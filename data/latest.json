@@ -1,0 +1,49 @@
+{
+  "generated_at": "2026-03-31T04:31:10.582Z",
+  "bajus_date": "Tuesday, March 31, 2026",
+  "bajus_ok": true,
+  "intl_ok": true,
+  "fx_ok": true,
+  "gold": {
+    "date": "2026-03-31",
+    "timestamp": "2026-03-31T04:31:10.582Z",
+    "bajus_g22": 20980,
+    "bajus_g21": 20025,
+    "bajus_g18": 17165,
+    "bajus_gtr": 13980,
+    "bajus_g22_vori": 244711,
+    "bajus_g21_vori": 233572,
+    "bajus_g18_vori": 200213,
+    "bajus_gtr_vori": 163063,
+    "intl_usd_oz": 4563.700195,
+    "intl_prev_usd_oz": null,
+    "intl_chg_usd": null,
+    "intl_chg_pct": null,
+    "intl_gram_bdt": 18047.02,
+    "usd_bdt": 122.997868
+  },
+  "silver": {
+    "date": "2026-03-31",
+    "timestamp": "2026-03-31T04:31:10.582Z",
+    "bajus_s22": 490,
+    "bajus_s21": 465,
+    "bajus_s18": 400,
+    "bajus_str": 300,
+    "bajus_s22_vori": 5715,
+    "bajus_s21_vori": 5424,
+    "bajus_s18_vori": 4666,
+    "bajus_str_vori": 3499,
+    "intl_usd_oz": 72.233002,
+    "intl_prev_usd_oz": null,
+    "intl_chg_usd": null,
+    "intl_chg_pct": null,
+    "intl_gram_bdt": 285.6433,
+    "usd_bdt": 122.997868
+  },
+  "counts": {
+    "gold": 196,
+    "silver": 196,
+    "intl": 196
+  },
+  "bajus_raw": " HOTLINE: +8802-41031722 ABOUT US ABOUT US CHIEF ADVISOR’S MESSAGE COMMITTEE BOARD OF DIRECTORS STANDING COMMITTEE BANKING AND FINANCIAL SERVICE PRICING AND PRICE MONITORING FOREIGN TRADE AND MARKET DEVELOPMENT TARIFF AND TAXATION WOMEN AFFAIRS ANTI-SMUGGLING AND LAW ENFORCEMENT RESEARCH AND DEVELOPMENT EXHIBITION, TRADE AND EVENT MANAGEMENT LAW AND MEMBERSHIP DISTRICT COMMITTEE MEMBER MEMBER LIST DHAKA CHATTOGRAM BARISHAL KHULNA MYMENSINGH RAJSHAHI RANGPUR SYLHET BECOME A MEMBER POLICY POLICY N"
+}
