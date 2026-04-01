@@ -1,5 +1,5 @@
 /**
- * SonarGold BD — Shared App Logic
+ * GoldRateLive — Shared App Logic
  * All pages include this file via <script src="app.js">
  *
  * Each page sets window.PAGE_CONFIG before loading this script:
@@ -24,7 +24,7 @@ const LANGS = {
   en: {
     nav_gold:'Gold', nav_silver:'Silver', nav_live:'Live Market',
     nav_compare:'Compare', nav_history:'History', nav_forecast:'Forecast', nav_calc:'Calculator',
-    eyebrow:'BAJUS Official · Live International · 4-Hour Auto-Update',
+    eyebrow:'BAJUS Official · Live International · Auto-Update',
     loading:'Loading…', awaiting:'Awaiting data', no_change:'No change',
     data_unavail:'Data unavailable', unavail:'Unavailable',
     bajus_ok_gold:'<strong>Note:</strong> Official BAJUS rates. Prices exclude 5% VAT and making charges (≈৳300/gram). 1 Vori = 11.664g. 1 Tola = 1 Vori.',
@@ -856,9 +856,10 @@ async function init() {
 
   // Set active nav link for current page
   const path = window.location.pathname;
-  const gLink = $('nav-gold-link'), sLink = $('nav-silver-link');
+  const gLink = $('nav-gold-link'), sLink = $('nav-silver-link'), hLink= $('nav-home-link');
   if (path.includes('gold.html')   && gLink) gLink.classList.add('active');
   if (path.includes('silver.html') && sLink) sLink.classList.add('active');
+  if ((!path.includes('silver.html')&&!path.includes('gold.html')) && hLink) hLink.classList.add('active');
 
   bindEvents();
   initParticles();
