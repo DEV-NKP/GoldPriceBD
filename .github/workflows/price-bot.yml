@@ -18,11 +18,11 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      # 1. Checkout
+      # 1. Checkout with default GITHUB_TOKEN (for read access)
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT }}  # Use PAT instead of GITHUB_TOKEN
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       # 2. Node.js
       - name: Setup Node.js 20
@@ -81,6 +81,13 @@ jobs:
           git add data/ logs/
           git diff --staged --quiet && echo "No changes to commit" || (
             TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
-            git commit -m "🔄 Update prices — $TIMESTAMP" &&
-            git push
+            git commit -m "🔄 Update prices — $TIMESTAMP"
           )
+
+      # 8. Push changes using PAT
+      - name: Push changes
+        if: ${{ success() }}
+        run: |
+          # Set up authentication with PAT
+          git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/DEV-NKP/GoldRateLive.git
+          git push origin master
