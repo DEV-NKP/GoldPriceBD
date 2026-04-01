@@ -2548,14 +2548,15 @@
   },
   {
     "date": "2026-04-01",
-    "timestamp": "2026-04-01T04:14:43.273Z",
-    "bajus_g22": null,
-    "bajus_g21": null,
-    "bajus_g18": null,
-    "bajus_gtr": null,
-    "bajus_g22_vori": null,
-    "bajus_g21_vori": null,
-    "bajus_g18_vori": null,
-    "bajus_gtr_vori": null
+    "timestamp": "2026-04-01T05:15:39.809Z",
+    "data_source": "alaminjewellers",
+    "bajus_g22": 21260,
+    "bajus_g21": 20295,
+    "bajus_g18": 17395,
+    "bajus_gtr": 14170,
+    "bajus_g22_vori": 247977,
+    "bajus_g21_vori": 236721,
+    "bajus_g18_vori": 202895,
+    "bajus_gtr_vori": 165279
   }
 ]
