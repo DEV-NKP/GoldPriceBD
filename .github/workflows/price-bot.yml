@@ -22,7 +22,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}  # Use PAT instead of GITHUB_TOKEN
 
       # 2. Node.js
       - name: Setup Node.js 20
