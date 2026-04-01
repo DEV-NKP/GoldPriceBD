@@ -1,5 +1,5 @@
 /**
- * SonarGold BD — Price Scraper v2.1 (GitHub Actions Optimized)
+ * SonarGold BD — Price Scraper v2.2 (Advanced BAJUS Bypass)
  * ============================================================
  * Runs every 4 hours via GitHub Actions.
  * Scrapes BAJUS (bajus.org) for BD gold/silver prices.
@@ -45,8 +45,8 @@ const CFG = {
   LATEST_FILE : path.join(__dirname, 'data', 'latest.json'),
   STORE_ONLY_ON_CHANGE: true,
   HEADLESS    : true,
-  TIMEOUT     : 45000, // Increased timeout for GitHub Actions
-  MAX_RETRIES : 3, // Increased retries
+  TIMEOUT     : 45000,
+  MAX_RETRIES : 3,
   LOG_KEEP_DAYS: 30,
 };
 
@@ -128,14 +128,25 @@ function convertBengaliToArabic(str) {
   return str;
 }
 
-/* ─── SCRAPE BAJUS (ENHANCED FOR GITHUB ACTIONS) ─── */
+/* ─── SCRAPE BAJUS (ADVANCED BOT BYPASS) ─── */
 async function scrapeBajus() {
-  info('Starting BAJUS scrape (Puppeteer + stealth)…');
+  info('Starting BAJUS scrape (Advanced Bot Bypass)…');
   let browser;
 
   for (const url of CFG.BAJUS_URLS) {
     for (let attempt = 1; attempt <= CFG.MAX_RETRIES; attempt++) {
       try {
+        // Use a more comprehensive stealth configuration
+        const stealthOptions = {
+          language: 'en-US,en;q=0.9',
+          locale: 'en-US',
+          colorScheme: 'light',
+          timezone: 'America/New_York',
+          geolocation: { latitude: 40.7128, longitude: -74.0060 }, // New York
+          permissions: ['geolocation'],
+          reducedMotion: 'default'
+        };
+
         browser = await puppeteer.launch({
           headless: CFG.HEADLESS,
           args: [
@@ -144,7 +155,7 @@ async function scrapeBajus() {
             '--disable-blink-features=AutomationControlled',
             '--disable-dev-shm-usage', 
             '--disable-gpu',
-            '--window-size=1920,1080', // Larger viewport
+            '--window-size=1920,1080',
             '--disable-web-security',
             '--disable-features=IsolateOrigins,site-per-process',
             '--allow-running-insecure-content',
@@ -152,28 +163,114 @@ async function scrapeBajus() {
             '--disable-popup-blocking',
             '--disable-extensions',
             '--disable-plugins',
-            '--disable-images', // Don't load images
-            '--disable-javascript', // Try without JS first
+            '--disable-images',
+            '--disable-notifications',
+            '--disable-default-apps',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding',
+            '--disable-field-trial-config',
+            '--disable-ipc-flooding-protection',
+            '--enable-automation',
+            '--password-store=basic',
+            '--use-mock-keychain'
           ],
         });
         
         const page = await browser.newPage();
         
-        // Enhanced stealth
+        // Apply stealth options
+        await page.emulateTimezone(stealthOptions.timezone);
+        await page.setGeolocation(stealthOptions.geolocation);
+        await page.setExtraHTTPHeaders({
+          'Accept-Language': stealthOptions.language,
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'DNT': '1',
+          'Connection': 'keep-alive',
+          'Upgrade-Insecure-Requests': '1',
+          'Sec-Fetch-Dest': 'document',
+          'Sec-Fetch-Mode': 'navigate',
+          'Sec-Fetch-Site': 'none',
+          'Sec-Fetch-User': '?1',
+          'Cache-Control': 'max-age=0'
+        });
+        
+        // Enhanced stealth scripts
         await page.evaluateOnNewDocument(() => {
-          Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-          Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
-          Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
-          window.chrome = { runtime: {} };
+          // Remove webdriver property
+          Object.defineProperty(navigator, 'webdriver', {
+            get: () => undefined
+          });
+          
+          // Override plugins
+          Object.defineProperty(navigator, 'plugins', {
+            get: () => [
+              {
+                0: {
+                  type: "application/x-google-chrome-pdf",
+                  suffixes: "pdf",
+                  description: "Portable Document Format",
+                  enabledPlugin: Plugin
+                },
+                description: "Portable Document Format",
+                filename: "internal-pdf-viewer",
+                length: 1,
+                name: "Chrome PDF Plugin"
+              }
+            ]
+          });
+          
+          // Override languages
+          Object.defineProperty(navigator, 'languages', {
+            get: () => ['en-US', 'en']
+          });
+          
+          // Add chrome object
+          window.chrome = {
+            app: {},
+            runtime: {}
+          };
+          
+          // Override permissions
           Object.defineProperty(navigator, 'permissions', {
             get: () => ({
               query: () => Promise.resolve({ state: 'granted' })
             })
           });
+          
+          // Override WebGL
+          const getParameter = WebGLRenderingContext.prototype.getParameter;
+          WebGLRenderingContext.prototype.getParameter = function(parameter) {
+            if (parameter === 37445) {
+              return 'Intel Inc.';
+            }
+            if (parameter === 37446) {
+              return 'Intel(R) HD Graphics 630';
+            }
+            return getParameter(parameter);
+          };
+          
+          // Override the getBoundingClientRect method to prevent size detection
+          const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+          Element.prototype.getBoundingClientRect = function() {
+            const result = originalGetBoundingClientRect.call(this);
+            // Add random small variations to make detection harder
+            result.x += Math.random() * 0.1 - 0.05;
+            result.y += Math.random() * 0.1 - 0.05;
+            return result;
+          };
         });
 
         await page.setUserAgent(rndUA());
-        await page.setViewport({ width: 1920, height: 1080 });
+        await page.setViewport({ 
+          width: 1920, 
+          height: 1080,
+          deviceScaleFactor: 1,
+          isMobile: false,
+          hasTouch: false,
+          isLandscape: true
+        });
         
         // Block unnecessary resources
         await page.setRequestInterception(true);
@@ -186,22 +283,55 @@ async function scrapeBajus() {
         });
 
         // Random delay before navigation
-        await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000));
+        await new Promise(r => setTimeout(r, 2000 + Math.random() * 3000));
         
+        // Navigate to the page
         info(`Attempt ${attempt}: GET ${url}`);
-        const res = await page.goto(url, { 
-          waitUntil: 'domcontentloaded', 
+        const response = await page.goto(url, { 
+          waitUntil: 'networkidle2', // Wait for network to be idle
           timeout: CFG.TIMEOUT 
         });
 
-        if (!res || res.status() >= 400) {
-          warn(`HTTP ${res?.status()} — skipping`);
+        // Check if we got blocked
+        if (!response || response.status() >= 400) {
+          warn(`HTTP ${response?.status()} — skipping`);
           await browser.close(); browser = null;
           break;
         }
 
+        // Check for common block indicators
+        const isBlocked = await page.evaluate(() => {
+          // Check for common block indicators
+          const blockIndicators = [
+            'access denied',
+            'forbidden',
+            'blocked',
+            'captcha',
+            'cloudflare',
+            'security check',
+            'checking your browser',
+            'enable javascript',
+            'enable cookies'
+          ];
+          
+          const pageText = document.body.innerText.toLowerCase();
+          return blockIndicators.some(indicator => pageText.includes(indicator));
+        });
+        
+        if (isBlocked) {
+          warn('Page appears to be blocked by bot detection');
+          await browser.close(); browser = null;
+          continue;
+        }
+
         // Wait a bit for dynamic content
         await new Promise(r => setTimeout(r, 3000 + Math.random() * 2000));
+        
+        // Try to scroll a bit to trigger any lazy-loaded content
+        await page.evaluate(() => {
+          window.scrollBy(0, window.innerHeight);
+        });
+        await new Promise(r => setTimeout(r, 1000));
         
         const html = await page.content();
         await browser.close(); browser = null;
@@ -218,7 +348,7 @@ async function scrapeBajus() {
         warn(`Attempt ${attempt} error (${url}): ${e.message}`);
         if (browser) { try { await browser.close(); } catch {} browser = null; }
         if (attempt < CFG.MAX_RETRIES) {
-          const delay = 3000 + Math.random() * 3000;
+          const delay = 5000 + Math.random() * 5000;
           info(`Retrying in ${delay}ms...`);
           await new Promise(r => setTimeout(r, delay));
         }
@@ -395,61 +525,46 @@ const isValidGold = p => {
     && g.g22 > g.g21 && g.g21 > g.g18 && g.g18 > g.gtr;
 };
 
-/* ─── FETCH INTERNATIONAL PRICES (WITH DNS RESOLUTION FIX) ─── */
+/* ─── FETCH INTERNATIONAL PRICES ─── */
 async function fetchInternational() {
   info('Fetching international prices from gold-api.com and open.er-api.com…');
   const { default: fetch } = await import('node-fetch');
   let gold = null, silver = null, fx = null;
 
-  // Check DNS resolution first
-  const goldApiHost = new URL(CFG.INTL_GOLD_URL).hostname;
-  const silverApiHost = new URL(CFG.INTL_SILVER_URL).hostname;
-  
-  const goldDnsOK = await resolveDNS(goldApiHost);
-  const silverDnsOK = await resolveDNS(silverApiHost);
-
   try {
-    if (goldDnsOK) {
-      const r = await fetch(CFG.INTL_GOLD_URL, { 
-        signal: AbortSignal.timeout(15000),
-        headers: {
-          'User-Agent': rndUA(),
-          'Accept': 'application/json',
-          'Accept-Language': 'en-US,en;q=0.9',
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
-      });
-      gold = await r.json();
-      info(`Gold API: ${JSON.stringify(gold)}`);
-      if (!isFinite(+gold.price) || +gold.price <= 0) throw new Error('Bad gold data');
-      info(`XAU: $${gold.price}/oz`);
-    } else {
-      throw new Error('DNS resolution failed');
-    }
+    const r = await fetch(CFG.INTL_GOLD_URL, { 
+      signal: AbortSignal.timeout(15000),
+      headers: {
+        'User-Agent': rndUA(),
+        'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    });
+    gold = await r.json();
+    info(`Gold API: ${JSON.stringify(gold)}`);
+    if (!isFinite(+gold.price) || +gold.price <= 0) throw new Error('Bad gold data');
+    info(`XAU: $${gold.price}/oz`);
   } catch (e) { 
     error(`XAU fetch: ${e.message}`); 
   }
 
   try {
-    if (silverDnsOK) {
-      const r = await fetch(CFG.INTL_SILVER_URL, { 
-        signal: AbortSignal.timeout(15000),
-        headers: {
-          'User-Agent': rndUA(),
-          'Accept': 'application/json',
-          'Accept-Language': 'en-US,en;q=0.9',
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
-      });
-      silver = await r.json();
-      info(`Silver API: ${JSON.stringify(silver)}`);
-      if (!isFinite(+silver.price) || +silver.price <= 0) throw new Error('Bad silver data');
-      info(`XAG: $${silver.price}/oz`);
-    } else {
-      throw new Error('DNS resolution failed');
-    }
+    const r = await fetch(CFG.INTL_SILVER_URL, { 
+      signal: AbortSignal.timeout(15000),
+      headers: {
+        'User-Agent': rndUA(),
+        'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    });
+    silver = await r.json();
+    info(`Silver API: ${JSON.stringify(silver)}`);
+    if (!isFinite(+silver.price) || +silver.price <= 0) throw new Error('Bad silver data');
+    info(`XAG: $${silver.price}/oz`);
   } catch (e) { 
     error(`XAG fetch: ${e.message}`); 
   }
@@ -572,7 +687,7 @@ async function main() {
   const onlySource = args.find(a => a.startsWith('--source='))?.split('=')[1];
 
   info('══════════════════════════════════════════════');
-  info('SonarGold Scraper v2.1 (GitHub Actions Optimized) starting…');
+  info('SonarGold Scraper v2.2 (Advanced BAJUS Bypass) starting…');
   info(`Mode: ${dryRun ? 'DRY RUN' : 'LIVE'} | Source: ${onlySource || 'all'}`);
   info('══════════════════════════════════════════════');
 
