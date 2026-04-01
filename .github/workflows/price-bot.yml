@@ -17,7 +17,7 @@ permissions:
 jobs:
   update-prices:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
 
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -34,66 +34,12 @@ jobs:
           node-version: "24"
           cache: "npm"
 
-      # 3. Install system dependencies (Chromium + WARP)
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update -q
-
-          # Chromium dependencies (existing)
-          sudo apt-get install -y -q \
-            libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 \
-            libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
-            libgbm1 libasound2t64 libpango-1.0-0 libpangocairo-1.0-0 \
-            fonts-liberation xdg-utils
-
-          # ── Cloudflare WARP (gives us a residential-grade IP) ──
-          # Add Cloudflare's GPG key and repo
-          curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg \
-            | sudo gpg --yes --dearmor -o /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
-          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] \
-            https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" \
-            | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
-
-          sudo apt-get update -q
-          sudo apt-get install -y -q cloudflare-warp || echo "WARP install failed — continuing without"
-
-      # 4. Start Cloudflare WARP and configure SOCKS5 proxy
-      - name: Start Cloudflare WARP proxy
-        run: |
-          # Accept TOS and register WARP
-          warp-cli --accept-tos registration new 2>/dev/null || true
-
-          # Switch to proxy mode (exposes SOCKS5 on 127.0.0.1:40000)
-          warp-cli --accept-tos mode proxy 2>/dev/null || true
-
-          # Connect
-          warp-cli --accept-tos connect 2>/dev/null || true
-
-          # Wait for WARP to come up
-          sleep 8
-
-          # Check status
-          STATUS=$(warp-cli status 2>/dev/null || echo "unknown")
-          echo "WARP status: $STATUS"
-
-          if echo "$STATUS" | grep -qi "connected"; then
-            echo "WARP_PROXY=socks5://127.0.0.1:40000" >> $GITHUB_ENV
-            echo "✅ WARP connected — BAJUS scraping will use residential IP"
-          else
-            echo "⚠️  WARP not connected — will try without proxy (Wayback Machine fallback available)"
-          fi
-
-      # 5. Install npm dependencies
+      # 3. Install dependencies (no Chromium/puppeteer deps needed anymore!)
       - name: Install npm dependencies
-        run: |
-          npm ci --prefer-offline || npm install
-          # Install proxy agent packages for Node.js
-          npm install --no-save https-proxy-agent socks-proxy-agent 2>/dev/null || true
+        run: npm ci --prefer-offline || npm install
 
-      # 6. Run scraper
+      # 4. Run scraper
       - name: Run price scraper
-        env:
-          WARP_PROXY: ${{ env.WARP_PROXY }}
         run: |
           SOURCE="${{ github.event.inputs.source || 'all' }}"
           if [ "$SOURCE" = "all" ]; then
@@ -102,20 +48,21 @@ jobs:
             node scraper.js --source=$SOURCE
           fi
 
-      # 7. Show results
+      # 5. Show results
       - name: Show results
         run: |
           echo "=== latest.json ==="
           node -e "
             try {
               const d = require('./data/latest.json');
-              console.log('bajus_ok:', d.bajus_ok, '| bajus_cached:', d.bajus_cached, '| bajus_source:', d.bajus_source);
+              console.log('bajus_ok:', d.bajus_ok, '| bajus_source:', d.bajus_source, '| bajus_cached:', d.bajus_cached);
               console.log('intl_ok:', d.intl_ok, '| fx_ok:', d.fx_ok);
-              console.log('Gold 22K:', d.gold?.bajus_g22, 'BDT/g | XAU:', d.gold?.intl_usd_oz, 'USD/oz');
-              console.log('Silver 22K:', d.silver?.bajus_s22, 'BDT/g | XAG:', d.silver?.intl_usd_oz, 'USD/oz');
+              console.log('Gold 22K:', d.gold?.bajus_g22, 'BDT/g (' + d.gold?.bajus_g22_vori + ' BDT/vori)');
+              console.log('Silver 22K:', d.silver?.bajus_s22, 'BDT/g');
+              console.log('XAU:', d.gold?.intl_usd_oz, 'USD/oz | XAG:', d.silver?.intl_usd_oz, 'USD/oz');
               console.log('Counts:', d.counts);
             } catch(e) {
-              console.log('(latest.json not found)');
+              console.log('(latest.json not found or invalid)', e.message);
             }
           "
           echo ""
@@ -129,7 +76,7 @@ jobs:
             }
           "
 
-      # 8. Commit changes
+      # 6. Commit changes
       - name: Commit changes
         run: |
           git config user.name  "sonargold-bot"
@@ -139,9 +86,11 @@ jobs:
             echo "No changes to commit"
           else
             TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
-            git commit -m "🔄 Update prices — $TIMESTAMP"
+            BAJUS_OK=$(node -e "try{const d=require('./data/latest.json');console.log(d.bajus_ok?'✅':'⚠️')}catch{console.log('❓')}" 2>/dev/null)
+            SOURCE=$(node -e "try{const d=require('./data/latest.json');console.log(d.bajus_source||'none')}catch{console.log('none')}" 2>/dev/null)
+            git commit -m "🔄 Update prices — $TIMESTAMP $BAJUS_OK [$SOURCE]"
           fi
 
-      # 9. Push changes
+      # 7. Push changes
       - name: Push changes
         run: git push
