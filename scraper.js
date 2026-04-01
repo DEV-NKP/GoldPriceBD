@@ -1,5 +1,5 @@
 /**
- * SonarGold BD — Price Scraper v2 (Fixed)
+ * SonarGold BD — Price Scraper v2.1 (GitHub Actions Optimized)
  * ============================================================
  * Runs every 4 hours via GitHub Actions.
  * Scrapes BAJUS (bajus.org) for BD gold/silver prices.
@@ -23,6 +23,7 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const cheerio       = require('cheerio');
 const fs            = require('fs');
 const path          = require('path');
+const dns           = require('dns').promises;
 
 puppeteer.use(StealthPlugin());
 
@@ -44,8 +45,8 @@ const CFG = {
   LATEST_FILE : path.join(__dirname, 'data', 'latest.json'),
   STORE_ONLY_ON_CHANGE: true,
   HEADLESS    : true,
-  TIMEOUT     : 35000,
-  MAX_RETRIES : 2,
+  TIMEOUT     : 45000, // Increased timeout for GitHub Actions
+  MAX_RETRIES : 3, // Increased retries
   LOG_KEEP_DAYS: 30,
 };
 
@@ -58,6 +59,8 @@ const UAS = [
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0',
   'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3.1 Safari/605.1.15',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0'
 ];
 const rndUA = () => UAS[Math.floor(Math.random() * UAS.length)];
 
@@ -104,7 +107,18 @@ const hasChanged = (arr, entry, keys) => {
   return keys.some(k => last[k] !== entry[k]);
 };
 
-/* ─── BENGALI → ARABIC NUMERAL CONVERTER (FROM VERSION 1) ─── */
+/* ─── DNS RESOLUTION HELPER ─── */
+async function resolveDNS(hostname) {
+  try {
+    await dns.lookup(hostname);
+    return true;
+  } catch (e) {
+    warn(`DNS resolution failed for ${hostname}: ${e.message}`);
+    return false;
+  }
+}
+
+/* ─── BENGALI → ARABIC NUMERAL CONVERTER ─── */
 function convertBengaliToArabic(str) {
   const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
   const arabicDigits  = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -114,7 +128,7 @@ function convertBengaliToArabic(str) {
   return str;
 }
 
-/* ─── SCRAPE BAJUS (FROM VERSION 1 WITH IMPROVEMENTS) ─── */
+/* ─── SCRAPE BAJUS (ENHANCED FOR GITHUB ACTIONS) ─── */
 async function scrapeBajus() {
   info('Starting BAJUS scrape (Puppeteer + stealth)…');
   let browser;
@@ -125,23 +139,60 @@ async function scrapeBajus() {
         browser = await puppeteer.launch({
           headless: CFG.HEADLESS,
           args: [
-            '--no-sandbox', '--disable-setuid-sandbox',
+            '--no-sandbox', 
+            '--disable-setuid-sandbox',
             '--disable-blink-features=AutomationControlled',
-            '--disable-dev-shm-usage', '--disable-gpu',
-            '--window-size=1366,768',
+            '--disable-dev-shm-usage', 
+            '--disable-gpu',
+            '--window-size=1920,1080', // Larger viewport
+            '--disable-web-security',
+            '--disable-features=IsolateOrigins,site-per-process',
+            '--allow-running-insecure-content',
+            '--disable-webgl',
+            '--disable-popup-blocking',
+            '--disable-extensions',
+            '--disable-plugins',
+            '--disable-images', // Don't load images
+            '--disable-javascript', // Try without JS first
           ],
         });
+        
         const page = await browser.newPage();
-        await page.setUserAgent(rndUA());
-        await page.setViewport({ width: 1366, height: 768 });
-        await page.setRequestInterception(true);
-        page.on('request', req => {
-          if (['image', 'stylesheet', 'font', 'media'].includes(req.resourceType())) req.abort();
-          else req.continue();
+        
+        // Enhanced stealth
+        await page.evaluateOnNewDocument(() => {
+          Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+          Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+          Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+          window.chrome = { runtime: {} };
+          Object.defineProperty(navigator, 'permissions', {
+            get: () => ({
+              query: () => Promise.resolve({ state: 'granted' })
+            })
+          });
         });
 
+        await page.setUserAgent(rndUA());
+        await page.setViewport({ width: 1920, height: 1080 });
+        
+        // Block unnecessary resources
+        await page.setRequestInterception(true);
+        page.on('request', req => {
+          if (['image', 'stylesheet', 'font', 'media', 'script'].includes(req.resourceType())) {
+            req.abort();
+          } else {
+            req.continue();
+          }
+        });
+
+        // Random delay before navigation
+        await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000));
+        
         info(`Attempt ${attempt}: GET ${url}`);
-        const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: CFG.TIMEOUT });
+        const res = await page.goto(url, { 
+          waitUntil: 'domcontentloaded', 
+          timeout: CFG.TIMEOUT 
+        });
 
         if (!res || res.status() >= 400) {
           warn(`HTTP ${res?.status()} — skipping`);
@@ -149,7 +200,9 @@ async function scrapeBajus() {
           break;
         }
 
-        await new Promise(r => setTimeout(r, 2500));
+        // Wait a bit for dynamic content
+        await new Promise(r => setTimeout(r, 3000 + Math.random() * 2000));
+        
         const html = await page.content();
         await browser.close(); browser = null;
 
@@ -164,7 +217,11 @@ async function scrapeBajus() {
       } catch (e) {
         warn(`Attempt ${attempt} error (${url}): ${e.message}`);
         if (browser) { try { await browser.close(); } catch {} browser = null; }
-        if (attempt < CFG.MAX_RETRIES) await new Promise(r => setTimeout(r, 3000));
+        if (attempt < CFG.MAX_RETRIES) {
+          const delay = 3000 + Math.random() * 3000;
+          info(`Retrying in ${delay}ms...`);
+          await new Promise(r => setTimeout(r, delay));
+        }
       }
     }
   }
@@ -173,7 +230,7 @@ async function scrapeBajus() {
   return null;
 }
 
-/* ─── PARSE BAJUS HTML (FIXED VERSION - COMBINING BEST OF V1 & V2) ─── */
+/* ─── PARSE BAJUS HTML ─── */
 function parseBajusHTML(html, sourceUrl) {
   if (!html || html.length < 500) return null;
 
@@ -212,13 +269,13 @@ function parseBajusHTML(html, sourceUrl) {
   
   /* Pattern: "২২ ক্যা: ক্যাডমিয়াম (হলমার্ককৃত) প্রতি গ্রাম স্বর্ণের মূল্য : ২০৭০০/-" */
   const patterns = [
-    // Gold patterns - updated to include the colon after "ক্যা"
+    // Gold patterns
     { key: 'g22', regex: /২২\s*ক্যা[:\s]*.*?স্বর্ণের মূল্য\s*[:\-\s]\s*(\d+)/i },
     { key: 'g21', regex: /২১\s*ক্যা[:\s]*.*?স্বর্ণের মূল্য\s*[:\-\s]\s*(\d+)/i },
     { key: 'g18', regex: /১৮\s*ক্যা[:\s]*.*?স্বর্ণের মূল্য\s*[:\-\s]\s*(\d+)/i },
     { key: 'gtr', regex: /সনাতন পদ্ধতি.*?স্বর্ণের মূল্য\s*[:\-\s]\s*(\d+)/i },
     
-    // Silver patterns - updated to include the colon after "ক্যা"
+    // Silver patterns
     { key: 's22', regex: /২২\s*ক্যা[:\s]*.*?ক্যাডমিয়াম.*?রূপার মূল্য\s*[:\-\s]\s*(\d+)/i },
     { key: 's21', regex: /২১\s*ক্যা[:\s]*.*?ক্যাডমিয়াম.*?রূপার মূল্য\s*[:\-\s]\s*(\d+)/i },
     { key: 's18', regex: /১৮\s*ক্যা[:\s]*.*?ক্যাডমিয়াম.*?রূপার মূল্য\s*[:\-\s]\s*(\d+)/i },
@@ -231,7 +288,7 @@ function parseBajusHTML(html, sourceUrl) {
       const val = parseInt(match[1].replace(/,/g, ''), 10);
       if (isFinite(val) && val > 50) {
         const target = ['g22','g21','g18','gtr'].includes(p.key) ? result.gold : result.silver;
-        if (target[p.key] === null) target[p.key] = val; // don't overwrite
+        if (target[p.key] === null) target[p.key] = val;
         info(`Found ${p.key}: ${val}`);
       }
     }
@@ -245,20 +302,17 @@ function parseBajusHTML(html, sourceUrl) {
     if (!numMatch) return;
     const nums = numMatch.map(n => parseInt(n.replace(/,/g,''),10)).filter(n => n > 50 && n < 100000);
     if (nums.length === 0) return;
-    const val = nums[nums.length - 1]; // last number is usually the price
+    const val = nums[nums.length - 1];
 
-    // --- Language-agnostic checks ---
     const isSilver = rowText.includes('SILVER') || rowText.includes('রূপার মূল্য');
     const isGold = rowText.includes('GOLD') || rowText.includes('স্বর্ণের মূল্য');
     const isTraditional = rowText.includes('TRADITIONAL') || rowText.includes('সনাতন পদ্ধতি');
 
-    // --- Gold Parsing ---
     if (rowText.includes('22') && isGold && !result.gold.g22) result.gold.g22 = val;
     else if (rowText.includes('21') && isGold && !result.gold.g21) result.gold.g21 = val;
     else if (rowText.includes('18') && isGold && !result.gold.g18) result.gold.g18 = val;
     else if (isTraditional && isGold && !result.gold.gtr) result.gold.gtr = val;
 
-    // --- Silver Parsing ---
     else if (rowText.includes('22') && isSilver && !result.silver.s22) result.silver.s22 = val;
     else if (rowText.includes('21') && isSilver && !result.silver.s21) result.silver.s21 = val;
     else if (rowText.includes('18') && isSilver && !result.silver.s18) result.silver.s18 = val;
@@ -273,7 +327,6 @@ function parseBajusHTML(html, sourceUrl) {
       .sort((a, b) => b - a);
 
     if (candidates.length >= 4) {
-      /* Try to find 4 consecutive decreasing values for gold */
       for (let i = 0; i <= candidates.length - 4; i++) {
         const [a, b, c, d] = candidates.slice(i, i + 4);
         if (a > b && b > c && c > d
@@ -290,7 +343,6 @@ function parseBajusHTML(html, sourceUrl) {
     }
   }
 
-  /* STRATEGY 4: Extract all numbers from text, use positional logic for silver */
   if (!result.silver.s22) {
     const numBlocks = convertedTickerText.match(/\b(\d{2,4})\b/g) || [];
     const candidates = [...new Set(numBlocks.map(Number))]
@@ -298,7 +350,6 @@ function parseBajusHTML(html, sourceUrl) {
       .sort((a, b) => b - a);
 
     if (candidates.length >= 3) {
-      /* Try to find 3 consecutive decreasing values for silver */
       for (let i = 0; i <= candidates.length - 3; i++) {
         const [a, b, c] = candidates.slice(i, i + 3);
         if (a > b && b > c
@@ -314,7 +365,7 @@ function parseBajusHTML(html, sourceUrl) {
     }
   }
 
-  /* Silver fallback: if we found s22 but not others, derive proportionally */
+  /* Silver fallback */
   if (result.silver.s22 && !result.silver.s21) {
     result.silver.s21 = Math.round(result.silver.s22 * 0.945);
     result.silver.s18 = Math.round(result.silver.s22 * 0.808);
@@ -322,7 +373,6 @@ function parseBajusHTML(html, sourceUrl) {
     warn('Silver: derived s21/s18/str proportionally from s22');
   }
 
-  /* If only one silver value found and it's labeled cadmium/22K silver */
   if (!result.silver.s22) {
     const cadMatch = convertedTickerText.match(/(?:২২\s*ক্যা[:\s]*)?(?:রূপার|স্বর্ণের)\s*মূল্য\s*[:\-\s]\s*(\d+)/i);
     if (cadMatch) {
@@ -345,36 +395,84 @@ const isValidGold = p => {
     && g.g22 > g.g21 && g.g21 > g.g18 && g.g18 > g.gtr;
 };
 
-/* ─── FETCH INTERNATIONAL PRICES ─── */
+/* ─── FETCH INTERNATIONAL PRICES (WITH DNS RESOLUTION FIX) ─── */
 async function fetchInternational() {
   info('Fetching international prices from gold-api.com and open.er-api.com…');
   const { default: fetch } = await import('node-fetch');
   let gold = null, silver = null, fx = null;
 
-  try {
-    const r = await fetch(CFG.INTL_GOLD_URL, { signal: AbortSignal.timeout(12000) });
-    gold = await r.json();
-    info(`Gold API: ${JSON.stringify(gold)}`);
-    if (!isFinite(+gold.price) || +gold.price <= 0) throw new Error('Bad gold data');
-    info(`XAU: $${gold.price}/oz`);
-  } catch (e) { error(`XAU fetch: ${e.message}`); }
+  // Check DNS resolution first
+  const goldApiHost = new URL(CFG.INTL_GOLD_URL).hostname;
+  const silverApiHost = new URL(CFG.INTL_SILVER_URL).hostname;
+  
+  const goldDnsOK = await resolveDNS(goldApiHost);
+  const silverDnsOK = await resolveDNS(silverApiHost);
 
   try {
-    const r = await fetch(CFG.INTL_SILVER_URL, { signal: AbortSignal.timeout(12000) });
-    silver = await r.json();
-    info(`Silver API: ${JSON.stringify(silver)}`);
-    if (!isFinite(+silver.price) || +silver.price <= 0) throw new Error('Bad silver data');
-    info(`XAG: $${silver.price}/oz`);
-  } catch (e) { error(`XAG fetch: ${e.message}`); }
+    if (goldDnsOK) {
+      const r = await fetch(CFG.INTL_GOLD_URL, { 
+        signal: AbortSignal.timeout(15000),
+        headers: {
+          'User-Agent': rndUA(),
+          'Accept': 'application/json',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      gold = await r.json();
+      info(`Gold API: ${JSON.stringify(gold)}`);
+      if (!isFinite(+gold.price) || +gold.price <= 0) throw new Error('Bad gold data');
+      info(`XAU: $${gold.price}/oz`);
+    } else {
+      throw new Error('DNS resolution failed');
+    }
+  } catch (e) { 
+    error(`XAU fetch: ${e.message}`); 
+  }
 
   try {
-    const r = await fetch(CFG.FX_URL, { signal: AbortSignal.timeout(12000) });
+    if (silverDnsOK) {
+      const r = await fetch(CFG.INTL_SILVER_URL, { 
+        signal: AbortSignal.timeout(15000),
+        headers: {
+          'User-Agent': rndUA(),
+          'Accept': 'application/json',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      silver = await r.json();
+      info(`Silver API: ${JSON.stringify(silver)}`);
+      if (!isFinite(+silver.price) || +silver.price <= 0) throw new Error('Bad silver data');
+      info(`XAG: $${silver.price}/oz`);
+    } else {
+      throw new Error('DNS resolution failed');
+    }
+  } catch (e) { 
+    error(`XAG fetch: ${e.message}`); 
+  }
+
+  try {
+    const r = await fetch(CFG.FX_URL, { 
+      signal: AbortSignal.timeout(15000),
+      headers: {
+        'User-Agent': rndUA(),
+        'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    });
     fx = await r.json();
     if (!isFinite(+fx?.rates?.BDT)) throw new Error('No BDT rate');
     info(`USD/BDT: ${fx.rates.BDT}`);
-  } catch (e) { error(`FX fetch: ${e.message}`); fx = { rates: { BDT: null } }; }
+  } catch (e) { 
+    error(`FX fetch: ${e.message}`); 
+    fx = { rates: { BDT: null } }; 
+  }
 
-  // Safely extract optional fields that may have different names across API versions
   const pick = (obj, ...keys) => {
     for (const k of keys) {
       const v = obj?.[k];
@@ -456,7 +554,6 @@ function persist(entry, history, file, keys, label) {
     info(`${label}: no change — skipping history append`);
     return { stored: false, history };
   }
-  // Update in-place if same date; otherwise append
   if (history.length && history[history.length - 1].date === entry.date) {
     history[history.length - 1] = entry;
     info(`${label}: updated same-day entry (${entry.date})`);
@@ -475,7 +572,7 @@ async function main() {
   const onlySource = args.find(a => a.startsWith('--source='))?.split('=')[1];
 
   info('══════════════════════════════════════════════');
-  info('SonarGold Scraper v2 (Fixed) starting…');
+  info('SonarGold Scraper v2.1 (GitHub Actions Optimized) starting…');
   info(`Mode: ${dryRun ? 'DRY RUN' : 'LIVE'} | Source: ${onlySource || 'all'}`);
   info('══════════════════════════════════════════════');
 
@@ -515,7 +612,6 @@ async function main() {
   const sR = persist(silverEntry, silverHist, CFG.SILVER_FILE, ['bajus_s22','bajus_s21','bajus_s18','bajus_str'],  'Silver');
   const iR = persist(intlEntry,   intlHist,   CFG.INTL_FILE,   ['gold_usd_oz','silver_usd_oz','usd_bdt'],           'Intl');
 
-  // Build latest.json — merges gold + silver + intl for website convenience
   const latest = {
     generated_at : now.toISOString(),
     bajus_date   : now.toLocaleDateString('en-US', {
@@ -526,7 +622,6 @@ async function main() {
     fx_ok     : intlEntry.usd_bdt !== null,
     gold: {
       ...goldEntry,
-      // Add intl fields under gold for website backward-compat
       intl_usd_oz     : intlEntry.gold_usd_oz,
       intl_prev_usd_oz: intlEntry.gold_prev_usd_oz,
       intl_chg_usd    : intlEntry.gold_chg_usd,
