@@ -19,20 +19,23 @@ jobs:
   update-prices:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Force Node.js 24 to avoid deprecation warnings
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-      # 1. Checkout repo (auto uses GITHUB_TOKEN)
+      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup Node.js
-      - name: Setup Node.js 20
+      # 2. Setup Node.js 24
+      - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: "npm"
 
-      # 3. Install Chromium deps (for Puppeteer)
+      # 3. Install Chromium dependencies
       - name: Install Chromium dependencies
         run: |
           sudo apt-get update -q
@@ -56,7 +59,7 @@ jobs:
             node scraper.js --source=$SOURCE
           fi
 
-      # 6. Show results (debug/logging)
+      # 6. Show results
       - name: Show results
         run: |
           echo "=== latest.json (gold) ==="
@@ -83,7 +86,7 @@ jobs:
             }
           "
 
-      # 7. Commit changes (only if any)
+      # 7. Commit changes
       - name: Commit changes
         run: |
           git config user.name  "sonargold-bot"
@@ -98,6 +101,6 @@ jobs:
             git commit -m "🔄 Update prices — $TIMESTAMP"
           fi
 
-      # 8. Push changes (uses GITHUB_TOKEN automatically)
+      # 8. Push changes
       - name: Push changes
         run: git push
