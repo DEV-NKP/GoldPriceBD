@@ -73,11 +73,11 @@ jobs:
             console.log(JSON.stringify(f[f.length-1], null, 2));
           " 2>/dev/null || echo "(no gold file)"
 
-      # 7. Commit & push if files changed
+      # 7. Commit changes
       - name: Commit changes
         run: |
-          git config user.name  "sonargold-bot"
-          git config user.email "sonargold-bot@users.noreply.github.com"
+          git config user.name  "gold-rate-live"
+          git config user.email "gold-rate-live@users.noreply.github.com"
           git add data/ logs/
           git diff --staged --quiet && echo "No changes to commit" || (
             TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
