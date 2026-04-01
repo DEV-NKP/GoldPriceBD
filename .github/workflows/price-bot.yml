@@ -1,4 +1,5 @@
 name: 🔄 SonarGold Price Bot
+
 on:
   schedule:
     # Every 4 hours UTC
@@ -18,7 +19,7 @@ jobs:
   update-prices:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
+    # Force Node.js 24 to avoid deprecation warnings
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -34,11 +35,21 @@ jobs:
           node-version: "24"
           cache: "npm"
 
-      # 3. Install dependencies (no Chromium/puppeteer deps needed anymore!)
+      # 3. Install Chromium dependencies
+      - name: Install Chromium dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q \
+            libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 \
+            libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
+            libgbm1 libasound2t64 libpango-1.0-0 libpangocairo-1.0-0 \
+            fonts-liberation xdg-utils
+
+      # 4. Install dependencies
       - name: Install npm dependencies
         run: npm ci --prefer-offline || npm install
 
-      # 4. Run scraper
+      # 5. Run scraper
       - name: Run price scraper
         run: |
           SOURCE="${{ github.event.inputs.source || 'all' }}"
@@ -48,23 +59,22 @@ jobs:
             node scraper.js --source=$SOURCE
           fi
 
-      # 5. Show results
+      # 6. Show results
       - name: Show results
         run: |
-          echo "=== latest.json ==="
+          echo "=== latest.json (gold) ==="
           node -e "
             try {
               const d = require('./data/latest.json');
-              console.log('bajus_ok:', d.bajus_ok, '| bajus_source:', d.bajus_source, '| bajus_cached:', d.bajus_cached);
-              console.log('intl_ok:', d.intl_ok, '| fx_ok:', d.fx_ok);
-              console.log('Gold 22K:', d.gold?.bajus_g22, 'BDT/g (' + d.gold?.bajus_g22_vori + ' BDT/vori)');
-              console.log('Silver 22K:', d.silver?.bajus_s22, 'BDT/g');
-              console.log('XAU:', d.gold?.intl_usd_oz, 'USD/oz | XAG:', d.silver?.intl_usd_oz, 'USD/oz');
+              console.log('bajus_ok:', d.bajus_ok, '| intl_ok:', d.intl_ok, '| fx_ok:', d.fx_ok);
+              console.log('Gold 22K:', d.gold?.bajus_g22, 'BDT/g | XAU:', d.gold?.intl_usd_oz, 'USD/oz');
+              console.log('Silver 22K:', d.silver?.bajus_s22, 'BDT/g | XAG:', d.silver?.intl_usd_oz, 'USD/oz');
               console.log('Counts:', d.counts);
             } catch(e) {
-              console.log('(latest.json not found or invalid)', e.message);
+              console.log('(latest.json not found)');
             }
           "
+
           echo ""
           echo "=== Last gold entry ==="
           node -e "
@@ -76,21 +86,21 @@ jobs:
             }
           "
 
-      # 6. Commit changes
+      # 7. Commit changes
       - name: Commit changes
         run: |
           git config user.name  "sonargold-bot"
           git config user.email "sonargold-bot@users.noreply.github.com"
+
           git add data/ logs/
+
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
             TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
-            BAJUS_OK=$(node -e "try{const d=require('./data/latest.json');console.log(d.bajus_ok?'✅':'⚠️')}catch{console.log('❓')}" 2>/dev/null)
-            SOURCE=$(node -e "try{const d=require('./data/latest.json');console.log(d.bajus_source||'none')}catch{console.log('none')}" 2>/dev/null)
-            git commit -m "🔄 Update prices — $TIMESTAMP $BAJUS_OK [$SOURCE]"
+            git commit -m "🔄 Update prices — $TIMESTAMP"
           fi
 
-      # 7. Push changes
+      # 8. Push changes
       - name: Push changes
         run: git push
