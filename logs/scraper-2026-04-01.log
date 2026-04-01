@@ -25,3 +25,32 @@
 [2026-04-01T04:14:46.204Z] [INFO ] latest.json written
 [2026-04-01T04:14:46.204Z] [INFO ] Done — gold:stored silver:stored intl:stored
 [2026-04-01T04:14:46.204Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-01T04:39:08.486Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-01T04:39:08.488Z] [INFO ] SonarGold Scraper v2.1 (GitHub Actions Optimized) starting…
+[2026-04-01T04:39:08.488Z] [INFO ] Mode: LIVE | Source: all
+[2026-04-01T04:39:08.489Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-01T04:39:08.491Z] [INFO ] History — gold:197 silver:197 intl:197
+[2026-04-01T04:39:08.492Z] [INFO ] Starting BAJUS scrape (Puppeteer + stealth)…
+[2026-04-01T04:39:13.548Z] [INFO ] Attempt 1: GET https://bajus.org/gold-price
+[2026-04-01T04:39:13.835Z] [WARN ] HTTP 403 — skipping
+[2026-04-01T04:39:16.539Z] [INFO ] Attempt 1: GET https://www.bajus.org/gold-price
+[2026-04-01T04:39:16.829Z] [WARN ] HTTP 403 — skipping
+[2026-04-01T04:39:18.579Z] [INFO ] Attempt 1: GET https://bajus.org/index.php?action=goldprice
+[2026-04-01T04:39:18.687Z] [WARN ] HTTP 403 — skipping
+[2026-04-01T04:39:18.774Z] [ERROR] All BAJUS URLs failed
+[2026-04-01T04:39:18.776Z] [ERROR] BAJUS failed — BD prices null this run
+[2026-04-01T04:39:18.778Z] [INFO ] Fetching international prices from gold-api.com and open.er-api.com…
+[2026-04-01T04:39:19.482Z] [INFO ] Gold API: {"currency":"USD","currencySymbol":"$","exchangeRate":1,"name":"Gold","price":4675,"symbol":"XAU","updatedAt":"2026-04-01T04:39:10Z","updatedAtReadable":"a few seconds ago"}
+[2026-04-01T04:39:19.482Z] [INFO ] XAU: $4675/oz
+[2026-04-01T04:39:19.553Z] [INFO ] Silver API: {"currency":"USD","currencySymbol":"$","exchangeRate":1,"name":"Silver","price":74.099998,"symbol":"XAG","updatedAt":"2026-04-01T04:39:10Z","updatedAtReadable":"a few seconds ago"}
+[2026-04-01T04:39:19.553Z] [INFO ] XAG: $74.099998/oz
+[2026-04-01T04:39:19.623Z] [INFO ] USD/BDT: 122.723389
+[2026-04-01T04:39:19.624Z] [INFO ] Gold:   {"date":"2026-04-01","timestamp":"2026-04-01T04:39:08.491Z","bajus_g22":null,"bajus_g21":null,"bajus_g18":null,"bajus_gtr":null,"bajus_g22_vori":null,"bajus_g21_vori":null,"bajus_g18_vori":null,"bajus_gtr_vori":null}
+[2026-04-01T04:39:19.624Z] [INFO ] Silver: {"date":"2026-04-01","timestamp":"2026-04-01T04:39:08.491Z","bajus_s22":null,"bajus_s21":null,"bajus_s18":null,"bajus_str":null,"bajus_s22_vori":null,"bajus_s21_vori":null,"bajus_s18_vori":null,"bajus_str_vori":null}
+[2026-04-01T04:39:19.624Z] [INFO ] Intl:   {"date":"2026-04-01","timestamp":"2026-04-01T04:39:08.491Z","gold_usd_oz":4675,"gold_prev_usd_oz":null,"gold_chg_usd":null,"gold_chg_pct":null,"gold_gram_bdt":18445.89,"silver_usd_oz":74.099998,"silver_prev_usd_oz":null,"silver_chg_usd":null,"silver_chg_pct":null,"silver_gram_bdt":292.3723,"usd_bdt":122.723389}
+[2026-04-01T04:39:19.624Z] [INFO ] Gold: no change — skipping history append
+[2026-04-01T04:39:19.624Z] [INFO ] Silver: no change — skipping history append
+[2026-04-01T04:39:19.624Z] [INFO ] Intl: updated same-day entry (2026-04-01)
+[2026-04-01T04:39:19.639Z] [INFO ] latest.json written
+[2026-04-01T04:39:19.639Z] [INFO ] Done — gold:no-change silver:no-change intl:stored
+[2026-04-01T04:39:19.639Z] [INFO ] ══════════════════════════════════════════════
