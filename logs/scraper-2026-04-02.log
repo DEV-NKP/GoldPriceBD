@@ -490,3 +490,24 @@ curl: try 'curl --help' or 'curl --manual' for more information
 [2026-04-02T16:51:38.523Z] [INFO ] latest.json written
 [2026-04-02T16:51:38.524Z] [INFO ] Done — gold:no-change silver:no-change intl:stored
 [2026-04-02T16:51:38.524Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-02T17:19:59.573Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-02T17:19:59.575Z] [INFO ] SonarGold Scraper v3.2 (Simplified with Working Sources) starting…
+[2026-04-02T17:19:59.575Z] [INFO ] Mode: LIVE | Source: all
+[2026-04-02T17:19:59.575Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-02T17:19:59.576Z] [INFO ] History — gold:197 silver:197 intl:198
+[2026-04-02T17:19:59.576Z] [INFO ] Starting BAJUS scrape (v3.2 — simplified with working sources)…
+[2026-04-02T17:19:59.577Z] [INFO ] Trying BAJUSCTG API…
+[2026-04-02T17:20:00.828Z] [INFO ] BAJUSCTG API success: gold_22k=21260
+[2026-04-02T17:20:00.829Z] [INFO ] Fetching international prices…
+[2026-04-02T17:20:01.515Z] [INFO ] XAU: $4662.5/oz
+[2026-04-02T17:20:01.515Z] [INFO ] XAG: $72.842003/oz
+[2026-04-02T17:20:01.515Z] [INFO ] USD/BDT: 122.928003
+[2026-04-02T17:20:01.516Z] [INFO ] Gold:   {"date":"2026-04-02","timestamp":"2026-04-02T17:19:59.576Z","data_source":"bajusctg-api","bajus_g22":21260,"bajus_g21":20295,"bajus_g18":17395,"bajus_gtr":14170,"bajus_g22_vori":247977,"bajus_g21_vori":236721,"bajus_g18_vori":202895,"bajus_gtr_vori":165279}
+[2026-04-02T17:20:01.516Z] [INFO ] Silver: {"date":"2026-04-02","timestamp":"2026-04-02T17:19:59.576Z","data_source":"bajusctg-api","bajus_s22":490,"bajus_s21":465,"bajus_s18":400,"bajus_str":300,"bajus_s22_vori":5715,"bajus_s21_vori":5424,"bajus_s18_vori":4666,"bajus_str_vori":3499}
+[2026-04-02T17:20:01.516Z] [INFO ] Intl:   {"date":"2026-04-02","timestamp":"2026-04-02T17:19:59.576Z","gold_usd_oz":4662.5,"gold_prev_usd_oz":null,"gold_chg_usd":null,"gold_chg_pct":null,"gold_gram_bdt":18427.24,"silver_usd_oz":72.842003,"silver_prev_usd_oz":null,"silver_chg_usd":null,"silver_chg_pct":null,"silver_gram_bdt":287.8879,"usd_bdt":122.928003}
+[2026-04-02T17:20:01.516Z] [INFO ] Gold: no change — skipping history append
+[2026-04-02T17:20:01.516Z] [INFO ] Silver: no change — skipping history append
+[2026-04-02T17:20:01.516Z] [INFO ] Intl: updated same-day entry (2026-04-02)
+[2026-04-02T17:20:01.538Z] [INFO ] latest.json written
+[2026-04-02T17:20:01.538Z] [INFO ] Done — gold:no-change silver:no-change intl:stored
+[2026-04-02T17:20:01.538Z] [INFO ] ══════════════════════════════════════════════
