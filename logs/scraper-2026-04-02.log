@@ -241,3 +241,90 @@ curl: try 'curl --help' or 'curl --manual' for more information
 [2026-04-02T08:50:04.904Z] [INFO ] latest.json written
 [2026-04-02T08:50:04.904Z] [INFO ] Done — gold:no-change silver:no-change intl:stored
 [2026-04-02T08:50:04.904Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-02T12:56:21.382Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-02T12:56:21.383Z] [INFO ] SonarGold Scraper v3.1 (Enhanced with BAJUSCTG Fallback) starting…
+[2026-04-02T12:56:21.383Z] [INFO ] Mode: LIVE | Source: all
+[2026-04-02T12:56:21.384Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-02T12:56:21.385Z] [INFO ] History — gold:197 silver:197 intl:198
+[2026-04-02T12:56:21.385Z] [INFO ] Starting BAJUS scrape (v3.1 — multi-strategy with BAJUSCTG fallback)…
+[2026-04-02T12:56:21.385Z] [INFO ] [fetch] Attempt 1: GET https://bajus.org/gold-price
+[2026-04-02T12:56:21.480Z] [WARN ] [fetch] Attempt 1 failed: HTTP 403
+[2026-04-02T12:56:24.483Z] [INFO ] [fetch] Attempt 2: GET https://bajus.org/gold-price
+[2026-04-02T12:56:24.521Z] [WARN ] [fetch] Attempt 2 failed: HTTP 403
+[2026-04-02T12:56:24.522Z] [INFO ] [curl] Attempt 1: GET https://bajus.org/gold-price
+[2026-04-02T12:56:24.529Z] [INFO ] curl: using --impersonate chrome
+[2026-04-02T12:56:24.535Z] [WARN ] [curl] Attempt 1 failed: curl failed: Command failed: curl -sL --max-time 20 --impersonate chrome          -H "Accept-Language: en-US,en;q=0.9"         "https://bajus.org/gold-price"
+curl: option --impersonate: is unknown
+curl: try 'curl --help' or 'curl --manual' for more information
+
+[2026-04-02T12:56:27.536Z] [INFO ] [curl] Attempt 2: GET https://bajus.org/gold-price
+[2026-04-02T12:56:27.543Z] [INFO ] curl: using --impersonate chrome
+[2026-04-02T12:56:27.549Z] [WARN ] [curl] Attempt 2 failed: curl failed: Command failed: curl -sL --max-time 20 --impersonate chrome          -H "Accept-Language: en-US,en;q=0.9"         "https://bajus.org/gold-price"
+curl: option --impersonate: is unknown
+curl: try 'curl --help' or 'curl --manual' for more information
+
+[2026-04-02T12:56:27.549Z] [INFO ] [puppeteer] Attempt 1: GET https://bajus.org/gold-price
+[2026-04-02T12:56:30.034Z] [WARN ] [puppeteer] Attempt 1 failed: HTTP 403
+[2026-04-02T12:56:35.039Z] [INFO ] [puppeteer] Attempt 2: GET https://bajus.org/gold-price
+[2026-04-02T12:56:38.009Z] [WARN ] [puppeteer] Attempt 2 failed: HTTP 403
+[2026-04-02T12:56:38.010Z] [INFO ] [fetch] Attempt 1: GET https://www.bajus.org/gold-price
+[2026-04-02T12:56:38.093Z] [WARN ] [fetch] Attempt 1 failed: HTTP 403
+[2026-04-02T12:56:41.096Z] [INFO ] [fetch] Attempt 2: GET https://www.bajus.org/gold-price
+[2026-04-02T12:56:41.137Z] [WARN ] [fetch] Attempt 2 failed: HTTP 403
+[2026-04-02T12:56:41.137Z] [INFO ] [curl] Attempt 1: GET https://www.bajus.org/gold-price
+[2026-04-02T12:56:41.143Z] [INFO ] curl: using --impersonate chrome
+[2026-04-02T12:56:41.149Z] [WARN ] [curl] Attempt 1 failed: curl failed: Command failed: curl -sL --max-time 20 --impersonate chrome          -H "Accept-Language: en-US,en;q=0.9"         "https://www.bajus.org/gold-price"
+curl: option --impersonate: is unknown
+curl: try 'curl --help' or 'curl --manual' for more information
+
+[2026-04-02T12:56:44.150Z] [INFO ] [curl] Attempt 2: GET https://www.bajus.org/gold-price
+[2026-04-02T12:56:44.157Z] [INFO ] curl: using --impersonate chrome
+[2026-04-02T12:56:44.163Z] [WARN ] [curl] Attempt 2 failed: curl failed: Command failed: curl -sL --max-time 20 --impersonate chrome          -H "Accept-Language: en-US,en;q=0.9"         "https://www.bajus.org/gold-price"
+curl: option --impersonate: is unknown
+curl: try 'curl --help' or 'curl --manual' for more information
+
+[2026-04-02T12:56:44.163Z] [INFO ] [puppeteer] Attempt 1: GET https://www.bajus.org/gold-price
+[2026-04-02T12:56:46.389Z] [WARN ] [puppeteer] Attempt 1 failed: HTTP 403
+[2026-04-02T12:56:51.395Z] [INFO ] [puppeteer] Attempt 2: GET https://www.bajus.org/gold-price
+[2026-04-02T12:56:53.709Z] [WARN ] [puppeteer] Attempt 2 failed: HTTP 403
+[2026-04-02T12:56:53.709Z] [INFO ] [fetch] Attempt 1: GET https://bajus.org/index.php?action=goldprice
+[2026-04-02T12:56:53.754Z] [WARN ] [fetch] Attempt 1 failed: HTTP 403
+[2026-04-02T12:56:56.758Z] [INFO ] [fetch] Attempt 2: GET https://bajus.org/index.php?action=goldprice
+[2026-04-02T12:56:56.806Z] [WARN ] [fetch] Attempt 2 failed: HTTP 403
+[2026-04-02T12:56:56.806Z] [INFO ] [curl] Attempt 1: GET https://bajus.org/index.php?action=goldprice
+[2026-04-02T12:56:56.813Z] [INFO ] curl: using --impersonate chrome
+[2026-04-02T12:56:56.819Z] [WARN ] [curl] Attempt 1 failed: curl failed: Command failed: curl -sL --max-time 20 --impersonate chrome          -H "Accept-Language: en-US,en;q=0.9"         "https://bajus.org/index.php?action=goldprice"
+curl: option --impersonate: is unknown
+curl: try 'curl --help' or 'curl --manual' for more information
+
+[2026-04-02T12:56:59.820Z] [INFO ] [curl] Attempt 2: GET https://bajus.org/index.php?action=goldprice
+[2026-04-02T12:56:59.827Z] [INFO ] curl: using --impersonate chrome
+[2026-04-02T12:56:59.833Z] [WARN ] [curl] Attempt 2 failed: curl failed: Command failed: curl -sL --max-time 20 --impersonate chrome          -H "Accept-Language: en-US,en;q=0.9"         "https://bajus.org/index.php?action=goldprice"
+curl: option --impersonate: is unknown
+curl: try 'curl --help' or 'curl --manual' for more information
+
+[2026-04-02T12:56:59.833Z] [INFO ] [puppeteer] Attempt 1: GET https://bajus.org/index.php?action=goldprice
+[2026-04-02T12:57:01.902Z] [WARN ] [puppeteer] Attempt 1 failed: HTTP 403
+[2026-04-02T12:57:06.907Z] [INFO ] [puppeteer] Attempt 2: GET https://bajus.org/index.php?action=goldprice
+[2026-04-02T12:57:09.385Z] [WARN ] [puppeteer] Attempt 2 failed: HTTP 403
+[2026-04-02T12:57:09.385Z] [INFO ] Trying BAJUSCTG alternative site…
+[2026-04-02T12:57:10.652Z] [WARN ] BAJUSCTG API failed: HTTP 401
+[2026-04-02T12:57:11.714Z] [WARN ] BAJUSCTG HTML failed: HTTP 401
+[2026-04-02T12:57:11.715Z] [INFO ] Trying Wayback Machine fallback…
+[2026-04-02T12:57:16.955Z] [WARN ] Wayback Machine failed: No Wayback snapshot found
+[2026-04-02T12:57:16.955Z] [ERROR] All BAJUS strategies failed
+[2026-04-02T12:57:16.955Z] [INFO ] Reusing cached BAJUS prices from 2026-04-01T08:56:37.736Z (28h ago)
+[2026-04-02T12:57:16.956Z] [WARN ] Using cached BAJUS prices (live scraping failed)
+[2026-04-02T12:57:16.956Z] [INFO ] Fetching international prices…
+[2026-04-02T12:57:17.184Z] [INFO ] XAU: $4612.899902/oz
+[2026-04-02T12:57:17.184Z] [INFO ] XAG: $70.603996/oz
+[2026-04-02T12:57:17.184Z] [INFO ] USD/BDT: 122.928003
+[2026-04-02T12:57:17.184Z] [INFO ] Gold:   {"date":"2026-04-02","timestamp":"2026-04-02T12:56:21.385Z","data_source":"cache","bajus_g22":21260,"bajus_g21":20295,"bajus_g18":17395,"bajus_gtr":14170,"bajus_g22_vori":247977,"bajus_g21_vori":236721,"bajus_g18_vori":202895,"bajus_gtr_vori":165279}
+[2026-04-02T12:57:17.185Z] [INFO ] Silver: {"date":"2026-04-02","timestamp":"2026-04-02T12:56:21.385Z","data_source":"cache","bajus_s22":490,"bajus_s21":465,"bajus_s18":400,"bajus_str":300,"bajus_s22_vori":5715,"bajus_s21_vori":5424,"bajus_s18_vori":4666,"bajus_str_vori":3499}
+[2026-04-02T12:57:17.185Z] [INFO ] Intl:   {"date":"2026-04-02","timestamp":"2026-04-02T12:56:21.385Z","gold_usd_oz":4612.899902,"gold_prev_usd_oz":null,"gold_chg_usd":null,"gold_chg_pct":null,"gold_gram_bdt":18231.21,"silver_usd_oz":70.603996,"silver_prev_usd_oz":null,"silver_chg_usd":null,"silver_chg_pct":null,"silver_gram_bdt":279.0428,"usd_bdt":122.928003}
+[2026-04-02T12:57:17.185Z] [INFO ] Gold: no change — skipping history append
+[2026-04-02T12:57:17.185Z] [INFO ] Silver: no change — skipping history append
+[2026-04-02T12:57:17.185Z] [INFO ] Intl: updated same-day entry (2026-04-02)
+[2026-04-02T12:57:17.204Z] [INFO ] latest.json written
+[2026-04-02T12:57:17.204Z] [INFO ] Done — gold:no-change silver:no-change intl:stored
+[2026-04-02T12:57:17.204Z] [INFO ] ══════════════════════════════════════════════
