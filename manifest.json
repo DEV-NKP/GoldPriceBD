@@ -1,0 +1,21 @@
+{
+  "name": "Gold Rate Live Bangladesh",
+  "short_name": "GoldRateLive",
+  "description": "Official BAJUS gold and silver prices in Bangladesh with live updates",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffd700",
+  "icons": [
+    {
+      "src": "./my-favicon/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./my-favicon/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
