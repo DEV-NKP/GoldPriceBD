@@ -14,9 +14,4 @@ Crawl-delay: 1
 # Block common non-content paths (if any exist in future)
 Disallow: /admin/
 Disallow: /api/
-Disallow: /*.json$ ```
 
-**Enhancements:**
-- Added explicit allows for your main pages
-- Reduced crawl delay to 1 second (better for frequently updated financial data)
-- Added preventive disallows for future development
