@@ -1,18 +1,15 @@
 /**
- * SonarGold BD — Price Scraper v3.1 (Enhanced with BAJUS-CTG Fallback)
+ * SonarGold BD — Price Scraper v3.2 (Simplified with Working Sources)
  * ============================================================
  * Runs every 4 hours via GitHub Actions.
- * Scrapes BAJUS (bajus.org) for BD gold/silver prices.
- * Falls back to bajusctg.org if main site is blocked.
- * Fetches international XAU/XAG spot + USD/BDT from free APIs.
+ * Uses only working sources for BD gold/silver prices.
  *
- * KEY FIXES IN v3.1:
- *   1. Added bajusctg.org as a fallback source
- *   2. Uses Cloudflare WARP proxy (residential IP) when WARP_PROXY env is set
- *   3. Tries multiple scraping strategies: direct fetch → curl-impersonate → puppeteer
- *   4. Falls back to Wayback Machine (web.archive.org) snapshot if live site is blocked
- *   5. Caches last successful BAJUS prices and reuses them if scraping fails today
- *   6. Stale-price guard: won't reuse cached prices older than 3 days
+ * KEY CHANGES IN v3.2:
+ *   1. Removed failing strategies (fetch, curl, puppeteer) for BAJUS
+ *   2. Focuses on BAJUSCTG as primary source
+ *   3. Added goldr.org API as a fallback option
+ *   4. Kept Wayback Machine and cache as last resorts
+ *   5. Improved error handling and logging
  *
  * THREE separate output files:
  *   data/gold_prices.json   — BAJUS gold history (BD only, per-gram BDT)
@@ -37,15 +34,13 @@ puppeteer.use(StealthPlugin());
 
 /* ─── CONFIG ─── */
 const CFG = {
-  BAJUS_URLS: [
-    'https://bajus.org/gold-price',
-    'https://www.bajus.org/gold-price',
-    'https://bajus.org/index.php?action=goldprice',
-  ],
-  // Alternative BAJUS site
+  // Alternative BAJUS site - primary source
   BAJUSCTG_URLS: [
     'https://www.bajusctg.org/',
   ],
+  // GoldR.org API - fallback source
+  GOLDR_API_URL: 'https://api.goldr.org/v1/latest',
+  
   // Wayback Machine CDX API + snapshot base
   WAYBACK_CDX_URL : 'https://archive.org/wayback/available?url=bajus.org/gold-price',
   WAYBACK_BASE    : 'https://web.archive.org/web/',
@@ -136,9 +131,172 @@ function convertBengaliToArabic(str) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   STRATEGY 1 — Plain fetch with browser-like headers
-   Works on your local PC (residential IP), fails on GitHub (datacenter IP).
-   We still try it first in case the runner happens to have WARP active.
+   STRATEGY 1 — BAJUSCTG API
+   This is the primary source for current prices.
+   ═══════════════════════════════════════════════════════════ */
+async function fetchFromBajusCTG() {
+  info('Trying BAJUSCTG API…');
+  
+  try {
+    const { default: fetch } = await import('node-fetch');
+    const proxyUrl = process.env.WARP_PROXY || process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
+    
+    let fetchOptions = {
+      headers: {
+        'User-Agent'     : rndUA(),
+        'Accept'         : 'application/json, text/plain, */*',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Referer'        : 'https://www.bajusctg.org/',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      signal: AbortSignal.timeout(15000),
+    };
+
+    // If a proxy is configured, use it
+    if (proxyUrl) {
+      try {
+        const { HttpsProxyAgent } = await import('https-proxy-agent');
+        const { SocksProxyAgent } = await import('socks-proxy-agent');
+        const agent = proxyUrl.startsWith('socks')
+          ? new SocksProxyAgent(proxyUrl)
+          : new HttpsProxyAgent(proxyUrl);
+        fetchOptions.agent = agent;
+      } catch (e) {
+        warn(`Proxy agent setup failed: ${e.message}`);
+      }
+    }
+
+    // Try the API endpoint
+    const pricesUrl = 'https://www.bajusctg.org/pricesx.php';
+    const res = await fetch(pricesUrl, fetchOptions);
+    
+    if (res.status >= 400) throw new Error(`HTTP ${res.status}`);
+    const priceData = await res.json();
+    
+    if (!priceData) throw new Error('Empty or invalid price data');
+    
+    info(`BAJUSCTG API success: gold_22k=${priceData.gold_22k_gram}`);
+    
+    // Convert the API response to our standard format
+    return {
+      gold: {
+        g22: priceData.gold_22k_gram,
+        g21: priceData.gold_21k_gram,
+        g18: priceData.gold_18k_gram,
+        gtr: priceData.gold_trad_gram,
+      },
+      silver: {
+        s22: priceData.silver_22k_gram,
+        s21: priceData.silver_21k_gram,
+        s18: priceData.silver_18k_gram,
+        str: priceData.silver_trad_gram,
+      },
+      raw: 'BAJUSCTG API',
+      source: 'bajusctg-api',
+    };
+  } catch (e) {
+    warn(`BAJUSCTG API failed: ${e.message}`);
+    
+    // If API fails, try scraping the HTML page
+    try {
+      info('Trying BAJUSCTG HTML scraping…');
+      const html = await fetchWithHeaders('https://www.bajusctg.org/');
+      const parsed = parseBajusCTGHTML(html);
+      if (parsed && isValidGold(parsed)) {
+        info(`BAJUSCTG HTML success: gold22=${parsed.gold.g22}`);
+        return { ...parsed, source: 'bajusctg-html' };
+      }
+    } catch (e2) {
+      warn(`BAJUSCTG HTML failed: ${e2.message}`);
+    }
+    
+    return null;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STRATEGY 2 — GoldR.org API
+   This is a fallback source for current prices.
+   ═══════════════════════════════════════════════════════════ */
+async function fetchFromGoldR() {
+  info('Trying GoldR.org API…');
+  
+  try {
+    const { default: fetch } = await import('node-fetch');
+    const proxyUrl = process.env.WARP_PROXY || process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
+    
+    let fetchOptions = {
+      headers: {
+        'User-Agent'     : rndUA(),
+        'Accept'         : 'application/json, text/plain, */*',
+        'Accept-Language': 'en-US,en;q=0.9',
+      },
+      signal: AbortSignal.timeout(15000),
+    };
+
+    // If a proxy is configured, use it
+    if (proxyUrl) {
+      try {
+        const { HttpsProxyAgent } = await import('https-proxy-agent');
+        const { SocksProxyAgent } = await import('socks-proxy-agent');
+        const agent = proxyUrl.startsWith('socks')
+          ? new SocksProxyAgent(proxyUrl)
+          : new HttpsProxyAgent(proxyUrl);
+        fetchOptions.agent = agent;
+      } catch (e) {
+        warn(`Proxy agent setup failed: ${e.message}`);
+      }
+    }
+
+    const res = await fetch(CFG.GOLDR_API_URL, fetchOptions);
+    
+    if (res.status >= 400) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    
+    if (!data || !data.data || !data.data.gold) throw new Error('Invalid GoldR API response');
+    
+    // Extract prices from GoldR API response
+    const goldData = data.data.gold;
+    const silverData = data.data.silver || {};
+    
+    // Convert from BDT per bhori to BDT per gram
+    const gold22k = Math.round(goldData['22k'] / VORI);
+    const gold21k = Math.round(goldData['21k'] / VORI);
+    const gold18k = Math.round(goldData['18k'] / VORI);
+    const goldTrad = Math.round(goldData['traditional'] / VORI);
+    
+    const silver22k = silverData['22k'] ? Math.round(silverData['22k'] / VORI) : Math.round(gold22k * 0.023);
+    const silver21k = silverData['21k'] ? Math.round(silverData['21k'] / VORI) : Math.round(gold21k * 0.023);
+    const silver18k = silverData['18k'] ? Math.round(silverData['18k'] / VORI) : Math.round(gold18k * 0.023);
+    const silverTrad = silverData['traditional'] ? Math.round(silverData['traditional'] / VORI) : Math.round(goldTrad * 0.023);
+    
+    info(`GoldR API success: gold_22k=${gold22k}`);
+    
+    return {
+      gold: {
+        g22: gold22k,
+        g21: gold21k,
+        g18: gold18k,
+        gtr: goldTrad,
+      },
+      silver: {
+        s22: silver22k,
+        s21: silver21k,
+        s18: silver18k,
+        str: silverTrad,
+      },
+      raw: 'GoldR API',
+      source: 'goldr-api',
+    };
+  } catch (e) {
+    warn(`GoldR API failed: ${e.message}`);
+    return null;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Simple fetch with browser-like headers
+   Used for HTML scraping when needed.
    ═══════════════════════════════════════════════════════════ */
 async function fetchWithHeaders(url) {
   const { default: fetch } = await import('node-fetch');
@@ -183,197 +341,7 @@ async function fetchWithHeaders(url) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   STRATEGY 2 — curl with --impersonate (curl-impersonate / curl ≥ 8.x)
-   curl on Ubuntu 24 supports --impersonate natively since 8.3.
-   This spoofs TLS/JA3 fingerprint. Install via apt if available.
-   ═══════════════════════════════════════════════════════════ */
-function fetchWithCurl(url) {
-  try {
-    const proxyArg = process.env.WARP_PROXY
-      ? `--proxy ${process.env.WARP_PROXY}`
-      : '';
-
-    // Try curl with impersonate (curl ≥ 8.3 built with libngtcp2)
-    // Falls back to plain curl with good headers if --impersonate unsupported
-    let cmd;
-    try {
-      execSync('curl --impersonate chrome 2>&1 | head -1', { stdio: 'pipe' });
-      cmd = `curl -sL --max-time 20 --impersonate chrome ${proxyArg} \
-        -H "Accept-Language: en-US,en;q=0.9" \
-        "${url}"`;
-      info('curl: using --impersonate chrome');
-    } catch {
-      cmd = `curl -sL --max-time 20 ${proxyArg} \
-        -H "User-Agent: ${rndUA()}" \
-        -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
-        -H "Accept-Language: en-US,en;q=0.9" \
-        -H "Accept-Encoding: gzip, deflate, br" \
-        -H "DNT: 1" \
-        -H "Upgrade-Insecure-Requests: 1" \
-        "${url}"`;
-      info('curl: using plain headers');
-    }
-
-    const html = execSync(cmd, { encoding: 'utf8', maxBuffer: 5 * 1024 * 1024 });
-    if (!html || html.length < 500) throw new Error('Empty response from curl');
-    return html;
-  } catch (e) {
-    throw new Error(`curl failed: ${e.message}`);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   STRATEGY 3 — Puppeteer with stealth (original approach)
-   Last resort — slowest but handles JS-rendered pages.
-   ═══════════════════════════════════════════════════════════ */
-async function fetchWithPuppeteer(url) {
-  let browser;
-  try {
-    const launchArgs = [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-blink-features=AutomationControlled',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--window-size=1920,1080',
-    ];
-
-    // Route Puppeteer through proxy if set
-    const proxyUrl = process.env.WARP_PROXY || process.env.HTTPS_PROXY;
-    if (proxyUrl) {
-      launchArgs.push(`--proxy-server=${proxyUrl}`);
-      info(`Puppeteer: routing through proxy ${proxyUrl}`);
-    }
-
-    browser = await puppeteer.launch({ headless: CFG.HEADLESS, args: launchArgs });
-    const page = await browser.newPage();
-
-    await page.evaluateOnNewDocument(() => {
-      Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-      Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
-      window.chrome = { app: {}, runtime: {} };
-    });
-
-    await page.setUserAgent(rndUA());
-    await page.setViewport({ width: 1920, height: 1080, deviceScaleFactor: 1 });
-    await page.setExtraHTTPHeaders({
-      'Accept-Language'          : 'en-US,en;q=0.9',
-      'Accept'                   : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-      'DNT'                      : '1',
-      'Upgrade-Insecure-Requests': '1',
-    });
-
-    // Block heavy resources to speed up
-    await page.setRequestInterception(true);
-    page.on('request', req => {
-      if (['image', 'stylesheet', 'font', 'media'].includes(req.resourceType())) {
-        req.abort();
-      } else {
-        req.continue();
-      }
-    });
-
-    await new Promise(r => setTimeout(r, 1500 + Math.random() * 1500));
-    const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: CFG.TIMEOUT });
-
-    if (!response || response.status() >= 400) {
-      throw new Error(`HTTP ${response?.status()}`);
-    }
-
-    await new Promise(r => setTimeout(r, 2500));
-    const html = await page.content();
-    await browser.close(); browser = null;
-    return html;
-  } finally {
-    if (browser) { try { await browser.close(); } catch {} }
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   STRATEGY 4 — BAJUSCTG alternative site
-   This site has a simpler structure and might be easier to scrape.
-   ═══════════════════════════════════════════════════════════ */
-async function fetchFromBajusCTG() {
-  info('Trying BAJUSCTG alternative site…');
-  
-  // Try to fetch the prices API directly
-  try {
-    const { default: fetch } = await import('node-fetch');
-    const proxyUrl = process.env.WARP_PROXY || process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
-    
-    let fetchOptions = {
-      headers: {
-        'User-Agent'     : rndUA(),
-        'Accept'         : 'application/json, text/plain, */*',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Referer'        : 'https://www.bajusctg.org/',
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      signal: AbortSignal.timeout(15000),
-    };
-
-    // If a proxy is configured, use it
-    if (proxyUrl) {
-      try {
-        const { HttpsProxyAgent } = await import('https-proxy-agent');
-        const { SocksProxyAgent } = await import('socks-proxy-agent');
-        const agent = proxyUrl.startsWith('socks')
-          ? new SocksProxyAgent(proxyUrl)
-          : new HttpsProxyAgent(proxyUrl);
-        fetchOptions.agent = agent;
-      } catch (e) {
-        warn(`Proxy agent setup failed: ${e.message}`);
-      }
-    }
-
-    const pricesUrl = 'https://www.bajusctg.org/pricesx.php';
-    const res = await fetch(pricesUrl, fetchOptions);
-    
-    if (res.status >= 400) throw new Error(`HTTP ${res.status}`);
-    const priceData = await res.json();
-    
-    if (!priceData) throw new Error('Empty or invalid price data');
-    
-    info(`BAJUSCTG API success: gold_22k=${priceData.gold_22k_gram}`);
-    
-    // Convert the API response to our standard format
-    return {
-      gold: {
-        g22: priceData.gold_22k_gram,
-        g21: priceData.gold_21k_gram,
-        g18: priceData.gold_18k_gram,
-        gtr: priceData.gold_trad_gram,
-      },
-      silver: {
-        s22: priceData.silver_22k_gram,
-        s21: priceData.silver_21k_gram,
-        s18: priceData.silver_18k_gram,
-        str: priceData.silver_trad_gram,
-      },
-      raw: 'BAJUSCTG API',
-      source: 'bajusctg-api',
-    };
-  } catch (e) {
-    warn(`BAJUSCTG API failed: ${e.message}`);
-    
-    // If API fails, try scraping the HTML page
-    try {
-      const html = await fetchWithHeaders('https://www.bajusctg.org/');
-      const parsed = parseBajusCTGHTML(html);
-      if (parsed && isValidGold(parsed)) {
-        info(`BAJUSCTG HTML success: gold22=${parsed.gold.g22}`);
-        return { ...parsed, source: 'bajusctg-html' };
-      }
-    } catch (e2) {
-      warn(`BAJUSCTG HTML failed: ${e2.message}`);
-    }
-    
-    return null;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   STRATEGY 5 — Wayback Machine fallback
+   STRATEGY 3 — Wayback Machine fallback
    Fetches today's or yesterday's snapshot from archive.org.
    archive.org is a public service with no IP restrictions.
    ═══════════════════════════════════════════════════════════ */
@@ -416,66 +384,9 @@ async function fetchFromWayback() {
    MAIN BAJUS SCRAPER — tries all strategies in order
    ═══════════════════════════════════════════════════════════ */
 async function scrapeBajus() {
-  info('Starting BAJUS scrape (v3.1 — multi-strategy with BAJUSCTG fallback)…');
+  info('Starting BAJUS scrape (v3.2 — simplified with working sources)…');
 
-  // Try each live URL with each strategy
-  for (const url of CFG.BAJUS_URLS) {
-    // Strategy 1: plain fetch
-    for (let attempt = 1; attempt <= CFG.MAX_RETRIES; attempt++) {
-      try {
-        info(`[fetch] Attempt ${attempt}: GET ${url}`);
-        const html   = await fetchWithHeaders(url);
-        const parsed = parseBajusHTML(html, url);
-        if (parsed && isValidGold(parsed)) {
-          info(`[fetch] ✓ gold22=${parsed.gold.g22}/g`);
-          return { ...parsed, source: 'live-fetch' };
-        }
-        warn('[fetch] Parsed but invalid — trying next');
-        break;
-      } catch (e) {
-        warn(`[fetch] Attempt ${attempt} failed: ${e.message}`);
-        if (attempt < CFG.MAX_RETRIES) await sleep(3000);
-      }
-    }
-
-    // Strategy 2: curl
-    for (let attempt = 1; attempt <= CFG.MAX_RETRIES; attempt++) {
-      try {
-        info(`[curl] Attempt ${attempt}: GET ${url}`);
-        const html   = fetchWithCurl(url);
-        const parsed = parseBajusHTML(html, url);
-        if (parsed && isValidGold(parsed)) {
-          info(`[curl] ✓ gold22=${parsed.gold.g22}/g`);
-          return { ...parsed, source: 'live-curl' };
-        }
-        warn('[curl] Parsed but invalid — trying next');
-        break;
-      } catch (e) {
-        warn(`[curl] Attempt ${attempt} failed: ${e.message}`);
-        if (attempt < CFG.MAX_RETRIES) await sleep(3000);
-      }
-    }
-
-    // Strategy 3: Puppeteer (slowest, last resort for live)
-    for (let attempt = 1; attempt <= CFG.MAX_RETRIES; attempt++) {
-      try {
-        info(`[puppeteer] Attempt ${attempt}: GET ${url}`);
-        const html   = await fetchWithPuppeteer(url);
-        const parsed = parseBajusHTML(html, url);
-        if (parsed && isValidGold(parsed)) {
-          info(`[puppeteer] ✓ gold22=${parsed.gold.g22}/g`);
-          return { ...parsed, source: 'live-puppeteer' };
-        }
-        warn('[puppeteer] Parsed but invalid — trying next');
-        break;
-      } catch (e) {
-        warn(`[puppeteer] Attempt ${attempt} failed: ${e.message}`);
-        if (attempt < CFG.MAX_RETRIES) await sleep(5000);
-      }
-    }
-  }
-
-  // Strategy 4: BAJUSCTG alternative site
+  // Strategy 1: BAJUSCTG API/HTML
   try {
     const bajusctgResult = await fetchFromBajusCTG();
     if (bajusctgResult) {
@@ -485,7 +396,17 @@ async function scrapeBajus() {
     warn(`[bajusctg] Error: ${e.message}`);
   }
 
-  // Strategy 5: Wayback Machine
+  // Strategy 2: GoldR.org API
+  try {
+    const goldrResult = await fetchFromGoldR();
+    if (goldrResult) {
+      return goldrResult;
+    }
+  } catch (e) {
+    warn(`[goldr] Error: ${e.message}`);
+  }
+
+  // Strategy 3: Wayback Machine
   try {
     const html = await fetchFromWayback();
     if (html) {
@@ -503,9 +424,7 @@ async function scrapeBajus() {
   return null;
 }
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-/* ─── PARSE BAJUS HTML (unchanged from v2.2) ─── */
+/* ─── PARSE BAJUS HTML (for Wayback Machine) ─── */
 function parseBajusHTML(html, sourceUrl) {
   if (!html || html.length < 500) return null;
   const $ = cheerio.load(html);
@@ -847,7 +766,7 @@ async function main() {
   const onlySource = args.find(a => a.startsWith('--source='))?.split('=')[1];
 
   info('══════════════════════════════════════════════');
-  info('SonarGold Scraper v3.1 (Enhanced with BAJUSCTG Fallback) starting…');
+  info('SonarGold Scraper v3.2 (Simplified with Working Sources) starting…');
   info(`Mode: ${dryRun ? 'DRY RUN' : 'LIVE'} | Source: ${onlySource || 'all'}`);
   if (process.env.WARP_PROXY) info(`WARP proxy: ${process.env.WARP_PROXY}`);
   info('══════════════════════════════════════════════');
