@@ -1,16 +1,13 @@
 /**
- * GoldRateLive — Shared App Logic
- * All pages include this file via <script src="app.js">
- *
- * Each page sets window.PAGE_CONFIG before loading this script:
- *   window.PAGE_CONFIG = { page: 'home'|'gold'|'silver' }
+ * GoldRateLive — Shared App Logic v2.0
+ * Enhanced with: mobile nav, scroll animations, intersection observer,
+ * number counter animations, price flash effects, keyboard accessibility
  */
 'use strict';
 
 /* ═══ CONSTANTS ═══ */
 const VORI = 11.664, OZ = 31.1035, KILO = 1000, ANA = VORI / 16;
 
-/* ── CHANGE THIS to your GitHub repo ── */
 const REPO_RAW = '.';
 const DATA = {
   latest : `${REPO_RAW}/data/latest.json`,
@@ -27,11 +24,11 @@ const LANGS = {
     eyebrow:'BAJUS Official · Live International · Auto-Update',
     loading:'Loading…', awaiting:'Awaiting data', no_change:'No change',
     data_unavail:'Data unavailable', unavail:'Unavailable',
-    bajus_ok_gold:'<strong>Note:</strong> Official BAJUS rates. Prices exclude 5% VAT and making charges (≈৳300/gram). 1 Vori = 11.664g. 1 Tola = 1 Vori.',
+    bajus_ok_gold:'<strong>Note:</strong> Official BAJUS rates. Prices exclude 5% VAT and making charges (≈৳300/gram). 1 Vori = 11.664g = 1 Tola.',
     bajus_ok_silver:'<strong>Note:</strong> Official BAJUS silver rates. Prices exclude 5% VAT and making charges (≈৳26/gram). 1 Vori = 11.664g.',
-    bajus_err:'<strong>⚠ BAJUS data not yet available.</strong> The bot runs every 4 hours. <a href="https://bajus.org/gold-price" target="_blank" style="color:var(--gold)">Check bajus.org directly ↗</a>',
+    bajus_err:'<strong>⚠ BAJUS data not yet available.</strong> The bot runs every 4 hours. <a href="https://bajus.org/gold-price" target="_blank" rel="noopener" style="color:var(--gold)">Check bajus.org directly ↗</a>',
     silver_err:'<strong>⚠ Silver rates not found</strong> in fetched data.',
-    prem_note:'<strong>Premium note:</strong> Positive = BD price higher than international (normal — import duty, VAT, BAJUS margin). <span style="color:var(--up);font-weight:600"> Green = BD cheaper</span> · <span style="color:var(--dn);font-weight:600"> Red = BD more expensive</span>',
+    prem_note:'<strong>Premium note:</strong> Positive = BD price higher than international (normal — import duty, VAT, BAJUS margin). <span style="color:var(--up);font-weight:600">Green = BD cheaper</span> · <span style="color:var(--dn);font-weight:600">Red = BD more expensive</span>',
     fc_disclaimer:'⚠ Forecasts use linear regression on historical BAJUS data. For informational purposes only — not financial advice.',
   },
   bn: {
@@ -42,9 +39,9 @@ const LANGS = {
     data_unavail:'তথ্য অনুপলব্ধ', unavail:'অনুপলব্ধ',
     bajus_ok_gold:'<strong>নোট:</strong> সরকারি বাজুস রেট। ৫% ভ্যাট ও তৈরি মজুরি (≈৳৩০০/গ্রাম) ছাড়া। ১ ভরি = ১১.৬৬৪ গ্রাম।',
     bajus_ok_silver:'<strong>নোট:</strong> সরকারি বাজুস রুপার রেট। ৫% ভ্যাট ও তৈরি মজুরি (≈৳২৬/গ্রাম) ছাড়া।',
-    bajus_err:'<strong>⚠ বাজুস তথ্য এখনো পাওয়া যায়নি।</strong> বট প্রতি ৪ ঘণ্টায় চলে। <a href="https://bajus.org/gold-price" target="_blank" style="color:var(--gold)">bajus.org দেখুন ↗</a>',
+    bajus_err:'<strong>⚠ বাজুস তথ্য এখনো পাওয়া যায়নি।</strong> বট প্রতি ৪ ঘণ্টায় চলে। <a href="https://bajus.org/gold-price" target="_blank" rel="noopener" style="color:var(--gold)">bajus.org দেখুন ↗</a>',
     silver_err:'<strong>⚠ রুপার দাম পাওয়া যায়নি।</strong>',
-    prem_note:'<strong>প্রিমিয়াম নোট:</strong> ধনাত্মক = বাংলাদেশে দাম বেশি (স্বাভাবিক — আমদানি শুল্ক, ভ্যাট)। <span style="color:var(--up);font-weight:600"> সবুজ = সস্তা</span> · <span style="color:var(--dn);font-weight:600"> লাল = বেশি দাম</span>',
+    prem_note:'<strong>প্রিমিয়াম নোট:</strong> ধনাত্মক = বাংলাদেশে দাম বেশি (স্বাভাবিক — আমদানি শুল্ক, ভ্যাট)। <span style="color:var(--up);font-weight:600">সবুজ = সস্তা</span> · <span style="color:var(--dn);font-weight:600">লাল = বেশি দাম</span>',
     fc_disclaimer:'⚠ পূর্বাস ঐতিহাসিক ডেটার উপর ভিত্তি করে। শুধুমাত্র তথ্যের জন্য — আর্থিক পরামর্শ নয়।',
   },
   ar: {
@@ -55,7 +52,7 @@ const LANGS = {
     data_unavail:'البيانات غير متاحة', unavail:'غير متاح',
     bajus_ok_gold:'<strong>ملاحظة:</strong> أسعار BAJUS الرسمية. تستثني ضريبة القيمة المضافة 5% وأجور الصنعة.',
     bajus_ok_silver:'<strong>ملاحظة:</strong> أسعار فضة BAJUS الرسمية.',
-    bajus_err:'<strong>⚠ بيانات BAJUS غير متوفرة.</strong> <a href="https://bajus.org/gold-price" target="_blank" style="color:var(--gold)">تحقق من bajus.org ↗</a>',
+    bajus_err:'<strong>⚠ بيانات BAJUS غير متوفرة.</strong> <a href="https://bajus.org/gold-price" target="_blank" rel="noopener" style="color:var(--gold)">تحقق من bajus.org ↗</a>',
     silver_err:'<strong>⚠ أسعار الفضة غير متوفرة.</strong>',
     prem_note:'<strong>ملاحظة العلاوة:</strong> إيجابي = سعر بنغلاديش أعلى.',
     fc_disclaimer:'⚠ التوقعات للأغراض المعلوماتية فقط.',
@@ -68,7 +65,7 @@ const LANGS = {
     data_unavail:'डेटा अनुपलब्ध', unavail:'अनुपलब्ध',
     bajus_ok_gold:'<strong>नोट:</strong> आधिकारिक BAJUS दरें। 5% VAT और बनाने का शुल्क (≈৳300/ग्राम) को छोड़कर।',
     bajus_ok_silver:'<strong>नोट:</strong> आधिकारिक BAJUS चाँदी दरें।',
-    bajus_err:'<strong>⚠ BAJUS डेटा अभी उपलब्ध नहीं है।</strong> <a href="https://bajus.org/gold-price" target="_blank" style="color:var(--gold)">bajus.org देखें ↗</a>',
+    bajus_err:'<strong>⚠ BAJUS डेटा अभी उपलब्ध नहीं है।</strong> <a href="https://bajus.org/gold-price" target="_blank" rel="noopener" style="color:var(--gold)">bajus.org देखें ↗</a>',
     silver_err:'<strong>⚠ चाँदी की दरें उपलब्ध नहीं हैं।</strong>',
     prem_note:'<strong>प्रीमियम नोट:</strong> धनात्मक = बांग्लादेश में ज्यादा दाम।',
     fc_disclaimer:'⚠ पूर्वानुमान केवल सूचनात्मक उद्देश्यों के लिए हैं।',
@@ -92,6 +89,8 @@ const S = {
   tenDayGoldKarat: 'bajus_g22',
   tenDaySilverKarat: 'bajus_s22',
   nextRefresh: 0,
+  prevGoldPrice: null,
+  prevSilverPrice: null,
 };
 
 /* ═══ HELPERS ═══ */
@@ -104,11 +103,13 @@ function clz(id, ...c) { const e=$(id); if(e) e.className = c.join(' '); }
 const isV = v => v !== null && v !== undefined && isFinite(+v) && +v > 0;
 const fBDT = n => isV(n) ? '৳ ' + fmt(n) : '—';
 const fUSD = n => isV(n) ? '$ ' + fmtD(n, 2) : '—';
+
 function toUnit(pg, u) {
   if (!isV(pg)) return null;
   return { gram:pg, vori:pg*VORI, tola:pg*VORI, ana:pg*ANA, ounce:pg*OZ, kilo:pg*KILO }[u] || pg;
 }
 function unitLbl(u) { return { gram:'Gram', vori:'Vori', tola:'Tola', ana:'Ana', ounce:'Troy Oz', kilo:'Kilo' }[u] || u; }
+
 function chgInfo(cur, prev) {
   if (!isV(cur) || !isV(prev) || +prev===0) return { c:'fl', t:'—' };
   const d = +cur - +prev, p = (d / +prev) * 100;
@@ -116,17 +117,51 @@ function chgInfo(cur, prev) {
   const s = d > 0 ? '+' : '';
   return { c: d>0 ? 'up' : 'dn', t:`${s}${fmt(d)} (${s}${fmtD(p,2)}%)` };
 }
+
 function setSt(name, ok, t) {
   const d = $('sd-' + name), e = $('st-' + name);
   if (d) d.className = 'sd ' + (ok ? 'dot-ok' : 'dot-warn');
   if (e) e.textContent = t;
 }
+
 function setNotice(id, type, html) {
   const e = $(id); if (!e) return;
   e.className = 'notice' + (type ? ' ' + type : '');
   e.innerHTML = html;
 }
+
 function T(k) { return (LANGS[S.lang] || LANGS.en)[k] || LANGS.en[k] || k; }
+
+/* ═══ PRICE FLASH ANIMATION ═══ */
+function flashPrice(el) {
+  if (!el) return;
+  el.classList.remove('price-updated');
+  void el.offsetWidth; // reflow
+  el.classList.add('price-updated');
+}
+
+/* ═══ NUMBER COUNTER ANIMATION ═══ */
+function animateNumber(el, targetText, duration = 600) {
+  if (!el || !targetText) return;
+  const match = targetText.match(/[\d,]+/);
+  if (!match) { el.textContent = targetText; return; }
+  const target = parseInt(match[0].replace(/,/g,''), 10);
+  if (isNaN(target)) { el.textContent = targetText; return; }
+  const prefix = targetText.split(match[0])[0];
+  const suffix = targetText.split(match[0])[1] || '';
+  const start = Date.now();
+  const startVal = target * 0.85;
+  const step = () => {
+    const elapsed = Date.now() - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    const current = Math.round(startVal + (target - startVal) * ease);
+    el.textContent = prefix + current.toLocaleString('en-BD') + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = targetText;
+  };
+  requestAnimationFrame(step);
+}
 
 /* ═══ I18N ENGINE ═══ */
 function applyI18n() {
@@ -163,14 +198,16 @@ async function loadLatest() {
       timeZone:'Asia/Dhaka', month:'short', day:'numeric',
       hour:'2-digit', minute:'2-digit', hour12:true
     }) : '—';
-    setSt('bajus', ok, ok ? (S.latest.bajus_date || 'today') : 'Not fetched yet');
-    setSt('intl', S.latest?.intl_ok||false, S.latest?.intl_ok ? `Live · ${fUSD(S.latest?.gold?.intl_usd_oz)}/oz` : 'Not available');
+    setSt('bajus', S.latest?.bajus_ok||false, S.latest?.bajus_ok ? `Live · Gold - ${fUSD(S.latest?.gold?.bajus_g22_vori)}/vori | Silver - ${fUSD(S.latest?.silver?.bajus_s22_vori)}/vori` : 'Not available');
+    setSt('intl', S.latest?.intl_ok||false, S.latest?.intl_ok ? `Live · Gold - ${fUSD(S.latest?.gold?.intl_usd_oz)}/oz | Silver - ${fUSD(S.latest?.silver?.intl_usd_oz)}/oz` : 'Not available');
     setSt('fx',   S.latest?.fx_ok||false,   S.latest?.fx_ok   ? `1 USD = ৳${fmtD(S.latest?.gold?.usd_bdt,2)}` : 'Not available');
     txt('st-upd', dt);
     txt('upd-time', S.latest?.bajus_date || '—');
     return true;
   } catch (e) {
-    setSt('bajus', false, 'File not found'); setSt('intl', false, 'File not found'); setSt('fx', false, 'File not found');
+    setSt('bajus', false, 'File not found');
+    setSt('intl', false, 'File not found');
+    setSt('fx', false, 'File not found');
     console.warn('loadLatest:', e.message);
     return false;
   }
@@ -204,15 +241,26 @@ function renderGold() {
   setNotice('bajus-gold-notice', '', T('bajus_ok_gold'));
   const u = S.goldUnit;
   const prev = S.goldHistory.length > 1 ? S.goldHistory[S.goldHistory.length - 2] : null;
+  const isFirstLoad = !S.prevGoldPrice;
+
   [['22','bajus_g22'],['21','bajus_g21'],['18','bajus_g18'],['tr','bajus_gtr']].forEach(([id, key]) => {
     const pg = d[key], pp = prev?.[key];
     const price = toUnit(pg, u), prevPrice = toUnit(pp || pg, u);
     clz(`gp-${id}`, 'p-price');
-    txt(`gp-${id}`, '৳ ' + fmt(price));
+    const el = $(`gp-${id}`);
+    const newText = '৳ ' + fmt(price);
+    if (el && !isFirstLoad && el.textContent !== newText) {
+      flashPrice(el);
+      animateNumber(el, newText);
+    } else if (el) {
+      el.textContent = newText;
+    }
     txt(`gu-${id}`, 'BDT / ' + unitLbl(u));
     const { c, t } = chgInfo(price, prevPrice);
     clz(`gc-${id}`, 'p-chg ' + c); txt(`gc-${id}`, t);
   });
+
+  S.prevGoldPrice = d.bajus_g22;
   const pg = d.bajus_g22;
   [['gram',pg],['vori',pg*VORI],['tola',pg*VORI],['ana',pg*ANA],['oz',pg*OZ],['kg',pg*KILO]].forEach(([k,v]) => {
     clz(`gv-${k}`, 'conv-val'); txt(`gv-${k}`, '৳ ' + fmt(v));
@@ -233,13 +281,25 @@ function renderSilver() {
   }
   setNotice('bajus-silver-notice', '', T('bajus_ok_silver'));
   const prev = S.silverHistory.length > 1 ? S.silverHistory[S.silverHistory.length - 2] : null;
+  const isFirstLoad = !S.prevSilverPrice;
+
   [['22','bajus_s22'],['21','bajus_s21'],['18','bajus_s18'],['tr','bajus_str']].forEach(([id, key]) => {
     const pg = d[key], pp = prev?.[key];
     const price = pg * VORI, prevPrice = (pp || pg) * VORI;
-    clz(`sp-${id}`, 'p-price'); txt(`sp-${id}`, '৳ ' + fmt(price));
+    clz(`sp-${id}`, 'p-price');
+    const el = $(`sp-${id}`);
+    const newText = '৳ ' + fmt(price);
+    if (el && !isFirstLoad && el.textContent !== newText) {
+      flashPrice(el);
+      animateNumber(el, newText);
+    } else if (el) {
+      el.textContent = newText;
+    }
     const { c, t } = chgInfo(price, prevPrice);
     clz(`sc-${id}`, 'p-chg ' + c); txt(`sc-${id}`, t);
   });
+
+  S.prevSilverPrice = d.bajus_s22;
   const pg = d.bajus_s22;
   [['gram',pg],['vori',pg*VORI],['tola',pg*VORI],['oz',pg*OZ],['kg',pg*KILO]].forEach(([k,v]) => {
     clz(`sv-${k}`, 'conv-val'); txt(`sv-${k}`, '৳ ' + fmt(v));
@@ -349,11 +409,10 @@ function renderTenDay(metal, karatKey) {
     const pPg = (i < last10.length - 1 ? last10[i + 1][karatKey] : vPg) || vPg;
     const vori = Math.round(vPg * VORI);
     const chg  = vPg - pPg, chgPct = pPg ? (chg / pPg) * 100 : 0;
-    // Buyer perspective: price down = good (green), price up = bad (red)
     const cc = Math.abs(chg) < 0.1 ? 'fl' : chg < 0 ? 'up' : 'dn';
     const isToday = e.date === todayDate && i === 0;
     return `<tr${isToday ? ' class="tr-today"' : ''}>
-      <td>${e.date || '—'}${isToday ? ' <span style="font-size:10px;color:var(--gold);margin-left:6px;font-weight:600;">Today</span>' : ''}</td>
+      <td>${e.date || '—'}${isToday ? ' <span style="font-size:9.5px;color:var(--gold);margin-left:6px;font-weight:700;letter-spacing:.5px;">TODAY</span>' : ''}</td>
       <td>${vPg ? fmt(vPg) : '—'}</td>
       <td>${vori ? fmt(vori) : '—'}</td>
       <td class="chg ${i < last10.length-1 ? cc : 'fl'}">${i < last10.length-1 ? (chg >= 0 ? '+' : '') + fmt(chg) : '—'}</td>
@@ -407,7 +466,6 @@ function renderInsights() {
     if (te) { te.className = 'ins-trend ' + trendClass; te.innerHTML = trendHtml; }
   }
 
-  // Gold momentum
   if (rg.length >= 2) {
     const f = +rg[0].bajus_g22, l = +rg[rg.length-1].bajus_g22;
     const m = f ? ((l-f)/f*100) : 0;
@@ -418,7 +476,6 @@ function renderInsights() {
     );
   }
 
-  // Silver momentum
   if (rs.length >= 2) {
     const f = +rs[0].bajus_s22, l = +rs[rs.length-1].bajus_s22;
     const m = f ? ((l-f)/f*100) : 0;
@@ -429,7 +486,6 @@ function renderInsights() {
     );
   }
 
-  // Gold/Silver ratio
   const gUSD = g?.intl_usd_oz, sUSD = sv?.intl_usd_oz;
   if (isV(gUSD) && isV(sUSD)) {
     const ratio = +gUSD / +sUSD;
@@ -440,7 +496,6 @@ function renderInsights() {
     );
   }
 
-  // BD premium
   const rate = g?.usd_bdt, bdg22 = g?.bajus_g22;
   const intlGg = isV(gUSD) && isV(rate) ? (+gUSD / OZ) * rate : null;
   if (isV(bdg22) && isV(intlGg)) {
@@ -452,7 +507,6 @@ function renderInsights() {
     );
   }
 
-  // Best day of week
   if (S.goldHistory.length >= 14) {
     const dayAvg = {};
     S.goldHistory.slice(-90).forEach(e => {
@@ -468,7 +522,6 @@ function renderInsights() {
       days[best.day], 'fc-up', `<i class="fas fa-thumbs-up"></i> Avg ৳${fmt(best.avg)}/g`);
   }
 
-  // USD/BDT trend
   if (ri.length >= 2) {
     const f = +ri[0].usd_bdt, l = +ri[ri.length-1].usd_bdt;
     const chg = f ? ((l-f)/f*100) : 0;
@@ -497,7 +550,9 @@ function renderHistory() {
     const ctx = canvas.getContext('2d');
     if (S.histChart) { S.histChart.destroy(); S.histChart = null; }
     ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    ctx.fillStyle='rgba(106,122,138,.5)'; ctx.font='14px Inter,sans-serif'; ctx.textAlign='center';
+    ctx.fillStyle='rgba(90,106,122,.5)';
+    ctx.font='14px DM Sans,system-ui,sans-serif';
+    ctx.textAlign='center';
     ctx.fillText('No data yet — run seed-history.js first', ctx.canvas.width/2, ctx.canvas.height/2);
     return;
   }
@@ -518,12 +573,12 @@ function renderHistory() {
   const mkDS = (arr, metal, border, bg, label) => ({
     label, data: arr.map(e => getVal(e, metal, S.histDataset, S.histUnit)),
     borderColor: border, backgroundColor: bg,
-    borderWidth: 1.5, fill: true, tension: .4, pointRadius: 0, pointHoverRadius: 5,
+    borderWidth: 1.8, fill: true, tension: .4, pointRadius: 0, pointHoverRadius: 5,
   });
 
   const datasets = [];
-  if (S.histMetal !== 'silver' && srcG.length) datasets.push(mkDS(srcG,'gold','rgba(212,175,55,.85)','rgba(212,175,55,.07)','Gold 22K'));
-  if (S.histMetal !== 'gold'   && srcS.length) datasets.push(mkDS(srcS,'silver','rgba(184,196,204,.75)','rgba(184,196,204,.05)','Silver 22K'));
+  if (S.histMetal !== 'silver' && srcG.length) datasets.push(mkDS(srcG,'gold','rgba(201,168,76,.85)','rgba(201,168,76,.06)','Gold 22K'));
+  if (S.histMetal !== 'gold'   && srcS.length) datasets.push(mkDS(srcS,'silver','rgba(155,170,181,.75)','rgba(155,170,181,.05)','Silver 22K'));
   if (!datasets.length) return;
 
   const base   = srcG.length ? srcG : srcS;
@@ -538,17 +593,21 @@ function renderHistory() {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode:'index', intersect:false },
       plugins: {
-        legend: { display: S.histMetal === 'both', labels: { color:'rgba(240,237,232,.45)', font:{ family:'Space Grotesk', size:11 }, boxWidth:10, padding:12 } },
+        legend: {
+          display: S.histMetal === 'both',
+          labels: { color:'rgba(168,178,192,.55)', font:{ family:'DM Sans,system-ui,sans-serif', size:11 }, boxWidth:10, padding:12 }
+        },
         tooltip: {
-          backgroundColor:'rgba(10,13,22,.97)', borderColor:'rgba(212,175,55,.2)', borderWidth:.5,
-          titleColor:'rgba(240,237,232,.4)', bodyColor:'#F0EDE8',
-          titleFont:{ family:'Space Grotesk', size:10 }, bodyFont:{ family:'Playfair Display', size:15 }, padding:12,
+          backgroundColor:'rgba(9,12,22,.97)', borderColor:'rgba(201,168,76,.2)', borderWidth:.5,
+          titleColor:'rgba(168,178,192,.45)', bodyColor:'#EDE9E0',
+          titleFont:{ family:'DM Sans,system-ui,sans-serif', size:10 },
+          bodyFont:{ family:'Cormorant Garamond,Georgia,serif', size:15 }, padding:12,
           callbacks: { label: c => ` ${isBDT?'৳':'$'}${fmtD(c.parsed.y, isBDT?0:2)} ${isBDT?(S.histUnit==='vori'?'/Vori':'/Gram'):(S.histUnit==='gram'?'/gram':'/oz')}` }
         }
       },
       scales: {
-        x: { grid:{ color:'rgba(255,255,255,.04)', drawBorder:false }, ticks:{ color:'rgba(106,122,138,.8)', font:{ family:'Space Grotesk', size:10 }, maxTicksLimit:8 }, border:{ display:false } },
-        y: { grid:{ color:'rgba(255,255,255,.04)', drawBorder:false }, ticks:{ color:'rgba(106,122,138,.8)', font:{ family:'Space Grotesk', size:10 }, callback: v => (isBDT?'৳':'$') + fmtD(v, isBDT?0:2) }, border:{ display:false } }
+        x: { grid:{ color:'rgba(255,255,255,.03)', drawBorder:false }, ticks:{ color:'rgba(90,106,122,.8)', font:{ family:'DM Sans,system-ui,sans-serif', size:10 }, maxTicksLimit:8 }, border:{ display:false } },
+        y: { grid:{ color:'rgba(255,255,255,.03)', drawBorder:false }, ticks:{ color:'rgba(90,106,122,.8)', font:{ family:'DM Sans,system-ui,sans-serif', size:10 }, callback: v => (isBDT?'৳':'$') + fmtD(v, isBDT?0:2) }, border:{ display:false } }
       }
     }
   });
@@ -579,7 +638,7 @@ function renderForecast() {
   const gFc = linearReg(S.goldHistory,   'bajus_g22', 7);
   const sFc = linearReg(S.silverHistory, 'bajus_s22', 7);
 
-  function fillCard(pfx, fc, unit, makePerG) {
+  function fillCard(pfx, fc, unit) {
     const cur  = fc.cur, next = fc.nextVals?.[6] || cur;
     const chg  = cur ? ((next - cur) / cur * 100) : 0;
     const disp = unit === 'vori' ? next * VORI : next;
@@ -594,10 +653,9 @@ function renderForecast() {
     }
   }
 
-  fillCard('gold',   gFc, 'vori', 300);
-  fillCard('silver', sFc, 'vori', 26);
+  fillCard('gold',   gFc, 'vori');
+  fillCard('silver', sFc, 'vori');
 
-  // Build forecast chart
   const fcCanvas = $('forecast-chart'); if (!fcCanvas) return;
   if (gFc.pts.length < 5 && sFc.pts.length < 5) return;
 
@@ -615,21 +673,21 @@ function renderForecast() {
   S.forecastChart = new Chart(ctx, {
     type: 'line',
     data: { labels: allLbls, datasets: [
-      { label:'Gold 22K (Historical)', data:[...gHist,...Array(7).fill(null)], borderColor:'rgba(212,175,55,.9)', backgroundColor:'rgba(212,175,55,.07)', borderWidth:1.5, tension:.4, fill:true, pointRadius:0 },
-      { label:'Gold 22K (Forecast)',   data:gFwd, borderColor:'rgba(212,175,55,.45)', backgroundColor:'transparent', borderWidth:1.5, borderDash:[5,5], tension:.4, pointRadius:3, pointBackgroundColor:'rgba(212,175,55,.7)' },
-      { label:'Silver 22K (Historical)', data:[...sHist,...Array(7).fill(null)], borderColor:'rgba(184,196,204,.8)', backgroundColor:'rgba(184,196,204,.05)', borderWidth:1.5, tension:.4, fill:true, pointRadius:0 },
-      { label:'Silver 22K (Forecast)', data:sFwd, borderColor:'rgba(184,196,204,.4)', backgroundColor:'transparent', borderWidth:1.5, borderDash:[5,5], tension:.4, pointRadius:3, pointBackgroundColor:'rgba(184,196,204,.6)' },
+      { label:'Gold 22K (Historical)', data:[...gHist,...Array(7).fill(null)], borderColor:'rgba(201,168,76,.9)', backgroundColor:'rgba(201,168,76,.07)', borderWidth:1.8, tension:.4, fill:true, pointRadius:0 },
+      { label:'Gold 22K (Forecast)',   data:gFwd, borderColor:'rgba(201,168,76,.45)', backgroundColor:'transparent', borderWidth:1.8, borderDash:[5,5], tension:.4, pointRadius:3, pointBackgroundColor:'rgba(201,168,76,.7)' },
+      { label:'Silver 22K (Historical)', data:[...sHist,...Array(7).fill(null)], borderColor:'rgba(155,170,181,.8)', backgroundColor:'rgba(155,170,181,.05)', borderWidth:1.8, tension:.4, fill:true, pointRadius:0 },
+      { label:'Silver 22K (Forecast)', data:sFwd, borderColor:'rgba(155,170,181,.4)', backgroundColor:'transparent', borderWidth:1.8, borderDash:[5,5], tension:.4, pointRadius:3, pointBackgroundColor:'rgba(155,170,181,.6)' },
     ]},
     options: {
       responsive:true, maintainAspectRatio:false,
       interaction:{ mode:'index', intersect:false },
       plugins: {
-        legend: { labels:{ color:'rgba(240,237,232,.5)', font:{ family:'Space Grotesk', size:11 }, boxWidth:10, padding:10 } },
-        tooltip: { backgroundColor:'rgba(10,13,22,.97)', borderColor:'rgba(212,175,55,.2)', borderWidth:.5, titleColor:'rgba(240,237,232,.4)', bodyColor:'#F0EDE8', padding:11, callbacks:{ label:c=>` ৳${fmt(c.parsed.y)} /vori` } }
+        legend: { labels:{ color:'rgba(168,178,192,.5)', font:{ family:'DM Sans,system-ui,sans-serif', size:11 }, boxWidth:10, padding:10 } },
+        tooltip: { backgroundColor:'rgba(9,12,22,.97)', borderColor:'rgba(201,168,76,.2)', borderWidth:.5, titleColor:'rgba(168,178,192,.4)', bodyColor:'#EDE9E0', padding:11, callbacks:{ label:c=>` ৳${fmt(c.parsed.y)} /vori` } }
       },
       scales: {
-        x: { grid:{ color:'rgba(255,255,255,.04)', drawBorder:false }, ticks:{ color:'rgba(106,122,138,.8)', font:{ family:'Space Grotesk', size:10 }, maxTicksLimit:8 }, border:{ display:false } },
-        y: { grid:{ color:'rgba(255,255,255,.04)', drawBorder:false }, ticks:{ color:'rgba(106,122,138,.8)', font:{ family:'Space Grotesk', size:10 }, callback: v => '৳'+fmt(v) }, border:{ display:false } }
+        x: { grid:{ color:'rgba(255,255,255,.03)', drawBorder:false }, ticks:{ color:'rgba(90,106,122,.8)', font:{ family:'DM Sans,system-ui,sans-serif', size:10 }, maxTicksLimit:8 }, border:{ display:false } },
+        y: { grid:{ color:'rgba(255,255,255,.03)', drawBorder:false }, ticks:{ color:'rgba(90,106,122,.8)', font:{ family:'DM Sans,system-ui,sans-serif', size:10 }, callback: v => '৳'+fmt(v) }, border:{ display:false } }
       }
     }
   });
@@ -655,9 +713,10 @@ function renderTicker() {
   if (isV(sv?.intl_usd_oz)) items.push({ n:'Silver XAG/oz', v:'$ '+fmtD(+sv.intl_usd_oz,2),  chg:{c:'fl',t:''} });
   if (isV(g?.usd_bdt))      items.push({ n:'USD/BDT',       v:'৳ '+fmtD(+g.usd_bdt,2),        chg:{c:'fl',t:''} });
 
-  if (!items.length) { $('ticker').innerHTML='<div class="ti"><span class="tn">Loading…</span></div>'; return; }
+  if (!items.length) { const tk=$('ticker'); if(tk) tk.innerHTML='<div class="ti"><span class="tn">Loading live prices…</span></div>'; return; }
   const all = [...items, ...items];
-  $('ticker').innerHTML = all.map(i =>
+  const tk = $('ticker');
+  if (tk) tk.innerHTML = all.map(i =>
     `<div class="ti"><span class="tn">${i.n}</span><span class="tv">${i.v}</span>${i.chg.t ? `<span class="tc ${i.chg.c}">${i.chg.t}</span>` : ''}</div>`
   ).join('');
 }
@@ -665,7 +724,7 @@ function renderTicker() {
 /* ═══ CALCULATOR ═══ */
 function calculate() {
   const wt = parseFloat($('c-wt').value), unit = $('c-unit').value, karat = $('c-karat').value;
-  if (!wt || wt <= 0) { showToast('Enter a valid weight.'); return; }
+  if (!wt || wt <= 0) { showToast('⚠ Enter a valid weight.'); return; }
   let grams = wt;
   if (unit === 'vori' || unit === 'tola') grams = wt * VORI;
   else if (unit === 'ounce') grams = wt * OZ;
@@ -676,12 +735,14 @@ function calculate() {
   if (!isV(pg)) { showToast('⚠ Price unavailable for this karat.'); return; }
   const isGold = karat.startsWith('g'), mpg = isGold ? 300 : 26;
   const val = grams * +pg, vat = val * 1.05, make = vat + grams * mpg;
-  txt('c-lbl', `${wt} ${unit} of ${karat.toUpperCase()} (≈${grams.toFixed(3)}g)`);
+  const metalLabel = {g22:'Gold 22K',g21:'Gold 21K',g18:'Gold 18K',gtr:'Gold Traditional',s22:'Silver 22K',s21:'Silver 21K',s18:'Silver 18K',str:'Silver Traditional'}[karat] || karat;
+  txt('c-lbl', `${wt} ${unit} of ${metalLabel} (≈${grams.toFixed(3)}g)`);
   set('c-val', '৳ ' + fmt(val));
   txt('c-vat',  '৳ ' + fmt(vat));
   txt('c-make', '৳ ' + fmt(make));
-  txt('c-make-note', `(+5% VAT + ৳${mpg}/g making)`);
-  $('calc-res').classList.add('show');
+  txt('c-make-note', `(+5% VAT + ৳${mpg}/g making charge)`);
+  const res = $('calc-res');
+  if (res) res.classList.add('show');
 }
 
 /* ═══ TOAST ═══ */
@@ -690,18 +751,27 @@ function showToast(msg) {
   let t = document.getElementById('sg-toast');
   if (!t) {
     t = document.createElement('div'); t.id = 'sg-toast';
-    Object.assign(t.style, { position:'fixed', bottom:'1.5rem', left:'50%', transform:'translateX(-50%)', zIndex:'999', background:'var(--bg3)', border:'.5px solid var(--line2)', borderRadius:'10px', padding:'.75rem 1.25rem', fontSize:'13.5px', color:'var(--txt2)', boxShadow:'0 4px 24px rgba(0,0,0,.4)', fontFamily:'Inter,sans-serif', whiteSpace:'nowrap' });
+    Object.assign(t.style, {
+      position:'fixed', bottom:'1.5rem', left:'50%', transform:'translateX(-50%)',
+      zIndex:'9999', background:'var(--bg3)',
+      border:'.5px solid var(--line2)', borderRadius:'10px',
+      padding:'.75rem 1.35rem', fontSize:'13.5px', color:'var(--txt2)',
+      boxShadow:'0 4px 30px rgba(0,0,0,.45)', fontFamily:'DM Sans,system-ui,sans-serif',
+      whiteSpace:'nowrap', transition:'opacity .3s', backdropFilter:'blur(12px)',
+    });
     document.body.appendChild(t);
   }
-  t.textContent = msg; t.style.display = 'block';
-  clearTimeout(_tt); _tt = setTimeout(() => t.style.display = 'none', 5000);
+  t.textContent = msg; t.style.opacity = '1'; t.style.display = 'block';
+  clearTimeout(_tt); _tt = setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.style.display='none', 300); }, 4000);
 }
 
 /* ═══ CLOCK ═══ */
 function tick() {
   const now = new Date();
   const nc = $('nav-clock');
-  if (nc) nc.textContent = now.toLocaleTimeString('en-US', { timeZone:'Asia/Dhaka', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true }) + ' BST';
+  if (nc) nc.textContent = now.toLocaleTimeString('en-US', {
+    timeZone:'Asia/Dhaka', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true
+  }) + ' BST';
   if (S.nextRefresh) {
     const rem = Math.max(0, Math.floor((S.nextRefresh - Date.now()) / 1000));
     txt('st-cd', `${String(Math.floor(rem/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`);
@@ -711,45 +781,85 @@ function tick() {
 /* ═══ PARTICLES ═══ */
 function initParticles() {
   const canvas = $('particles-canvas'); if (!canvas) return;
+  // Skip particles on mobile for performance
+  if (window.innerWidth < 768) { canvas.style.display = 'none'; return; }
   const ctx = canvas.getContext('2d');
   let W = canvas.width = window.innerWidth;
   let H = canvas.height = window.innerHeight;
-  window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+  let rafId;
 
-  const pts = Array.from({ length:55 }, () => ({
+  const onResize = () => {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    if (W < 768) { canvas.style.display='none'; cancelAnimationFrame(rafId); }
+  };
+  window.addEventListener('resize', onResize, { passive:true });
+
+  const pts = Array.from({ length:50 }, () => ({
     x: Math.random()*W, y: Math.random()*H,
-    vx: (Math.random()-.5)*.35, vy: (Math.random()-.5)*.35,
-    r: Math.random()*1.4+.4,
-    a: Math.random()*.55+.1,
+    vx: (Math.random()-.5)*.3, vy: (Math.random()-.5)*.3,
+    r: Math.random()*1.5+.3,
+    a: Math.random()*.5+.08,
     gold: Math.random() > .45,
   }));
   let mx = -999, my = -999;
-  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive:true });
 
   (function draw() {
     ctx.clearRect(0,0,W,H);
     pts.forEach(p => {
       const dx = mx-p.x, dy = my-p.y, dist = Math.hypot(dx,dy);
-      if (dist < 180) { p.vx += dx/dist*.012; p.vy += dy/dist*.012; }
-      p.vx *= .99; p.vy *= .99;
+      if (dist < 160) { p.vx += dx/dist*.01; p.vy += dy/dist*.01; }
+      p.vx *= .985; p.vy *= .985;
       p.x += p.vx; p.y += p.vy;
       if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
       if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      ctx.fillStyle = p.gold ? `rgba(212,175,55,${p.a})` : `rgba(184,196,204,${p.a*.5})`;
+      ctx.fillStyle = p.gold ? `rgba(201,168,76,${p.a})` : `rgba(155,170,181,${p.a*.5})`;
       ctx.fill();
     });
     for (let i = 0; i < pts.length; i++) {
       for (let j = i+1; j < pts.length; j++) {
         const d = Math.hypot(pts[i].x-pts[j].x, pts[i].y-pts[j].y);
-        if (d < 90) {
+        if (d < 85) {
           ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y);
-          ctx.strokeStyle = `rgba(212,175,55,${.07*(1-d/90)})`; ctx.lineWidth = .5; ctx.stroke();
+          ctx.strokeStyle = `rgba(201,168,76,${.06*(1-d/85)})`; ctx.lineWidth = .5; ctx.stroke();
         }
       }
     }
-    requestAnimationFrame(draw);
+    rafId = requestAnimationFrame(draw);
   })();
+}
+
+/* ═══ SCROLL ANIMATIONS ═══ */
+function initScrollAnimations() {
+  if (!('IntersectionObserver' in window)) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  // Animate sections, cards, and grid items
+  const selectors = [
+    '.p-card', '.lc', '.conv-cell', '.avg-cell',
+    '.ins-card', '.fc-card', '.about-card',
+    '.kitco-box', '.ten-day-wrap', '.chart-box',
+    '.forecast-chart-box', '.author-card', '.calc-box'
+  ];
+
+  selectors.forEach(sel => {
+    document.querySelectorAll(sel).forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = `opacity .5s ease ${i * 0.05}s, transform .5s ease ${i * 0.05}s`;
+      obs.observe(el);
+    });
+  });
 }
 
 /* ═══ EVENTS ═══ */
@@ -757,8 +867,9 @@ function bindEvents() {
   // Gold unit tabs
   const gut = $('gold-utabs');
   if (gut) gut.querySelectorAll('.u-tab').forEach(b => b.addEventListener('click', () => {
-    gut.querySelectorAll('.u-tab').forEach(x => x.classList.remove('active'));
-    b.classList.add('active'); S.goldUnit = b.dataset.u; renderGold();
+    gut.querySelectorAll('.u-tab').forEach(x => { x.classList.remove('active'); x.setAttribute('aria-selected','false'); });
+    b.classList.add('active'); b.setAttribute('aria-selected','true');
+    S.goldUnit = b.dataset.u; renderGold();
   }));
 
   // History period
@@ -806,11 +917,14 @@ function bindEvents() {
     b.classList.add('active'); S.tenDaySilverKarat = b.dataset.k; renderTenDay('silver', S.tenDaySilverKarat);
   }));
 
-  // Language
-  const ldd = $('lang-dd');
-  if (ldd) ldd.querySelectorAll('.lang-opt').forEach(o => o.addEventListener('click', () => {
+  // Language — all lang-opt elements on page (inc. mobile)
+  document.querySelectorAll('.lang-opt').forEach(o => o.addEventListener('click', () => {
     S.lang = o.dataset.lang; localStorage.setItem('sg-lang', S.lang);
     applyI18n(); renderAll();
+  }));
+  // Keyboard for lang options
+  document.querySelectorAll('.lang-opt').forEach(o => o.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); o.click(); }
   }));
 
   // Calculator enter key
@@ -822,11 +936,57 @@ function bindEvents() {
     const nav = document.getElementById('nav');
     if (nav) nav.classList.toggle('scrolled', window.scrollY > 50);
     const st = document.getElementById('scrollTop');
-    if (st) st.classList.toggle('vis', window.scrollY > 300);
+    if (st) st.classList.toggle('vis', window.scrollY > 400);
+  }, { passive:true });
+
+  // Close mobile menu on outside click
+  document.addEventListener('click', e => {
+    const menu = document.getElementById('mobile-menu');
+    const toggle = document.getElementById('nav-toggle');
+    if (menu && toggle && menu.classList.contains('open')) {
+      if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+        menu.classList.remove('open');
+        toggle.classList.remove('open');
+        toggle.setAttribute('aria-expanded','false');
+        menu.setAttribute('aria-hidden','true');
+        document.body.style.overflow = '';
+      }
+    }
   });
+
+  // ESC closes mobile menu
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      const menu = document.getElementById('mobile-menu');
+      const toggle = document.getElementById('nav-toggle');
+      if (menu && menu.classList.contains('open')) {
+        menu.classList.remove('open');
+        toggle?.classList.remove('open');
+        toggle?.setAttribute('aria-expanded','false');
+        menu.setAttribute('aria-hidden','true');
+        document.body.style.overflow = '';
+        toggle?.focus();
+      }
+    }
+  });
+
+  // Touch swipe to close mobile menu
+  let touchStartX = 0;
+  const menu = document.getElementById('mobile-menu');
+  if (menu) {
+    menu.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive:true });
+    menu.addEventListener('touchend', e => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (diff > 60) { // swipe left to close
+        menu.classList.remove('open');
+        document.getElementById('nav-toggle')?.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    }, { passive:true });
+  }
 }
 
-/* ═══ RENDER ALL (call appropriate ones based on DOM) ═══ */
+/* ═══ RENDER ALL ═══ */
 function renderAll() {
   if ($('gp-22'))  renderGold();
   if ($('sp-22'))  renderSilver();
@@ -854,18 +1014,20 @@ async function init() {
   S.lang = detectLang();
   applyI18n();
 
-  // Set active nav link for current page
+  // Set active nav link
   const path = window.location.pathname;
-  const gLink = $('nav-gold-link'), sLink = $('nav-silver-link'), hLink= $('nav-home-link');
+  const gLink = $('nav-gold-link'), sLink = $('nav-silver-link'), hLink = $('nav-home-link');
   if (path.includes('gold.html')   && gLink) gLink.classList.add('active');
   if (path.includes('silver.html') && sLink) sLink.classList.add('active');
-  if ((!path.includes('silver.html')&&!path.includes('gold.html')) && hLink) hLink.classList.add('active');
+  if (!path.includes('silver.html') && !path.includes('gold.html') && hLink) hLink.classList.add('active');
 
   bindEvents();
   initParticles();
   setInterval(tick, 1000);
   tick();
   await load();
+  // Init scroll animations after first render
+  setTimeout(initScrollAnimations, 300);
   setInterval(load, 30 * 60 * 1000);
 }
 
