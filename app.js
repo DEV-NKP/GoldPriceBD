@@ -1032,3 +1032,134 @@ async function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+
+
+
+class LogoCarousel {
+  constructor() {
+    this.track = document.getElementById('logoTrack');
+    this.items = this.track.querySelectorAll('.logo-item');
+    this.links = this.track.querySelectorAll('.logo-link');
+    this.prevBtn = document.getElementById('prevBtn');
+    this.nextBtn = document.getElementById('nextBtn');
+    this.indicators = document.querySelectorAll('.indicator');
+    
+    this.currentIndex = 0;
+    this.autoRotateInterval = null;
+    
+    this.init();
+  }
+  
+  init() {
+    // Handle image load errors
+    this.links.forEach(link => {
+      const img = link.querySelector('img');
+      const fallback = link.querySelector('.logo-fallback');
+      
+      img.addEventListener('error', () => {
+        img.style.display = 'none';
+        fallback.style.display = 'flex';
+      });
+      
+      img.addEventListener('load', () => {
+        img.style.display = 'block';
+        fallback.style.display = 'none';
+      });
+    });
+    
+    // Center the active item initially
+    setTimeout(() => this.updateCarousel(), 100);
+    
+    // Event listeners
+    this.prevBtn.addEventListener('click', () => this.prev());
+    this.nextBtn.addEventListener('click', () => this.next());
+    
+    this.indicators.forEach((indicator, index) => {
+      indicator.addEventListener('click', () => this.goTo(index));
+    });
+    
+    // Start auto-rotate
+    this.startAutoRotate();
+    
+    // Pause on hover
+    this.track.addEventListener('mouseenter', () => this.pauseAutoRotate());
+    this.track.addEventListener('mouseleave', () => this.startAutoRotate());
+  }
+  
+  updateCarousel() {
+    // Calculate dynamic widths based on actual item widths
+    let totalWidth = 0;
+    const itemWidths = [];
+    
+    this.items.forEach((item, index) => {
+      const iconWidth = item.querySelector('.logo-icon').offsetWidth;
+      const padding = 40; // 2.5rem on each side
+      const itemWidth = iconWidth + padding;
+      itemWidths.push(itemWidth);
+      
+      if (index < this.currentIndex) {
+        totalWidth += itemWidth;
+      }
+    });
+    
+    const activeItemWidth = itemWidths[this.currentIndex];
+    const containerWidth = this.track.parentElement.offsetWidth;
+    const activeItemCenter = containerWidth / 2;
+    const offset = activeItemCenter - (totalWidth + activeItemWidth / 2);
+    
+    this.track.style.transform = `translateX(${offset}px)`;
+    
+    // Update active states - FIX: Apply to .logo-item, not .logo-link
+    this.items.forEach((item, index) => {
+      item.classList.toggle('active', index === this.currentIndex);
+    });
+    
+    // Update indicators
+    this.indicators.forEach((indicator, index) => {
+      indicator.classList.toggle('active', index === this.currentIndex);
+    });
+  }
+  
+  next() {
+    this.currentIndex = (this.currentIndex + 1) % this.items.length;
+    this.updateCarousel();
+  }
+  
+  prev() {
+    this.currentIndex = (this.currentIndex - 1 + this.items.length) % this.items.length;
+    this.updateCarousel();
+  }
+  
+  goTo(index) {
+    this.currentIndex = index;
+    this.updateCarousel();
+  }
+  
+  startAutoRotate() {
+    this.stopAutoRotate();
+    this.autoRotateInterval = setInterval(() => this.next(), 3000);
+  }
+  
+  stopAutoRotate() {
+    if (this.autoRotateInterval) {
+      clearInterval(this.autoRotateInterval);
+      this.autoRotateInterval = null;
+    }
+  }
+  
+  pauseAutoRotate() {
+    this.stopAutoRotate();
+  }
+}
+
+// Initialize carousel
+document.addEventListener('DOMContentLoaded', () => {
+  window.logoCarousel = new LogoCarousel();
+});
+
+// Handle window resize
+window.addEventListener('resize', () => {
+  const carousel = window.logoCarousel;
+  if (carousel) carousel.updateCarousel();
+});
