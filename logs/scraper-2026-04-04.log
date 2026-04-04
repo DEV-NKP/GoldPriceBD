@@ -19,3 +19,24 @@
 [2026-04-04T01:27:56.854Z] [INFO ] latest.json written
 [2026-04-04T01:27:56.854Z] [INFO ] Done — gold:no-change silver:no-change intl:stored
 [2026-04-04T01:27:56.854Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-04T08:33:27.792Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-04T08:33:27.793Z] [INFO ] SonarGold Scraper v3.2 (Simplified with Working Sources) starting…
+[2026-04-04T08:33:27.793Z] [INFO ] Mode: LIVE | Source: all
+[2026-04-04T08:33:27.793Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-04T08:33:27.794Z] [INFO ] History — gold:197 silver:197 intl:200
+[2026-04-04T08:33:27.795Z] [INFO ] Starting BAJUS scrape (v3.2 — simplified with working sources)…
+[2026-04-04T08:33:27.795Z] [INFO ] Trying BAJUSCTG API…
+[2026-04-04T08:33:28.803Z] [INFO ] BAJUSCTG API success: gold_22k=21260
+[2026-04-04T08:33:28.803Z] [INFO ] Fetching international prices…
+[2026-04-04T08:33:29.448Z] [INFO ] XAU: $4678/oz
+[2026-04-04T08:33:29.448Z] [INFO ] XAG: $73.151001/oz
+[2026-04-04T08:33:29.448Z] [INFO ] USD/BDT: 122.736993
+[2026-04-04T08:33:29.449Z] [INFO ] Gold:   {"date":"2026-04-04","timestamp":"2026-04-04T08:33:27.795Z","data_source":"bajusctg-api","bajus_g22":21260,"bajus_g21":20295,"bajus_g18":17395,"bajus_gtr":14170,"bajus_g22_vori":247977,"bajus_g21_vori":236721,"bajus_g18_vori":202895,"bajus_gtr_vori":165279}
+[2026-04-04T08:33:29.449Z] [INFO ] Silver: {"date":"2026-04-04","timestamp":"2026-04-04T08:33:27.795Z","data_source":"bajusctg-api","bajus_s22":490,"bajus_s21":465,"bajus_s18":400,"bajus_str":300,"bajus_s22_vori":5715,"bajus_s21_vori":5424,"bajus_s18_vori":4666,"bajus_str_vori":3499}
+[2026-04-04T08:33:29.449Z] [INFO ] Intl:   {"date":"2026-04-04","timestamp":"2026-04-04T08:33:27.795Z","gold_usd_oz":4678,"gold_prev_usd_oz":null,"gold_chg_usd":null,"gold_chg_pct":null,"gold_gram_bdt":18459.78,"silver_usd_oz":73.151001,"silver_prev_usd_oz":null,"silver_chg_usd":null,"silver_chg_pct":null,"silver_gram_bdt":288.6599,"usd_bdt":122.736993}
+[2026-04-04T08:33:29.449Z] [INFO ] Gold: no change — skipping history append
+[2026-04-04T08:33:29.450Z] [INFO ] Silver: no change — skipping history append
+[2026-04-04T08:33:29.450Z] [INFO ] Intl: no change — skipping history append
+[2026-04-04T08:33:29.464Z] [INFO ] latest.json written
+[2026-04-04T08:33:29.464Z] [INFO ] Done — gold:no-change silver:no-change intl:no-change
+[2026-04-04T08:33:29.464Z] [INFO ] ══════════════════════════════════════════════
