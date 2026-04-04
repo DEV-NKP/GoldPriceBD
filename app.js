@@ -198,7 +198,7 @@ async function loadLatest() {
       timeZone:'Asia/Dhaka', month:'short', day:'numeric',
       hour:'2-digit', minute:'2-digit', hour12:true
     }) : '—';
-    setSt('bajus', S.latest?.bajus_ok||false, S.latest?.bajus_ok ? `Live · Gold - ${fUSD(S.latest?.gold?.bajus_g22_vori)}/vori | Silver - ${fUSD(S.latest?.silver?.bajus_s22_vori)}/vori` : 'Not available');
+    setSt('bajus', S.latest?.bajus_ok||false, S.latest?.bajus_ok ? `Live · Gold - ৳ ${fmtD(S.latest?.gold?.bajus_g22_vori)}/vori | Silver - ৳ ${fmtD(S.latest?.silver?.bajus_s22_vori)}/vori` : 'Not available');
     setSt('intl', S.latest?.intl_ok||false, S.latest?.intl_ok ? `Live · Gold - ${fUSD(S.latest?.gold?.intl_usd_oz)}/oz | Silver - ${fUSD(S.latest?.silver?.intl_usd_oz)}/oz` : 'Not available');
     setSt('fx',   S.latest?.fx_ok||false,   S.latest?.fx_ok   ? `1 USD = ৳${fmtD(S.latest?.gold?.usd_bdt,2)}` : 'Not available');
     txt('st-upd', dt);
@@ -412,7 +412,7 @@ function renderTenDay(metal, karatKey) {
     const cc = Math.abs(chg) < 0.1 ? 'fl' : chg < 0 ? 'up' : 'dn';
     const isToday = e.date === todayDate && i === 0;
     return `<tr${isToday ? ' class="tr-today"' : ''}>
-      <td>${e.date || '—'}${isToday ? ' <span style="font-size:9.5px;color:var(--gold);margin-left:6px;font-weight:700;letter-spacing:.5px;">TODAY</span>' : ''}</td>
+      <td>${e.date || '—'}${isToday ? ' <span style="font-size:9.5px;color:var(--gold);margin-left:6px;font-weight:700;letter-spacing:.5px;">Last Updated Price</span>' : ''}</td>
       <td>${vPg ? fmt(vPg) : '—'}</td>
       <td>${vori ? fmt(vori) : '—'}</td>
       <td class="chg ${i < last10.length-1 ? cc : 'fl'}">${i < last10.length-1 ? (chg >= 0 ? '+' : '') + fmt(chg) : '—'}</td>
