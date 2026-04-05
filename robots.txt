@@ -14,4 +14,3 @@ Crawl-delay: 1
 # Block common non-content paths (if any exist in future)
 Disallow: /admin/
 Disallow: /api/
-Disallow: /*.json$ ```
