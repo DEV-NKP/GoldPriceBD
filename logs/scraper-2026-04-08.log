@@ -62,3 +62,27 @@
 [2026-04-08T13:06:29.277Z] [INFO ] Intl: updated same-day entry
 [2026-04-08T13:06:29.292Z] [INFO ] latest.json written | Final source: bajusctg-api
 [2026-04-08T13:06:29.292Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-08T16:54:31.579Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-08T16:54:31.581Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-04-08T16:54:31.581Z] [INFO ] Mode: LIVE
+[2026-04-08T16:54:31.581Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-08T16:54:31.582Z] [INFO ] History size — Gold: 200, Silver: 200, Intl: 204
+[2026-04-08T16:54:31.583Z] [INFO ] ════════════════════════════════
+[2026-04-08T16:54:31.583Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-04-08T16:54:31.583Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-04-08T16:54:33.110Z] [WARN ] BAJUSCTG API failed: HTTP 401
+[2026-04-08T16:54:33.111Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-04-08T16:54:33.505Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-04-08T16:54:33.614Z] [WARN ] GoldR.org parsed but data invalid
+[2026-04-08T16:54:33.615Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-04-08T16:54:33.862Z] [INFO ] Trying Strategy 4: Wayback Machine...
+[2026-04-08T16:54:39.079Z] [WARN ] Wayback failed: No snapshot
+[2026-04-08T16:54:39.079Z] [INFO ] Using cached prices from 2026-04-08 (11h old)
+[2026-04-08T16:54:39.080Z] [WARN ] ALL LIVE SOURCES FAILED — Using cached prices (mandatory fallback)
+[2026-04-08T16:54:39.080Z] [INFO ] Fetching international prices...
+[2026-04-08T16:54:40.075Z] [ERROR] XAU fetch failed: request to https://api.gold-api.com/price/XAU failed, reason: getaddrinfo ENOTFOUND api.gold-api.com
+[2026-04-08T16:54:40.706Z] [INFO ] Gold: no change — skipping append
+[2026-04-08T16:54:40.707Z] [INFO ] Silver: no change — skipping append
+[2026-04-08T16:54:40.707Z] [INFO ] Intl: updated same-day entry
+[2026-04-08T16:54:40.725Z] [INFO ] latest.json written | Final source: cache
+[2026-04-08T16:54:40.725Z] [INFO ] ══════════════════════════════════════════════
