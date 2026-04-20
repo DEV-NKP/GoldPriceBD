@@ -7,26 +7,20 @@
     <lastmod>2026-04-02</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://goldratelive.pages.dev/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://goldratelive.pages.dev/"/>
   </url>
 
   <url>
-    <loc>https://goldratelive.pages.dev/gold</loc>
+    <loc>https://goldratelive.pages.dev/gold.html</loc>
     <lastmod>2026-04-02</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://goldratelive.pages.dev/gold.html"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://goldratelive.pages.dev/gold.html"/>
   </url>
 
   <url>
-    <loc>https://goldratelive.pages.dev/silver</loc>
+    <loc>https://goldratelive.pages.dev/silver.html</loc>
     <lastmod>2026-04-02</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://goldratelive.pages.dev/silver.html"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://goldratelive.pages.dev/silver.html"/>
   </url>
 
 </urlset>
