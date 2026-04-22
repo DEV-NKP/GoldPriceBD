@@ -6,7 +6,7 @@ Allow: /gold.html
 Allow: /silver.html
 
 # Sitemap location
-Sitemap: https://goldratelive.pages.dev/sitemap.xml
+Sitemap: https://goldpricebd.pro.bd/sitemap.xml
 
 # Crawl delay for financial data
 Crawl-delay: 1

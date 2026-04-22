@@ -1017,9 +1017,9 @@ async function init() {
   // Set active nav link
   const path = window.location.pathname;
   const gLink = $('nav-gold-link'), sLink = $('nav-silver-link'), hLink = $('nav-home-link');
-  if (path.includes('gold.html')   && gLink) gLink.classList.add('active');
-  if (path.includes('silver.html') && sLink) sLink.classList.add('active');
-  if (!path.includes('silver.html') && !path.includes('gold.html') && hLink) hLink.classList.add('active');
+  if (path.includes('gold')   && gLink) gLink.classList.add('active');
+  if (path.includes('silver') && sLink) sLink.classList.add('active');
+  if (!path.includes('silver') && !path.includes('gold') && hLink) hLink.classList.add('active');
 
   bindEvents();
   initParticles();

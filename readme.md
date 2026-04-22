@@ -3,7 +3,7 @@
 
 **A professional web application providing live gold and silver prices in Bangladesh with automated data scraping and responsive design.**
 
-🔗 **Live Demo:** [https://goldratelive.pages.dev/](https://goldratelive.pages.dev/)
+🔗 **Live Demo:** [https://goldpricebd.pro.bd/](https://goldpricebd.pro.bd/)
 
 ---
 
