@@ -1,9 +1,13 @@
 /* ═══════════════════════════════════════════════════════════
-   GoldRateLive — Premium Stylesheet v2.0
+   GoldPriceBD — Premium Stylesheet v2.0
    Fonts: Cormorant Garamond (display) + DM Sans (body) + JetBrains Mono (data)
    ═══════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+Bengali:wght@400;500;600&display=swap');
+/* ★ MODIFIED: Removed @import — fonts already loaded via <link> in HTML.
+   Keeping @import causes redundant download and render-blocking FOIT.
+   If you ever use this CSS standalone, uncomment the line below:
+   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+Bengali:wght@400;500;600&display=swap');
+*/
 
 :root {
   /* Gold palette */
@@ -303,6 +307,8 @@ h1 em{
   max-width:600px;margin:0 auto 1.5rem;line-height:1.75;
   animation:fadeUp .8s .2s var(--ease-out) both;
 }
+.hero-sub a{color:var(--gold);text-decoration:none;border-bottom:.5px solid var(--gold-edge);transition:all .2s;}
+.hero-sub a:hover{color:var(--gold-lt);border-bottom-color:var(--gold-lt);}
 .upd-line{font-size:12px;color:var(--txt3);animation:fadeUp .8s .3s var(--ease-out) both;margin-bottom:.5rem;}
 #upd-time{color:var(--gold);font-weight:600;font-family:var(--font-mono);font-size:11.5px;}
 
@@ -714,6 +720,8 @@ hr.kd{border:none;border-top:.5px solid var(--line);margin:.6rem 0;}
 }
 .ins-ttl{font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--txt);margin-bottom:.55rem;}
 .ins-desc{font-size:12.5px;color:var(--txt2);line-height:1.65;margin-bottom:.9rem;}
+.ins-desc a{color:var(--gold);text-decoration:none;border-bottom:.5px solid var(--gold-edge);transition:all .2s;}
+.ins-desc a:hover{color:var(--gold-lt);border-bottom-color:var(--gold-lt);}
 .ins-val{font-family:var(--font-mono);font-size:1.5rem;font-weight:600;color:var(--gold);}
 .ins-trend{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:100px;margin-top:.65rem;}
 
@@ -770,6 +778,8 @@ hr.kd{border:none;border-top:.5px solid var(--line);margin:.6rem 0;}
 .about-card h3{font-family:var(--font-display);font-size:1.15rem;color:var(--gold);margin-bottom:.8rem;font-weight:600;}
 .about-card p{font-size:13.5px;color:var(--txt2);line-height:1.75;}
 .about-card strong{color:var(--txt);}
+.about-card a{color:var(--gold);text-decoration:none;border-bottom:.5px solid var(--gold-edge);transition:all .2s;}
+.about-card a:hover{color:var(--gold-lt);border-bottom-color:var(--gold-lt);}
 
 /* ── AUTHOR ── */
 .author-card{
@@ -869,9 +879,9 @@ footer{
 }
 .price-updated{animation:priceFlash .8s ease;}
 
-/* ══════════════════════════════════
+/* ════════════════════════════════════
    RESPONSIVE SYSTEM
-   ══════════════════════════════════ */
+   ════════════════════════════════════ */
 
 /* ── LARGE DESKTOP (1200px+) ── */
 @media(min-width:1200px){
@@ -1020,7 +1030,7 @@ footer{
     radial-gradient(ellipse 60% 50% at 90% 110%,rgba(155,170,181,.015) 0%,transparent 55%);
 }
 
-/* Logo Track - The sliding container */
+/* Logo Track */
 .logo-track {
   display: flex;
   transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -1043,7 +1053,7 @@ footer{
   user-select: none;
 }
 
-/* Active State - Golden Glow */
+/* Active State */
 .logo-item.active {
   opacity: 1;
   transform: scale(1.1);
@@ -1056,7 +1066,7 @@ footer{
   transform: scale(1.05);
 }
 
-/* Link wrapper - no hover effects to avoid conflicts */
+/* Link wrapper */
 .logo-link {
   text-decoration: none;
   color: inherit;
@@ -1096,7 +1106,7 @@ footer{
   transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-/* Fallback Icon (when image fails to load) */
+/* Fallback Icon */
 .logo-icon .logo-fallback {
   font-size: 32px;
   color: var(--txt);
