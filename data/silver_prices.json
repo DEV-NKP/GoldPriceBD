@@ -2665,15 +2665,15 @@
   },
   {
     "date": "2026-04-26",
-    "timestamp": "2026-04-26T22:25:10.736Z",
-    "data_source": "fallback",
-    "bajus_s22": 450,
-    "bajus_s21": 430,
-    "bajus_s18": 380,
-    "bajus_str": 280,
-    "bajus_s22_vori": 5249,
-    "bajus_s21_vori": 5016,
-    "bajus_s18_vori": 4432,
-    "bajus_str_vori": 3266
+    "timestamp": "2026-04-26T23:28:15.350Z",
+    "data_source": "bajusctg-api",
+    "bajus_s22": 490,
+    "bajus_s21": 465,
+    "bajus_s18": 400,
+    "bajus_str": 300,
+    "bajus_s22_vori": 5715,
+    "bajus_s21_vori": 5424,
+    "bajus_s18_vori": 4666,
+    "bajus_str_vori": 3499
   }
 ]
