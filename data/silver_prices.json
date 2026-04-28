@@ -2675,5 +2675,18 @@
     "bajus_s21_vori": 5424,
     "bajus_s18_vori": 4666,
     "bajus_str_vori": 3499
+  },
+  {
+    "date": "2026-04-28",
+    "timestamp": "2026-04-28T05:20:05.117Z",
+    "data_source": "bajusctg-api",
+    "bajus_s22": 470,
+    "bajus_s21": 445,
+    "bajus_s18": 385,
+    "bajus_str": 290,
+    "bajus_s22_vori": 5482,
+    "bajus_s21_vori": 5190,
+    "bajus_s18_vori": 4491,
+    "bajus_str_vori": 3383
   }
 ]
