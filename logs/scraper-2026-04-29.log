@@ -78,3 +78,27 @@
 [2026-04-29T11:24:46.390Z] [INFO ] Intl: updated same-day entry
 [2026-04-29T11:24:46.403Z] [INFO ] latest.json written | Final source: bajusctg-api
 [2026-04-29T11:24:46.403Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-29T13:16:49.111Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-29T13:16:49.112Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-04-29T13:16:49.112Z] [INFO ] Mode: LIVE
+[2026-04-29T13:16:49.113Z] [INFO ] ══════════════════════════════════════════════
+[2026-04-29T13:16:49.114Z] [INFO ] History size — Gold: 208, Silver: 207, Intl: 225
+[2026-04-29T13:16:49.114Z] [INFO ] ════════════════════════════════
+[2026-04-29T13:16:49.115Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-04-29T13:16:49.115Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-04-29T13:16:50.698Z] [WARN ] BAJUSCTG API failed: HTTP 401
+[2026-04-29T13:16:50.698Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-04-29T13:16:52.173Z] [WARN ] BAJUSCTG HTML failed: HTTP 401
+[2026-04-29T13:16:52.173Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-04-29T13:16:52.863Z] [WARN ] GoldR.org parsed but data invalid
+[2026-04-29T13:16:52.863Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-04-29T13:16:53.238Z] [INFO ] Trying Strategy 4: Wayback Machine...
+[2026-04-29T13:16:59.818Z] [WARN ] Wayback failed: No snapshot
+[2026-04-29T13:16:59.819Z] [INFO ] Using cached prices from 2026-04-29 (8h old)
+[2026-04-29T13:16:59.819Z] [WARN ] ALL LIVE SOURCES FAILED — Using cached prices (mandatory fallback)
+[2026-04-29T13:16:59.819Z] [INFO ] Fetching international prices...
+[2026-04-29T13:17:00.041Z] [INFO ] Gold: no change — skipping append
+[2026-04-29T13:17:00.041Z] [INFO ] Silver: no change — skipping append
+[2026-04-29T13:17:00.041Z] [INFO ] Intl: updated same-day entry
+[2026-04-29T13:17:00.135Z] [INFO ] latest.json written | Final source: cache
+[2026-04-29T13:17:00.135Z] [INFO ] ══════════════════════════════════════════════
