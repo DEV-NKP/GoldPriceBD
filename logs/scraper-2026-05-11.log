@@ -1,0 +1,17 @@
+[2026-05-11T01:52:04.784Z] [INFO ] ══════════════════════════════════════════════
+[2026-05-11T01:52:04.785Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-05-11T01:52:04.786Z] [INFO ] Mode: LIVE
+[2026-05-11T01:52:04.786Z] [INFO ] ══════════════════════════════════════════════
+[2026-05-11T01:52:04.787Z] [INFO ] History size — Gold: 212, Silver: 209, Intl: 236
+[2026-05-11T01:52:04.788Z] [INFO ] ════════════════════════════════
+[2026-05-11T01:52:04.788Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-05-11T01:52:04.789Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-05-11T01:52:06.570Z] [INFO ] ✓ BAJUSCTG success: 22K gram ≈ 20980
+[2026-05-11T01:52:06.570Z] [INFO ] SUCCESS — Source: bajusctg-api
+[2026-05-11T01:52:06.571Z] [INFO ] Fetching international prices...
+[2026-05-11T01:52:06.799Z] [ERROR] XAU fetch failed: request to https://api.gold-api.com/price/XAU failed, reason: getaddrinfo ENOTFOUND api.gold-api.com
+[2026-05-11T01:52:07.228Z] [INFO ] Gold: no change — skipping append
+[2026-05-11T01:52:07.228Z] [INFO ] Silver: no change — skipping append
+[2026-05-11T01:52:07.228Z] [INFO ] Intl: appended entry #237
+[2026-05-11T01:52:07.242Z] [INFO ] latest.json written | Final source: bajusctg-api
+[2026-05-11T01:52:07.243Z] [INFO ] ══════════════════════════════════════════════
