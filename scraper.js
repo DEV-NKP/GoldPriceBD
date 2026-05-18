@@ -1,5 +1,5 @@
 /**
- * GoldRateLive — Price Scraper v4.0 (Multi-Source Robust + Mandatory Cache)
+ * GoldPriceBD — Price Scraper v4.0 (Multi-Source Robust + Mandatory Cache)
  * ============================================================
  * Runs every 4 hours via GitHub Actions.
  * Uses multiple BAJUS mirrors + cache fallback. Never returns blank prices.

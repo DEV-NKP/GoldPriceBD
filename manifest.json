@@ -1,6 +1,6 @@
 {
   "name": "Gold Rate Live Bangladesh",
-  "short_name": "GoldRateLive",
+  "short_name": "GoldPriceBD",
   "description": "Official BAJUS gold and silver prices in Bangladesh with live updates",
   "start_url": "/",
   "display": "standalone",

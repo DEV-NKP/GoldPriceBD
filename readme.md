@@ -1,15 +1,15 @@
 
-# 💰 GoldRateLive - Real-Time Gold & Silver Price Tracker
+# 💰 GoldPriceBD - Real-Time Gold & Silver Price Tracker
 
 **A professional web application providing live gold and silver prices in Bangladesh with automated data scraping and responsive design.**
 
-🔗 **Live Demo:** [https://goldpricebd.pro.bd/](https://goldpricebd.pro.bd/)
+🔗 **Live Demo:** [https://goldpricebd.pages.dev/](https://goldpricebd.pages.dev/)
 
 ---
 
 ## 🚀 Overview
 
-GoldRateLive is a sophisticated price tracking solution that combines automated web scraping with a modern, responsive frontend to deliver real-time precious metals pricing data for the Bangladesh market. This project demonstrates expertise in web scraping, API integration, automation workflows, and frontend development.
+GoldPriceBD is a sophisticated price tracking solution that combines automated web scraping with a modern, responsive frontend to deliver real-time precious metals pricing data for the Bangladesh market. This project demonstrates expertise in web scraping, API integration, automation workflows, and frontend development.
 
 ---
 
@@ -55,11 +55,11 @@ External APIs → Scraper (Node.js) → JSON Data → Frontend (HTML/CSS/JS) →
 
 ## 📊 Project Metrics
 
-![GitHub stars](https://img.shields.io/github/stars/DEV-NKP/GoldRateLive?style=social)
-![GitHub forks](https://img.shields.io/github/forks/DEV-NKP/GoldRateLive?style=social)
-![GitHub issues](https://img.shields.io/github/issues/DEV-NKP/GoldRateLive)
-![GitHub license](https://img.shields.io/github/license/DEV-NKP/GoldRateLive)
-![Website](https://img.shields.io/website-up/down-green-line/https/goldratelive.pages.dev)
+![GitHub stars](https://img.shields.io/github/stars/DEV-NKP/GoldPriceBD?style=social)
+![GitHub forks](https://img.shields.io/github/forks/DEV-NKP/GoldPriceBD?style=social)
+![GitHub issues](https://img.shields.io/github/issues/DEV-NKP/GoldPriceBD)
+![GitHub license](https://img.shields.io/github/license/DEV-NKP/GoldPriceBD)
+![Website](https://img.shields.io/website-up/down-green-line/https/GoldPriceBD.pages.dev)
 ![Page Speed](https://img.shields.io/badge/Page%20Speed-95%2B-green)
 
 

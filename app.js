@@ -1,5 +1,5 @@
 /**
- * GoldRateLive — Shared App Logic v2.0
+ * GoldPriceBD — Shared App Logic v2.0
  * Enhanced with: mobile nav, scroll animations, intersection observer,
  * number counter animations, price flash effects, keyboard accessibility
  */
