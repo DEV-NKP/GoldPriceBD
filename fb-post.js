@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * fb-post.js — SonarGold Facebook Price Update Bot
+ * fb-post.js — New Fashion Jewellers (NFJS) Facebook Price Update Bot
  *
  * Flow:
  *  1. Load latest.json (new prices from scraper)
@@ -19,80 +19,124 @@ const path = require("path");
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
-const DATA_DIR        = path.resolve(__dirname, "data");
-const LATEST_JSON     = path.join(DATA_DIR, "latest.json");
-const LAST_POSTED_JSON= path.join(DATA_DIR, "fb_last_posted.json");
-const TEMPLATE_HTML   = path.join(__dirname, "fb-post-template.html");
-const OUTPUT_IMAGE    = path.join(__dirname, "fb-post-output.png");
+const DATA_DIR         = path.resolve(__dirname, "data");
+const LATEST_JSON      = path.join(DATA_DIR, "latest.json");
+const LAST_POSTED_JSON = path.join(DATA_DIR, "fb_last_posted.json");
+const TEMPLATE_HTML    = path.join(__dirname, "fb-post-template.html");
+const OUTPUT_IMAGE     = path.join(__dirname, "fb-post-output.png");
 
-/** Convert English digits → Bengali digits */
-function toBengaliNum(num) {
-  if (num === null || num === undefined) return "—";
-  return String(Number(num).toFixed(2))
+/** Grams per vori */
+const GRAMS_PER_VORI = 11.664;
+
+/** Convert English digits → Bengali digits (no decimal rounding artifact) */
+function toBengaliNum(num, decimals = 2) {
+  if (num === null || num === undefined || isNaN(parseFloat(num))) return "—";
+  return parseFloat(num)
+    .toFixed(decimals)
     .replace(/0/g,"০").replace(/1/g,"১").replace(/2/g,"২")
     .replace(/3/g,"৩").replace(/4/g,"৪").replace(/5/g,"৫")
     .replace(/6/g,"৬").replace(/7/g,"৭").replace(/8/g,"৮")
-    .replace(/9/g,"৯").replace(/\./g,".");
+    .replace(/9/g,"৯");
 }
 
-/** Format today's date in Bengali */
+/** Convert price-per-gram to price-per-vori in Bengali */
+function toVori(pricePerGram) {
+  if (!pricePerGram) return "—";
+  return toBengaliNum(parseFloat(pricePerGram) * GRAMS_PER_VORI, 0);
+}
+
+/** Format today's date in Bengali — fixed version */
 function bengaliDate() {
-  const now = new Date();
+  const now  = new Date();
   const days = ["রবিবার","সোমবার","মঙ্গলবার","বুধবার","বৃহস্পতিবার","শুক্রবার","শনিবার"];
   const months = ["জানুয়ারি","ফেব্রুয়ারি","মার্চ","এপ্রিল","মে","জুন",
                   "জুলাই","আগস্ট","সেপ্টেম্বর","অক্টোবর","নভেম্বর","ডিসেম্বর"];
-  const d = toBengaliNum(now.getDate()).replace(/\./g,"");
-  const m = months[now.getMonth()];
-  const y = toBengaliNum(now.getFullYear()).replace(/\./g,"");
+
+  // Use integer-only Bengali conversion to avoid ".০০" in date parts
+  const toInt = (n) => String(n)
+    .replace(/0/g,"০").replace(/1/g,"১").replace(/2/g,"২")
+    .replace(/3/g,"৩").replace(/4/g,"৪").replace(/5/g,"৫")
+    .replace(/6/g,"৬").replace(/7/g,"৭").replace(/8/g,"৮")
+    .replace(/9/g,"৯");
+
+  const d  = toInt(now.getDate());
+  const m  = months[now.getMonth()];
+  const y  = toInt(now.getFullYear());
   const wd = days[now.getDay()];
   return `${wd}, ${d} ${m} ${y}`;
 }
 
-/** Compute direction class + arrow + absolute diff */
-function delta(newVal, oldVal) {
-  const n = parseFloat(newVal) || 0;
-  const o = parseFloat(oldVal) || 0;
-  const diff = n - o;
-  if (!o || diff === 0) return { dir: "neutral", arrow: "➡️", diff: "০.০০" };
-  if (diff > 0) return { dir: "up",   arrow: "↑", diff: toBengaliNum(diff) };
-  return              { dir: "down",  arrow: "↓", diff: toBengaliNum(Math.abs(diff)) };
+/** Bengali time string */
+function bengaliTime() {
+  const now = new Date();
+  return now.toLocaleTimeString("bn-BD", { hour: "2-digit", minute: "2-digit" });
 }
 
-/** Render HTML template with real data, return filled HTML string */
+/** Compute direction class + arrow + absolute diff */
+function delta(newVal, oldVal) {
+  const n    = parseFloat(newVal) || 0;
+  const o    = parseFloat(oldVal) || 0;
+  const diff = n - o;
+  if (!o || diff === 0) return { dir: "neutral", arrow: "→", diffBn: "০.০০", diffNum: 0 };
+  if (diff > 0) return { dir: "up",   arrow: "↑", diffBn: toBengaliNum(diff),            diffNum: diff };
+  return              { dir: "down",  arrow: "↓", diffBn: toBengaliNum(Math.abs(diff)),   diffNum: Math.abs(diff) };
+}
+
+function prefixDelta(prefix, d) {
+  return {
+    [`${prefix}_DIR`]:   d.dir,
+    [`${prefix}_ARROW`]: d.arrow,
+    [`${prefix}_DIFF`]:  d.diffBn,
+  };
+}
+
+/** Render HTML template with real data */
 function renderTemplate(latest, prev) {
   let html = fs.readFileSync(TEMPLATE_HTML, "utf-8");
 
-  const g = latest.gold   || {};
-  const s = latest.silver || {};
-  const pg= prev.gold     || {};
-  const ps= prev.silver   || {};
+  const g  = latest.gold   || {};
+  const s  = latest.silver || {};
+  const pg = prev.gold     || {};
+  const ps = prev.silver   || {};
 
   const fields = {
-    DATE:     bengaliDate(),
+    DATE: bengaliDate(),
 
-    G22_NEW:  toBengaliNum(g.bajus_g22),
-    G22_PREV: toBengaliNum(pg.bajus_g22),
+    // Gold — gram price
+    G22_NEW:  toBengaliNum(g.bajus_g22, 0),
+    G22_PREV: toBengaliNum(pg.bajus_g22, 0),
     ...prefixDelta("G22", delta(g.bajus_g22, pg.bajus_g22)),
 
-    G21_NEW:  toBengaliNum(g.bajus_g21),
-    G21_PREV: toBengaliNum(pg.bajus_g21),
+    G21_NEW:  toBengaliNum(g.bajus_g21, 0),
+    G21_PREV: toBengaliNum(pg.bajus_g21, 0),
     ...prefixDelta("G21", delta(g.bajus_g21, pg.bajus_g21)),
 
-    G18_NEW:  toBengaliNum(g.bajus_g18),
-    G18_PREV: toBengaliNum(pg.bajus_g18),
+    G18_NEW:  toBengaliNum(g.bajus_g18, 0),
+    G18_PREV: toBengaliNum(pg.bajus_g18, 0),
     ...prefixDelta("G18", delta(g.bajus_g18, pg.bajus_g18)),
 
-    S22_NEW:  toBengaliNum(s.bajus_s22),
-    S22_PREV: toBengaliNum(ps.bajus_s22),
+    // Gold — vori price
+    G22_VORI: toVori(g.bajus_g22),
+    G21_VORI: toVori(g.bajus_g21),
+    G18_VORI: toVori(g.bajus_g18),
+
+    // Silver — gram price
+    S22_NEW:  toBengaliNum(s.bajus_s22, 0),
+    S22_PREV: toBengaliNum(ps.bajus_s22, 0),
     ...prefixDelta("S22", delta(s.bajus_s22, ps.bajus_s22)),
 
-    S21_NEW:  toBengaliNum(s.bajus_s21),
-    S21_PREV: toBengaliNum(ps.bajus_s21),
+    S21_NEW:  toBengaliNum(s.bajus_s21, 0),
+    S21_PREV: toBengaliNum(ps.bajus_s21, 0),
     ...prefixDelta("S21", delta(s.bajus_s21, ps.bajus_s21)),
 
-    S18_NEW:  toBengaliNum(s.bajus_s18),
-    S18_PREV: toBengaliNum(ps.bajus_s18),
+    S18_NEW:  toBengaliNum(s.bajus_s18, 0),
+    S18_PREV: toBengaliNum(ps.bajus_s18, 0),
     ...prefixDelta("S18", delta(s.bajus_s18, ps.bajus_s18)),
+
+    // Silver — vori price
+    S22_VORI: toVori(s.bajus_s22),
+    S21_VORI: toVori(s.bajus_s21),
+    S18_VORI: toVori(s.bajus_s18),
   };
 
   for (const [k, v] of Object.entries(fields)) {
@@ -101,18 +145,10 @@ function renderTemplate(latest, prev) {
   return html;
 }
 
-function prefixDelta(prefix, d) {
-  return {
-    [`${prefix}_DIR`]:   d.dir,
-    [`${prefix}_ARROW`]: d.arrow,
-    [`${prefix}_DIFF`]:  d.diff,
-  };
-}
-
 /** Use Puppeteer to screenshot the filled HTML → PNG */
 async function generateImage(html) {
   const puppeteer = require("puppeteer");
-  const tmpHtml = path.join(__dirname, "_tmp_post.html");
+  const tmpHtml   = path.join(__dirname, "_tmp_post.html");
   fs.writeFileSync(tmpHtml, html, "utf-8");
 
   const browser = await puppeteer.launch({
@@ -127,8 +163,7 @@ async function generateImage(html) {
   const page = await browser.newPage();
   await page.setViewport({ width: 1080, height: 1080, deviceScaleFactor: 2 });
   await page.goto(`file://${tmpHtml}`, { waitUntil: "networkidle0", timeout: 30000 });
-  // Extra wait for Google Fonts
-  await new Promise(r => setTimeout(r, 2500));
+  await new Promise(r => setTimeout(r, 3000)); // wait for Google Fonts
   await page.screenshot({ path: OUTPUT_IMAGE, type: "png", fullPage: false });
   await browser.close();
   fs.unlinkSync(tmpHtml);
@@ -136,7 +171,7 @@ async function generateImage(html) {
   return OUTPUT_IMAGE;
 }
 
-/** Build Bengali caption for the FB post */
+/** Build professional Bengali caption for the FB post */
 function buildCaption(latest, prev) {
   const g  = latest.gold   || {};
   const s  = latest.silver || {};
@@ -146,31 +181,86 @@ function buildCaption(latest, prev) {
   const d22  = delta(g.bajus_g22, pg.bajus_g22);
   const ds22 = delta(s.bajus_s22, ps.bajus_s22);
 
-  const dir22  = d22.dir  === "up" ? "📈 বৃদ্ধি পেয়েছে" : d22.dir  === "down" ? "📉 কমেছে" : "অপরিবর্তিত";
-  const dirs22 = ds22.dir === "up" ? "📈 বৃদ্ধি পেয়েছে" : ds22.dir === "down" ? "📉 কমেছে" : "অপরিবর্তিত";
+  // Direction label in Bengali
+  function dirLabel(d, diffBn) {
+    if (d.dir === "up")      return `📈 ${diffBn} ৳ বৃদ্ধি`;
+    if (d.dir === "down")    return `📉 ${diffBn} ৳ হ্রাস`;
+    return "অপরিবর্তিত";
+  }
 
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString("bn-BD", { hour: "2-digit", minute: "2-digit" });
+  // Format price cleanly (no Bengali for caption — FB renders raw numbers fine)
+  const fmt = (v) => v ? Number(v).toLocaleString("en-BD") : "—";
+  const vori = (v) => v ? Math.round(parseFloat(v) * GRAMS_PER_VORI).toLocaleString("en-BD") : "—";
 
-  return `🔔 বাজুস অনুমোদিত স্বর্ণ ও রূপার নতুন মূল্য!
+  const date    = bengaliDate();
+  const time    = bengaliTime();
+  const dir22   = dirLabel(d22,  d22.diffBn);
+  const dirs22  = dirLabel(ds22, ds22.diffBn);
 
-🥇 স্বর্ণের মূল্য (প্রতি গ্রাম):
-• ২২ ক্যারেট: ${g.bajus_g22 || "—"} ৳ — ${dir22} (${d22.arrow} ${d22.diff} ৳)
-• ২১ ক্যারেট: ${g.bajus_g21 || "—"} ৳
-• ১৮ ক্যারেট: ${g.bajus_g18 || "—"} ৳
+  return `✨ নিউ ফ্যাশন জুয়েলার্স (NFJ) — আজকের স্বর্ণ ও রূপার মূল্য
 
-🥈 রূপার মূল্য (প্রতি গ্রাম):
-• ২২ ক্যারেট: ${s.bajus_s22 || "—"} ৳ — ${dirs22} (${ds22.arrow} ${ds22.diff} ৳)
-• ২১ ক্যারেট: ${s.bajus_s21 || "—"} ৳
-• ১৮ ক্যারেট: ${s.bajus_s18 || "—"} ৳
+📅 ${date} | 🕐 ${time}
 
-📅 তারিখ: ${bengaliDate()}
-🕐 সময়: ${timeStr}
+━━━━━━━━━━━━━━━━━━
+🥇 স্বর্ণের মূল্য (বাজুস অনুমোদিত)
+━━━━━━━━━━━━━━━━━━
+▸ ২২ ক্যারেট
+   প্রতি গ্রাম : ${fmt(g.bajus_g22)} ৳  |  প্রতি ভরি : ${vori(g.bajus_g22)} ৳
+   পরিবর্তন   : ${dir22}
 
-✅ তথ্যসূত্র: বাংলাদেশ জুয়েলার্স সমিতি (বাজুস)
-🌐 সঠিক ও আপডেট মূল্য জানতে আমাদের পেজ ফলো করুন!
+▸ ২১ ক্যারেট
+   প্রতি গ্রাম : ${fmt(g.bajus_g21)} ৳  |  প্রতি ভরি : ${vori(g.bajus_g21)} ৳
 
-#স্বর্ণমূল্য #রূপামূল্য #বাজুস #সোনারদাম #GoldPriceBD #SilverPriceBD #বাংলাদেশ #জুয়েলারি`;
+▸ ১৮ ক্যারেট
+   প্রতি গ্রাম : ${fmt(g.bajus_g18)} ৳  |  প্রতি ভরি : ${vori(g.bajus_g18)} ৳
+
+━━━━━━━━━━━━━━━━━━
+🥈 রূপার মূল্য (বাজুস অনুমোদিত)
+━━━━━━━━━━━━━━━━━━
+▸ ২২ ক্যারেট
+   প্রতি গ্রাম : ${fmt(s.bajus_s22)} ৳  |  প্রতি ভরি : ${vori(s.bajus_s22)} ৳
+   পরিবর্তন   : ${dirs22}
+
+▸ ২১ ক্যারেট
+   প্রতি গ্রাম : ${fmt(s.bajus_s21)} ৳  |  প্রতি ভরি : ${vori(s.bajus_s21)} ৳
+
+▸ ১৮ ক্যারেট
+   প্রতি গ্রাম : ${fmt(s.bajus_s18)} ৳  |  প্রতি ভরি : ${vori(s.bajus_s18)} ৳
+
+━━━━━━━━━━━━━━━━━━
+📌 তথ্যসূত্র : বাংলাদেশ জুয়েলার্স সমিতি (বাজুস)
+🌐 ওয়েবসাইট  : https://nfjs.odoo.com
+📞 যোগাযোগ   : +880 1911-367421
+
+💍 নিউ ফ্যাশন জুয়েলার্স — ৩৫+ বছরের বিশ্বস্ততা ও অভিজ্ঞতায় আপনার পাশে।
+সোনা কেনা বা বেচার আগে সঠিক মূল্য জানুন — আমাদের পেজ ফলো করুন এবং বন্ধুদের সাথে শেয়ার করুন! 🔔
+
+#NFJ #নিউফ্যাশনজুয়েলার্স #স্বর্ণমূল্য #রূপামূল্য #বাজুস #আজকেরসোনারদাম #GoldPriceBD #SilverPriceBD #SonarDam #বাংলাদেশ #ঢাকা #জুয়েলারি #NewFashionJewellers #GoldRate #HallmarkedGold`;
+}
+
+/** Check if Bajus gold or silver prices changed vs last post */
+function pricesChanged(latest, prev) {
+  const g  = latest.gold   || {};
+  const s  = latest.silver || {};
+  const pg = prev.gold     || {};
+  const ps = prev.silver   || {};
+
+  const gKeys = ["bajus_g22","bajus_g21","bajus_g18"];
+  const sKeys = ["bajus_s22","bajus_s21","bajus_s18"];
+
+  for (const k of gKeys) {
+    if (parseFloat(g[k]) !== parseFloat(pg[k])) {
+      console.log(`📊 Gold price changed: ${k} ${pg[k]} → ${g[k]}`);
+      return true;
+    }
+  }
+  for (const k of sKeys) {
+    if (parseFloat(s[k]) !== parseFloat(ps[k])) {
+      console.log(`📊 Silver price changed: ${k} ${ps[k]} → ${s[k]}`);
+      return true;
+    }
+  }
+  return false;
 }
 
 /** Upload image + caption to Facebook Page */
@@ -182,13 +272,12 @@ async function postToFacebook(imagePath, caption) {
     throw new Error("❌ Missing FB_PAGE_ACCESS_TOKEN or FB_PAGE_ID env vars");
   }
 
-  // Use form-data + node-fetch to upload image
   const FormData = require("form-data");
   const fetch    = require("node-fetch");
 
   const form = new FormData();
   form.append("source", fs.createReadStream(imagePath), {
-    filename: "gold-price.png",
+    filename: "nfj-gold-price.png",
     contentType: "image/png",
   });
   form.append("caption", caption);
@@ -208,35 +297,9 @@ async function postToFacebook(imagePath, caption) {
   return body.id;
 }
 
-/** Check if Bajus gold or silver prices changed vs last post */
-function pricesChanged(latest, prev) {
-  const g  = latest.gold   || {};
-  const s  = latest.silver || {};
-  const pg = prev.gold     || {};
-  const ps = prev.silver   || {};
-
-  const keys = ["bajus_g22","bajus_g21","bajus_g18"];
-  const skeys= ["bajus_s22","bajus_s21","bajus_s18"];
-
-  for (const k of keys) {
-    if (parseFloat(g[k]) !== parseFloat(pg[k])) {
-      console.log(`📊 Gold price changed: ${k} ${pg[k]} → ${g[k]}`);
-      return true;
-    }
-  }
-  for (const k of skeys) {
-    if (parseFloat(s[k]) !== parseFloat(ps[k])) {
-      console.log(`📊 Silver price changed: ${k} ${ps[k]} → ${s[k]}`);
-      return true;
-    }
-  }
-  return false;
-}
-
 // ── main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  // 1. Load latest scraped prices
   if (!fs.existsSync(LATEST_JSON)) {
     console.log("⚠️  latest.json not found — skipping FB post");
     process.exit(0);
@@ -248,12 +311,10 @@ async function main() {
     process.exit(0);
   }
 
-  // 2. Load last-posted prices (if exists)
   const prev = fs.existsSync(LAST_POSTED_JSON)
     ? JSON.parse(fs.readFileSync(LAST_POSTED_JSON, "utf-8"))
     : { gold: {}, silver: {} };
 
-  // 3. Compare
   if (!pricesChanged(latest, prev)) {
     console.log("✅ No Bajus price change detected — skipping FB post");
     process.exit(0);
@@ -261,29 +322,22 @@ async function main() {
 
   console.log("🔔 Price change detected! Generating Facebook post...");
 
-  // 4. Render HTML
-  const html = renderTemplate(latest, prev);
-
-  // 5. Screenshot → PNG
+  const html      = renderTemplate(latest, prev);
   const imagePath = await generateImage(html);
+  const caption   = buildCaption(latest, prev);
 
-  // 6. Build caption
-  const caption = buildCaption(latest, prev);
-  console.log("\n📝 Caption preview:\n" + caption.slice(0, 200) + "...\n");
+  console.log("\n📝 Caption preview:\n" + caption.slice(0, 300) + "...\n");
 
-  // 7. Post to Facebook
   await postToFacebook(imagePath, caption);
 
-  // 8. Save new "last posted" snapshot
   const snapshot = {
     posted_at: new Date().toISOString(),
-    gold:   latest.gold   || {},
-    silver: latest.silver || {},
+    gold:      latest.gold   || {},
+    silver:    latest.silver || {},
   };
   fs.writeFileSync(LAST_POSTED_JSON, JSON.stringify(snapshot, null, 2), "utf-8");
   console.log(`💾 Saved snapshot to ${LAST_POSTED_JSON}`);
 
-  // Cleanup image
   if (fs.existsSync(OUTPUT_IMAGE)) fs.unlinkSync(OUTPUT_IMAGE);
 }
 

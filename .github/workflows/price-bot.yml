@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 1: Existing price scraper (UNCHANGED)
+  # JOB 1: Existing price scraper
   # ─────────────────────────────────────────────────────────────────────────────
   update-prices:
     runs-on: ubuntu-latest
@@ -103,9 +103,11 @@ jobs:
             git commit -m "🔄 Update prices — $TIMESTAMP"
           fi
 
-      # 8. Push changes
+      # 8. Push changes (rebase protects against overlapping cron runs)
       - name: Push changes
-        run: git push
+        run: |
+          git pull --rebase
+          git push
 
   # ─────────────────────────────────────────────────────────────────────────────
   # JOB 2: Facebook post (only runs if update-prices succeeded)
@@ -120,7 +122,7 @@ jobs:
       FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
 
     steps:
-      # 1. Checkout repository (auto-detect branch)
+      # 1. Checkout repository (auto-detect default branch)
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -171,6 +173,8 @@ jobs:
             git commit -m "📸 FB post snapshot — $TIMESTAMP"
           fi
 
-      # 8. Push snapshot
+      # 8. Push snapshot (rebase pulls Job 1's commit first so push succeeds)
       - name: Push FB snapshot
-        run: git push
+        run: |
+          git pull --rebase
+          git push
