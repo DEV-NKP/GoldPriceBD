@@ -1,8 +1,7 @@
 name: 🔄 SonarGold Price Bot
-
 on:
   schedule:
-    # Every 4 hours UTC
+    # Every hour UTC
     - cron: "0 * * * *"
   workflow_dispatch:
     inputs:
@@ -10,16 +9,22 @@ on:
         description: "Source to scrape: all / bajus / intl"
         required: false
         default: "all"
+      force_fb_post:
+        description: "Force FB post even if price unchanged (true/false)"
+        required: false
+        default: "false"
 
 # ✅ Required for push access
 permissions:
   contents: write
 
 jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 1: Existing price scraper (UNCHANGED)
+  # ─────────────────────────────────────────────────────────────────────────────
   update-prices:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # Force Node.js 24 to avoid deprecation warnings
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -74,7 +79,6 @@ jobs:
               console.log('(latest.json not found)');
             }
           "
-
           echo ""
           echo "=== Last gold entry ==="
           node -e "
@@ -91,9 +95,7 @@ jobs:
         run: |
           git config user.name  "sonargold-bot"
           git config user.email "sonargold-bot@users.noreply.github.com"
-
           git add data/ logs/
-
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
@@ -103,4 +105,79 @@ jobs:
 
       # 8. Push changes
       - name: Push changes
+        run: git push
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 2: Facebook post (only runs if update-prices succeeded)
+  # ─────────────────────────────────────────────────────────────────────────────
+  post-to-facebook:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: update-prices          # waits for scraper to finish & push new data
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      FB_PAGE_ACCESS_TOKEN: ${{ secrets.FB_PAGE_ACCESS_TOKEN }}
+      FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+
+    steps:
+      # 1. Checkout (fresh pull — includes the latest.json just pushed by Job 1)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main        # always pull from main to get the freshest data
+
+      # 2. Setup Node.js 24
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      # 3. Install Chromium + Bengali font dependencies
+      - name: Install system dependencies (Chromium + Bengali fonts)
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q \
+            libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 \
+            libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
+            libgbm1 libasound2t64 libpango-1.0-0 libpangocairo-1.0-0 \
+            fonts-liberation xdg-utils \
+            fonts-noto fonts-noto-cjk \
+            fonts-beng fonts-beng-extra
+
+      # 4. Install Node deps
+      - name: Install npm dependencies
+        run: npm ci --prefer-offline || npm install
+
+      # 5. Install FB post extra deps (form-data + node-fetch)
+      - name: Install FB post dependencies
+        run: |
+          npm install --save-dev puppeteer form-data node-fetch@2
+
+      # 6. Handle force-post flag (temporarily delete snapshot to force post)
+      - name: Handle force FB post flag
+        if: ${{ github.event.inputs.force_fb_post == 'true' }}
+        run: |
+          echo "⚡ Force post enabled — clearing last posted snapshot"
+          rm -f data/fb_last_posted.json
+
+      # 7. Run Facebook post script
+      - name: Generate image & post to Facebook
+        run: node fb-post.js
+
+      # 8. Commit fb_last_posted.json snapshot back to repo
+      - name: Commit FB snapshot
+        run: |
+          git config user.name  "sonargold-bot"
+          git config user.email "sonargold-bot@users.noreply.github.com"
+          git add data/fb_last_posted.json
+          if git diff --staged --quiet; then
+            echo "No FB snapshot changes to commit"
+          else
+            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+            git commit -m "📸 FB post snapshot — $TIMESTAMP"
+          fi
+
+      # 9. Push snapshot
+      - name: Push FB snapshot
         run: git push

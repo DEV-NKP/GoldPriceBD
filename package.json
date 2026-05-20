@@ -8,16 +8,19 @@
     "scrape:bajus": "node scraper.js --source=bajus",
     "scrape:intl": "node scraper.js --source=intl",
     "test": "node scraper.js --dry-run",
-    "seed": "node seed-history.js --merge"
+    "seed": "node seed-history.js --merge",
+    "fb-post": "node fb-post.js",
+    "fb-post:force": "node fb-post.js --force"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
-    "node-fetch": "^3.3.2",
+    "form-data": "^4.0.0",
+    "node-fetch": "^2.7.0",
     "puppeteer": "^24.40.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.18.1"
   }
 }
