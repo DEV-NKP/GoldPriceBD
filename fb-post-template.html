@@ -8,834 +8,338 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',sans-serif;}
+body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',sans-serif;background:#2a0600;color:#fff;}
 :root{
   --gold-1:#fff4b0;
   --gold-2:#f8d44f;
   --gold-3:#d9a514;
   --gold-4:#9b6400;
-  --gold-5:#5b3200;
-
-  --ruby-1:#5c0008;
-  --ruby-2:#3b0005;
-  --ruby-3:#220003;
-
   --silver-1:#eef7ff;
   --silver-2:#b8d7ea;
   --silver-3:#6ea4c7;
-  --silver-4:#27485d;
 }
-/* ── CANVAS ── */
-.canvas{
-  width:1080px;
-  height:1080px;
-  position:relative;
-  overflow:hidden;
 
+.canvas{
+  width:1080px;height:1080px;position:relative;overflow:hidden;
   background:
     radial-gradient(circle at top left, rgba(240,120,40,0.30), transparent 38%),
     radial-gradient(circle at bottom right, rgba(200,80,20,0.22), transparent 38%),
-    linear-gradient(
-      160deg,
-      #7a1e00 0%,
-      #5c1200 20%,
-      #3e0a00 45%,
-      #2a0600 70%,
-      #4a1000 100%
-    );
+    linear-gradient(160deg,#7a1e00 0%,#5c1200 20%,#3e0a00 45%,#2a0600 70%,#4a1000 100%);
 }
 
-/* ── Ambient glows ── */
-.glow1{
-  position:absolute;
-  top:-120px;
-  left:-120px;
-  width:700px;
-  height:700px;
-  border-radius:50%;
+.tex{position:absolute;inset:0;z-index:2;pointer-events:none;background-image:radial-gradient(circle,rgba(255,210,80,0.08) 1px,transparent 1px);background-size:32px 32px;}
+.wm{position:absolute;inset:0;z-index:3;pointer-events:none;display:flex;align-items:center;justify-content:center;}
+.wm img{width:450px;height:450px;object-fit:contain;opacity:0.06;filter:grayscale(100%) brightness(6);}
 
-  background:radial-gradient(
-    circle,
-    rgba(255,140,40,0.32) 0%,
-    rgba(220,80,20,0.18) 35%,
-    transparent 70%
-  );
+/* ── INNER LAYOUT ── */
+.inner{position:relative;z-index:10;width:100%;height:100%;display:flex;flex-direction:column;padding:20px 35px;}
 
-  z-index:1;
-  pointer-events:none;
-}
-.glow2{position:absolute;bottom:-80px;right:-80px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(200,100,30,0.26) 0%,transparent 65%);z-index:1;pointer-events:none;}
-.glow3{position:absolute;top:28%;left:50%;transform:translateX(-50%);width:820px;height:280px;background:radial-gradient(ellipse,rgba(240,190,60,0.14) 0%,transparent 62%);z-index:1;pointer-events:none;}
-
-/* ── Dot-mesh texture ── */
-.tex{
-  position:absolute;inset:0;z-index:2;pointer-events:none;
-  background-image:radial-gradient(circle,rgba(255,210,80,0.08) 1px,transparent 1px),
-                   radial-gradient(circle,rgba(255,210,80,0.04) 1px,transparent 1px);
-  background-size:32px 32px,16px 16px;
-  background-position:0 0,8px 8px;
+/* ── NEW ORGANIZED HEADER ── */
+.header-full{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 5px 0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255,215,80,0.3);
+  flex-shrink: 0;
 }
 
-/* ── Diagonal light beams ── */
-.beam{
-  position:absolute;z-index:2;pointer-events:none;
-  top:-20%;left:-8%;width:50%;height:140%;
-  background:linear-gradient(108deg,transparent 0%,rgba(255,210,80,0.06) 42%,rgba(255,210,80,0.13) 50%,rgba(255,210,80,0.06) 58%,transparent 100%);
-  transform:skewX(-14deg);
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
 }
-.beam2{
-  position:absolute;z-index:2;pointer-events:none;
-  top:-20%;right:-8%;width:28%;height:140%;
-  background:linear-gradient(108deg,transparent 0%,rgba(255,210,80,0.06) 50%,transparent 100%);
-  transform:skewX(-14deg);
+.header-logo {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  border: 1.5px solid var(--gold-2);
+  background: rgba(255,210,80,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-logo img { width: 45px; height: 45px; object-fit: contain; }
+.brand-info { display: flex; flex-direction: column; }
+.brand-en { font-family: 'Cinzel', serif; font-size: 26px; font-weight: 900; color: var(--gold-2); line-height: 1.1; }
+.brand-bn { font-size: 18px; font-weight: 600; color: rgba(255,220,120,0.8); }
+
+.header-mid {
+  flex: 1;
+  text-align: right;
+  font-size: 18px;
+  color: rgba(255,220,160,0.7);
+  letter-spacing: 0.5px;
 }
 
-/* ── Watermark (centered, large) ── */
-.wm{
-  position:absolute;inset:0;z-index:3;pointer-events:none;
-  display:flex;align-items:center;justify-content:center;
+.header-right {
+  flex: 1;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
-.wm img{
-  width:620px;height:620px;object-fit:contain;
-  opacity:0.09;
-  filter:grayscale(100%) brightness(6) contrast(0.7);
-}
-
-/* ── Gold border frame ── */
-.frame-outer{
-  position:absolute;
-  inset:10px;
-
-  border:2px solid rgba(255,225,110,0.90);
-
-  box-shadow:
-    0 0 0 1px rgba(255,245,200,0.28) inset,
-    0 0 32px rgba(255,200,60,0.22);
-
-  pointer-events:none;
-  z-index:20;
-}
-.frame-inner{position:absolute;inset:16px;border:0.5px solid rgba(255,210,80,0.28);pointer-events:none;z-index:20;}
-
-/* ── Corner L-bars ── */
-.co{position:absolute;width:22px;height:22px;z-index:24;pointer-events:none;}
-.co::before,.co::after{content:'';position:absolute;background:linear-gradient(90deg,#ffe566,#f0c030);}
-.co::before{width:1.5px;height:22px;top:0;left:0;}
-.co::after{width:22px;height:1.5px;top:0;left:0;}
-.co-tl{top:10px;left:10px;}
-.co-tr{top:10px;right:10px;transform:scaleX(-1);}
-.co-bl{bottom:10px;left:10px;transform:scaleY(-1);}
-.co-br{bottom:10px;right:10px;transform:scale(-1);}
-
-/* ── Corner diamond jewels ── */
-.cj{position:absolute;z-index:25;width:22px;height:22px;display:flex;align-items:center;justify-content:center;pointer-events:none;}
-.cj i{font-size:10px;color:#ffe555;opacity:1;filter:drop-shadow(0 0 6px rgba(255,220,60,0.90));}
-.cj-tl{top:5px;left:5px;}.cj-tr{top:5px;right:5px;}
-.cj-bl{bottom:5px;left:5px;}.cj-br{bottom:5px;right:5px;}
-
-/* ════════════════════════════
-   INNER LAYOUT
-   ════════════════════════════ */
-.inner{
-  position:relative;z-index:10;width:100%;height:100%;
-  display:flex;flex-direction:column;
-  padding:28px 38px 20px;
-}
-
-/* ── HEADER (centered) ── */
-.header{
-  display:flex;flex-direction:column;align-items:center;
-  text-align:center;margin-bottom:14px;flex-shrink:0;gap:6px;
-}
-.logo-ring{
-  width:80px;height:80px;border-radius:50%;
-  border:1.5px solid rgba(255,220,80,0.90);
-  background:linear-gradient(135deg,rgba(255,210,80,0.28),rgba(255,190,40,0.10));
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 28px rgba(255,210,60,0.45),0 0 50px rgba(255,180,20,0.15);
-  margin-bottom:4px;
-}
-.logo-ring img{width:58px;height:58px;object-fit:contain;}
-.brand-en{
-  font-family:'Cinzel',serif;font-size:24px;font-weight:900;
-  color:#ffe866;letter-spacing:2px;line-height:1;
-  text-shadow:0 0 28px rgba(255,220,60,0.65),0 2px 8px rgba(0,0,0,0.5);
-}
-.brand-bn{font-size:14px;font-weight:700;color:rgba(255,220,120,0.72);margin-top:3px;}
-.brand-sub{
-  font-size:10.5px;color:rgba(255,220,160,0.52);
-  letter-spacing:2.5px;text-transform:uppercase;margin-top:2px;
-  display:flex;align-items:center;gap:6px;justify-content:center;
-}
-.brand-sub span{font-size:4px;color:rgba(255,210,80,0.45);}
-
-.date-row{
-  display:flex;align-items:center;gap:8px;margin-top:4px;
-  background:linear-gradient(90deg,transparent,rgba(255,200,60,0.14),transparent);
-  padding:4px 24px;border-radius:20px;
-}
-.date-val{font-size:17px;font-weight:800;color:rgba(255,245,210,0.96);}
-.date-day{font-size:13px;font-weight:600;color:rgba(255,215,90,0.72);}
-.date-sep{font-size:8px;color:rgba(255,210,80,0.42);}
+.date-val { font-size: 20px; font-weight: 800; color: #fff; }
+.date-day { font-size: 18px; font-weight: 500; color: var(--gold-2); }
 
 /* ── TITLE BAND ── */
 .title-band{
-  position:relative;text-align:center;padding:13px 48px;margin-bottom:15px;flex-shrink:0;
-  background:linear-gradient(90deg,transparent,rgba(255,200,60,0.12) 18%,rgba(255,200,60,0.30) 50%,rgba(255,200,60,0.12) 82%,transparent);
-  border-top:1px solid rgba(255,215,80,0.72);
-  border-bottom:1px solid rgba(255,215,80,0.72);
+  text-align:center;
+  padding:12px 0;
+  margin-bottom:12px;
+  flex-shrink:0;
+  background: linear-gradient(90deg, transparent, rgba(255,210,80,0.15), transparent);
 }
-.title-band-orn{
-  position:absolute;top:50%;transform:translateY(-50%);
-  display:flex;align-items:center;gap:6px;
-}
-.title-band-orn.left{left:14px;}
-.title-band-orn.right{right:14px;}
-.title-band-orn i{font-size:12px;color:rgba(255,215,80,0.72);}
 .title-main{
-  font-size:32px;font-weight:900;
-  background:linear-gradient(180deg,#fffbe0 0%,#ffe84a 40%,#d4a000 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  line-height:1;
-  filter:drop-shadow(0 2px 8px rgba(200,140,0,0.4));
+  font-size:35px;
+  font-weight:900;
+  background:linear-gradient(180deg,#fffbe0, #ffe84a, #d4a000);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  line-height:1.1;
 }
-.title-sub{font-size:10.5px;color:rgba(255,220,120,0.62);letter-spacing:3px;text-transform:uppercase;margin-top:5px;}
+.title-sub{font-size:18px; color:rgba(255,220,120,0.8); margin-top:5px;}
 
 /* ── SECTION HEADERS ── */
-.sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-shrink:0;}
-.sec-hdr-line{flex:1;height:1px;}
+.sec-hdr{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-shrink:0;}
 .sec-hdr-pill{
-  font-size:11.5px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
-  padding:6px 20px;border-radius:20px;white-space:nowrap;
-  display:flex;align-items:center;gap:7px;
+  font-size:18px; font-weight:800; padding:8px 25px; border-radius:25px;
+  display:flex; align-items:center; gap:10px;
 }
-.gold-hdr .sec-hdr-line{background:linear-gradient(90deg,transparent,rgba(255,210,60,0.85));}
-.gold-hdr .sec-hdr-line:last-child{background:linear-gradient(90deg,rgba(255,210,60,0.85),transparent);}
-.gold-hdr .sec-hdr-pill{
-  background:
-    linear-gradient(
-      180deg,
-      #fff2a0 0%,
-      #f5cc28 35%,
-      #d09200 70%,
-      #a06800 100%
-    );
-
-  color:#2b1000;
-
-  border:1px solid rgba(255,235,160,0.65);
-
-  box-shadow:
-    0 0 18px rgba(255,220,70,0.55),
-    0 4px 18px rgba(0,0,0,0.40);
-}
-.silver-hdr .sec-hdr-line{background:linear-gradient(90deg,transparent,rgba(165,205,228,0.72));}
-.silver-hdr .sec-hdr-line:last-child{background:linear-gradient(90deg,rgba(165,205,228,0.72),transparent);}
-.silver-hdr .sec-hdr-pill{
-  background:linear-gradient(135deg,#2e4a5e,#5a98b5,#82c0d5,#4e8f88,#2e4a5e);
-  color:#01090f;
-  box-shadow:0 2px 14px rgba(125,185,215,0.42);
-}
+.gold-hdr .sec-hdr-pill{ background: linear-gradient(180deg, #f5cc28, #a06800); color:#2b1000; }
+.silver-hdr .sec-hdr-pill{ background: linear-gradient(135deg, #5a98b5, #2e4a5e); color:#fff; }
+.sec-hdr-line{flex:1; height:1px; background: rgba(255,215,80,0.3);}
 
 /* ── SECTIONS ── */
-.gold-section{flex:1.14;display:flex;flex-direction:column;gap:10px;}
-.silver-section{flex:1;display:flex;flex-direction:column;gap:10px;}
+.gold-section{flex:1; display:flex; flex-direction:column; gap:10px; margin-bottom:15px;}
+.silver-section{flex:1; display:flex; flex-direction:column; gap:10px;}
 
-/* ── DIVIDER ── */
-.section-divider{display:flex;align-items:center;gap:8px;flex-shrink:0;padding:3px 0;}
-.section-divider-line{flex:1;height:0.5px;background:linear-gradient(90deg,transparent,rgba(255,210,60,0.36),transparent);}
+/* ── PREMIUM CARDS ── */
+.cards{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
+.card{
+  border-radius:16px; overflow:hidden; position:relative;
+  display:flex; flex-direction:column;
+  background: linear-gradient(145deg, #4a1500, #1e0800);
+  border: 1px solid rgba(255,215,80,0.4);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.card.silver { background: linear-gradient(145deg, #1a3a4d, #051526); border-color: rgba(160,225,255,0.3); }
 
-/* ── CARD GRID ── */
-.cards{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:11px;min-height:0;}
+/* Color Bar at top */
+.card-bar { height: 6px; width: 100%; background: linear-gradient(90deg, #ffe866, #d4a000); }
+.card.silver .card-bar { background: linear-gradient(90deg, #eef7ff, #6ea4c7); }
 
-/* ════════════════════
-   GOLD CARDS
-   ════════════════════ */
-.gc{
-  border-radius:14px;
-  overflow:hidden;
-  position:relative;
-  display:flex;
-  flex-direction:column;
+.card-top { padding: 15px 12px 5px; position: relative; }
+.card-icon { position: absolute; top: 12px; right: 12px; font-size: 45px; color: rgba(255,215,80,0.2); }
+.card.silver .card-icon { color: rgba(160,225,255,0.2); }
 
-  border:1px solid rgba(255,220,90,0.72);
+.c-karat { font-size: 35px; font-weight: 900; line-height: 1; color: #fff; }
+.c-karat-sn { font-size: 30px; font-weight: 900; line-height: 1.2; color: #fff; }
+.c-word { font-size: 18px; font-weight: 700; color: rgba(255,228,148,0.7); margin-top: 2px; }
+.card.silver .c-word { color: rgba(178,228,252,0.6); }
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,230,140,0.10) 0%,
-      transparent 20%
-    ),
-    linear-gradient(
-      145deg,
-      #6b2000 0%,
-      #4a1500 35%,
-      #2e0c00 70%,
-      #1e0800 100%
-    );
-
-  box-shadow:
-    0 0 0 1px rgba(255,230,140,0.14) inset,
-    0 10px 30px rgba(0,0,0,0.60),
-    0 0 22px rgba(255,200,60,0.22);
+.card-bot { 
+  margin-top: auto; padding: 10px 12px 15px; 
+  background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05);
 }
-.gc-glow{
-  position:absolute;top:-22px;left:-22px;width:108px;height:108px;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,185,30,0.35) 0%,transparent 70%);
-  z-index:1;pointer-events:none;
-}
-.gc-slash{
-  position:absolute;
-  z-index:2;
-  top:-25%;
-  right:-10%;
-  width:46%;
-  height:150%;
-
-  background:linear-gradient(
-    168deg,
-    transparent 0%,
-    #fff5b0 10%,
-    #ffd040 28%,
-    #e8a808 45%,
-    #c07800 62%,
-    #ffe888 75%,
-    transparent 100%
-  );
-
-  transform:skewX(-18deg);
-  overflow:hidden;
-  pointer-events:none;
-}
-.gc-slash-icon{
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%) skewX(18deg) rotate(-15deg);
-  font-size:44px;color:rgba(80,38,0,0.36);pointer-events:none;
-}
-.gc-shimmer{
-  position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:linear-gradient(115deg,transparent 20%,rgba(255,248,170,0.05) 38%,rgba(255,248,170,0.12) 47%,rgba(255,248,170,0.05) 58%,transparent 75%);
-}
-.gc-top{position:relative;z-index:3;padding:18px 14px 6px;}
-.gc-karat{
-  font-size:64px;font-weight:900;line-height:0.82;
-  background:linear-gradient(
-  180deg,
-  #fffce0 0%,
-  #ffe990 22%,
-  #fad040 48%,
-  #e0a005 72%,
-  #9a6000 100%
-);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.gc-karat-sn{
-  font-size:30px;font-weight:900;line-height:1.1;
-  background:linear-gradient(180deg,#fffade 0%,#f0cc48 60%,#c08818 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.gc-word{font-size:10.5px;font-weight:700;color:rgba(255,228,148,0.62);letter-spacing:2.5px;text-transform:uppercase;margin-top:3px;}
-.gc-bot{
-  position:relative;z-index:3;margin-top:auto;
-  padding:11px 14px 15px;
-  background:linear-gradient(180deg,rgba(30,10,0,0.42),rgba(10,4,0,0.72));
-  border-top:1px solid rgba(255,200,60,0.22);
-}
-.gc-price{
-  font-size:28px;font-weight:900;line-height:1;
-  background:linear-gradient(
-  180deg,
-  #fffce0 0%,
-  #ffe990 22%,
-  #fad040 48%,
-  #e0a005 72%,
-  #9a6000 100%
-);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.gc-unit{font-size:9.5px;color:rgba(255,228,145,0.45);font-weight:500;margin-top:2px;}
-.gc-chg{
-  display:inline-flex;align-items:center;gap:3px;
-  margin-top:7px;padding:3px 9px;border-radius:10px;
-  font-size:11px;font-weight:800;line-height:1.3;
-}
-.up{background:rgba(48,209,88,0.18);border:0.5px solid rgba(48,209,88,0.55);color:#36d460;}
-.down{background:rgba(255,59,48,0.18);border:0.5px solid rgba(255,59,48,0.52);color:#ff4d42;}
-.neutral{background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.45);}
-
-/* ════════════════════
-   SILVER CARDS
-   ════════════════════ */
-.sc{
-  border-radius:13px;
-  overflow:hidden;
-  position:relative;
-  display:flex;
-  flex-direction:column;
-
-  border:1px solid rgba(160,225,255,0.58);
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(220,245,255,0.07) 0%,
-      transparent 20%
-    ),
-    linear-gradient(
-      145deg,
-      #0d3350 0%,
-      #082236 35%,
-      #051526 70%,
-      #030d1a 100%
-    );
-
-  box-shadow:
-    0 0 0 1px rgba(200,235,255,0.08) inset,
-    0 10px 28px rgba(0,0,0,0.65),
-    0 0 18px rgba(130,195,235,0.20);
-}
-.sc-glow{
-  position:absolute;top:-20px;left:-20px;width:95px;height:95px;border-radius:50%;
-  background:radial-gradient(circle,rgba(138,210,245,0.28) 0%,transparent 70%);
-  z-index:1;pointer-events:none;
-}
-.sc-slash{
-  position:absolute;
-  z-index:2;
-  top:-25%;
-  right:-10%;
-  width:46%;
-  height:150%;
-
-  background:linear-gradient(
-    168deg,
-    transparent 0%,
-    #f0faff 10%,
-    #c8e8f8 30%,
-    #88c8e8 50%,
-    #4898c0 70%,
-    #cceeff 82%,
-    transparent 100%
-  );
-
-  transform:skewX(-18deg);
-  overflow:hidden;
-  pointer-events:none;
-}
-.sc-slash-icon{
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%) skewX(18deg) rotate(-15deg);
-  font-size:36px;color:rgba(10,44,75,0.42);pointer-events:none;
-}
-.sc-shimmer{
-  position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:linear-gradient(115deg,transparent 20%,rgba(210,245,255,0.04) 38%,rgba(210,245,255,0.09) 47%,rgba(210,245,255,0.04) 58%,transparent 75%);
-}
-.sc-top{position:relative;z-index:3;padding:14px 12px 5px;}
-.sc-karat{
-  font-size:56px;font-weight:900;line-height:0.82;
-  background:linear-gradient(180deg,#f5fbff 0%,#c8e8f8 50%,#78b8d8 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.sc-karat-sn{
-  font-size:26px;font-weight:900;line-height:1.1;
-  background:linear-gradient(180deg,#eef8ff 0%,#b8dff5 60%,#68a8cc 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.sc-word{font-size:10px;font-weight:700;color:rgba(178,228,252,0.52);letter-spacing:2.5px;text-transform:uppercase;margin-top:2px;}
-.sc-bot{
-  position:relative;z-index:3;margin-top:auto;
-  padding:10px 12px 14px;
-  background:linear-gradient(180deg,rgba(0,10,22,0.38),rgba(0,5,14,0.70));
-  border-top:1px solid rgba(148,208,242,0.18);
-}
-.sc-price{
-  font-size:25px;font-weight:900;line-height:1;
-  background:linear-gradient(180deg,#f5faff 0%,#c8e8f8 50%,#90c8e8 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.sc-unit{font-size:9.5px;color:rgba(178,232,252,0.42);font-weight:500;margin-top:2px;}
-.sc-chg{
-  display:inline-flex;align-items:center;gap:3px;
-  margin-top:6px;padding:3px 9px;border-radius:10px;
-  font-size:11px;font-weight:800;line-height:1.3;
+.c-price { font-size: 28px; font-weight: 900; color: var(--gold-2); line-height: 1; }
+.card.silver .c-price { color: var(--silver-2); }
+.c-unit { font-size: 18px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+.c-chg { 
+  display: inline-flex; align-items: center; gap: 4px; 
+  margin-top: 8px; padding: 4px 10px; border-radius: 10px; 
+  font-size: 18px; font-weight: 800; 
 }
 
-/* ════════════════════
-   VORI STRIPS
-   ════════════════════ */
-.vori-row{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;flex-shrink:0;}
-.vc{border-radius:9px;padding:9px 12px;display:flex;flex-direction:column;gap:2px;}
-.vc-gold{
-  background:linear-gradient(135deg,rgba(255,185,40,0.22),rgba(220,145,10,0.09));
-  border:0.5px solid rgba(255,210,60,0.45);
+/* VORI STRIPS */
+.vori-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.vc { 
+  border-radius:12px; padding:12px; 
+  background: rgba(255,210,80,0.05); border: 1px solid rgba(255,210,80,0.2);
 }
-.vc-silver{
-  background:linear-gradient(135deg,rgba(148,204,235,0.16),rgba(110,178,215,0.07));
-  border:0.5px solid rgba(158,215,248,0.32);
-}
-.vc-lbl{font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
-.vc-gold .vc-lbl{color:rgba(255,215,70,0.72);}
-.vc-silver .vc-lbl{color:rgba(158,218,252,0.65);}
-.vc-val{font-size:17px;font-weight:900;}
-.vc-gold .vc-val{
-  background:linear-gradient(90deg,#ffe860,#e8b820);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.vc-silver .vc-val{
-  background:linear-gradient(90deg,#d8f2ff,#98d2f0);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.vc-unit{font-size:9px;color:rgba(255,255,255,0.26);}
+.card.silver + .vori-row .vc { background: rgba(160,225,255,0.05); border-color: rgba(160,225,255,0.2); }
+.vc-lbl { font-size: 18px; font-weight: 700; color: var(--gold-2); margin-bottom: 2px; }
+.vc-val { font-size: 22px; font-weight: 900; color: #fff; }
+.vc-unit { font-size: 18px; color: rgba(255,255,255,0.4); }
 
-/* ════════════════════
-   FOOTER
-   ════════════════════ */
+/* ── FOOTER ── */
 .footer{
-  display:flex;justify-content:space-between;align-items:center;
-  padding-top:11px;border-top:0.5px solid rgba(255,210,70,0.26);
-  flex-shrink:0;
+  display:flex; justify-content:space-between; align-items:center; 
+  padding-top:15px; margin-top:auto; border-top:1px solid rgba(255,215,80,0.2);
 }
-.ft-left{display:flex;flex-direction:column;gap:3px;}
-.ft-src{font-size:11px;color:rgba(255,228,175,0.52);}
-.ft-src i{font-size:9.5px;color:rgba(255,210,70,0.65);margin-right:4px;}
-.ft-src b{color:rgba(255,215,80,0.82);font-weight:700;}
-.ft-contact{font-size:10.5px;color:rgba(255,210,160,0.38);}
-.ft-contact i{font-size:9px;color:rgba(255,210,70,0.48);margin-right:4px;}
-.copy-main{font-size:10px;color:rgba(255,215,80,0.52);display:flex;align-items:center;gap:4px;}
-.copy-main i{font-size:9px;color:rgba(255,210,70,0.44);}
+.ft-src { font-size: 18px; color: rgba(255,220,150,0.7); }
+.ft-src a { color: var(--gold-2); text-decoration: none; font-weight: 700; }
+.ft-contact { font-size: 18px; color: rgba(255,220,150,0.7); }
+.copy-main { font-size: 18px; color: rgba(255,215,80,0.5); }
+
+.up{ color:#36d460; }
+.down{ color:#ff4d42; }
+.neutral{ color:rgba(255,255,255,0.6); }
 </style>
 </head>
 <body>
 <div class="canvas">
-
-  <!-- Background layers -->
-  <div class="glow1"></div>
-  <div class="glow2"></div>
-  <div class="glow3"></div>
   <div class="tex"></div>
-  <div class="beam"></div>
-  <div class="beam2"></div>
-
-  <!-- Watermark (centered NFJ logo) -->
-  <div class="wm">
-    <img src="https://nfjs.odoo.com/web/image/1364-2e93ef11/trans_white.webp" alt="NFJ Watermark"/>
-  </div>
-
-  <!-- Border frame -->
-  <div class="frame-outer"></div>
-  <div class="frame-inner"></div>
-
-  <!-- Corner L-bars -->
-  <div class="co co-tl"></div>
-  <div class="co co-tr"></div>
-  <div class="co co-bl"></div>
-  <div class="co co-br"></div>
-
-  <!-- Corner diamonds -->
-  <div class="cj cj-tl"><i class="fa-solid fa-diamond"></i></div>
-  <div class="cj cj-tr"><i class="fa-solid fa-diamond"></i></div>
-  <div class="cj cj-bl"><i class="fa-solid fa-diamond"></i></div>
-  <div class="cj cj-br"><i class="fa-solid fa-diamond"></i></div>
-
+  <div class="wm"><img src="https://nfjs.odoo.com/web/image/1364-2e93ef11/trans_white.webp" alt="Watermark"/></div>
+  
   <div class="inner">
+    <!-- ORGANIZED HEADER -->
+    <header class="header-full">
+      <div class="header-left">
+        <div class="header-logo">
+          <img src="https://nfjs.odoo.com/web/image/1364-2e93ef11/trans_white.webp" alt="Logo"/>
+        </div>
+        <div class="brand-info">
+          <div class="brand-en">New Fashion Jewellers</div>
+          <div class="brand-bn">নিউ ফ্যাশন জুয়েলার্স</div>
+        </div>
+      </div>
+      
+      <div class="header-right">
+        <div class="header-mid">
+        Since 1990 ● Dhaka, BD
+      </div>
+        <div class="date-val">{{DATE}}</div>
+        <div class="date-day">{{DAY}}</div>
+      </div>
+    </header>
 
-    <!-- ══ HEADER (centered) ══ -->
-    <div class="header">
-      <div class="logo-ring">
-        <img src="https://nfjs.odoo.com/web/image/1364-2e93ef11/trans_white.webp" alt="NFJ Logo"/>
-      </div>
-      <div class="brand-en">New Fashion Jewellers</div>
-      <div class="brand-bn">নিউ ফ্যাশন জুয়েলার্স</div>
-      <div class="brand-sub">
-        <i class="fa-solid fa-gem" style="font-size:8px;color:rgba(255,210,60,0.55);"></i>
-        NFJ
-        <span>●</span>
-        Since 1990
-        <span>●</span>
-        Dhaka, BD
-      </div>
-      <div class="date-row">
-        <i class="fa-regular fa-calendar" style="font-size:13px;color:rgba(255,210,70,0.72);"></i>
-        <span class="date-val">{{DATE}}</span>
-        <i class="fa-solid fa-circle" style="font-size:4px;color:rgba(255,210,70,0.40);"></i>
-        <span class="date-day">{{DAY}}</span>
-      </div>
-    </div>
-
-    <!-- ══ TITLE BAND ══ -->
+    <!-- TITLE -->
     <div class="title-band">
-      <div class="title-band-orn left">
-        <i class="fa-solid fa-star-of-david"></i>
-        <i class="fa-solid fa-gem"></i>
-      </div>
-      <div class="title-band-orn right">
-        <i class="fa-solid fa-gem"></i>
-        <i class="fa-solid fa-star-of-david"></i>
-      </div>
       <div class="title-main">আজকের স্বর্ণ ও রূপার দর</div>
       <div class="title-sub">বাজুস অনুমোদিত মূল্য তালিকা &nbsp;·&nbsp; প্রতি গ্রাম</div>
     </div>
 
-    <!-- ══════════ GOLD SECTION ══════════ -->
-    <div class="gold-section">
+    <!-- GOLD SECTION -->
+    <section class="gold-section">
       <div class="sec-hdr gold-hdr">
-        <div class="sec-hdr-line"></div>
-        <div class="sec-hdr-pill">
-          <i class="fa-solid fa-coins"></i>
-          স্বর্ণের মূল্য — প্রতি গ্রাম
-          <i class="fa-solid fa-coins"></i>
-        </div>
+        <div class="sec-hdr-pill"><i class="fa-solid fa-coins"></i> স্বর্ণের মূল্য — প্রতি গ্রাম</div>
         <div class="sec-hdr-line"></div>
       </div>
-
       <div class="cards">
-
-        <!-- 22K Gold -->
-        <div class="gc">
-          <div class="gc-glow"></div>
-          <div class="gc-slash"><i class="fa-solid fa-coins gc-slash-icon"></i></div>
-          <div class="gc-shimmer"></div>
-          <div class="gc-top">
-            <div class="gc-karat">২২</div>
-            <div class="gc-word">ক্যারেট</div>
+        <div class="card">
+          <div class="card-bar"></div>
+          <div class="card-top">
+            <i class="fa-solid fa-coins card-icon"></i>
+            <div class="c-karat">২২</div><div class="c-word">ক্যারেট</div>
           </div>
-          <div class="gc-bot">
-            <div class="gc-price">{{G22_NEW}}/-</div>
-            <div class="gc-unit">প্রতি গ্রাম</div>
-            <div class="gc-chg {{G22_DIR}}">
-              <i class="fa-solid {{G22_ICON}}"></i> {{G22_DIFF}} ৳
-            </div>
+          <div class="card-bot">
+            <div class="c-price">{{G22_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
+            <div class="c-chg {{G22_DIR}}"><i class="fa-solid {{G22_ICON}}"></i> {{G22_DIFF}} ৳</div>
           </div>
         </div>
-
-        <!-- 21K Gold -->
-        <div class="gc">
-          <div class="gc-glow"></div>
-          <div class="gc-slash"><i class="fa-solid fa-ring gc-slash-icon"></i></div>
-          <div class="gc-shimmer"></div>
-          <div class="gc-top">
-            <div class="gc-karat">২১</div>
-            <div class="gc-word">ক্যারেট</div>
+        <div class="card">
+          <div class="card-bar"></div>
+          <div class="card-top">
+            <i class="fa-solid fa-ring card-icon"></i>
+            <div class="c-karat">২১</div><div class="c-word">ক্যারেট</div>
           </div>
-          <div class="gc-bot">
-            <div class="gc-price">{{G21_NEW}}/-</div>
-            <div class="gc-unit">প্রতি গ্রাম</div>
-            <div class="gc-chg {{G21_DIR}}">
-              <i class="fa-solid {{G21_ICON}}"></i> {{G21_DIFF}} ৳
-            </div>
+          <div class="card-bot">
+            <div class="c-price">{{G21_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
+            <div class="c-chg {{G21_DIR}}"><i class="fa-solid {{G21_ICON}}"></i> {{G21_DIFF}} ৳</div>
           </div>
         </div>
-
-        <!-- 18K Gold -->
-        <div class="gc">
-          <div class="gc-glow"></div>
-          <div class="gc-slash"><i class="fa-solid fa-medal gc-slash-icon"></i></div>
-          <div class="gc-shimmer"></div>
-          <div class="gc-top">
-            <div class="gc-karat">১৮</div>
-            <div class="gc-word">ক্যারেট</div>
+        <div class="card">
+          <div class="card-bar"></div>
+          <div class="card-top">
+            <i class="fa-solid fa-medal card-icon"></i>
+            <div class="c-karat">১৮</div><div class="c-word">ক্যারেট</div>
           </div>
-          <div class="gc-bot">
-            <div class="gc-price">{{G18_NEW}}/-</div>
-            <div class="gc-unit">প্রতি গ্রাম</div>
-            <div class="gc-chg {{G18_DIR}}">
-              <i class="fa-solid {{G18_ICON}}"></i> {{G18_DIFF}} ৳
-            </div>
+          <div class="card-bot">
+            <div class="c-price">{{G18_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
+            <div class="c-chg {{G18_DIR}}"><i class="fa-solid {{G18_ICON}}"></i> {{G18_DIFF}} ৳</div>
           </div>
         </div>
-
-        <!-- Sanaton Gold -->
-        <div class="gc" style="border-color:rgba(220,168,40,0.45);background:linear-gradient(150deg,#542000,#3a1600,#240e00,#180a00);">
-          <div class="gc-glow" style="background:radial-gradient(circle,rgba(220,160,30,0.32) 0%,transparent 70%);"></div>
-          <div class="gc-slash" style="background:linear-gradient(168deg,transparent 0%,rgba(240,195,50,0.82) 30%,rgba(215,162,22,0.92) 52%,rgba(188,135,12,0.72) 70%,transparent 100%);">
-            <i class="fa-solid fa-gem gc-slash-icon"></i>
+        <div class="card">
+          <div class="card-bar"></div>
+          <div class="card-top">
+            <i class="fa-solid fa-gem card-icon"></i>
+            <div class="c-karat-sn">সনাতন</div><div class="c-word">(Traditional)</div>
           </div>
-          <div class="gc-shimmer"></div>
-          <div class="gc-top">
-            <div class="gc-karat-sn">সনাতন</div>
-            <div class="gc-word">পদ্ধতি</div>
-          </div>
-          <div class="gc-bot">
-            <div class="gc-price">{{GTR_NEW}}/-</div>
-            <div class="gc-unit">প্রতি গ্রাম</div>
-            <div class="gc-chg {{GTR_DIR}}">
-              <i class="fa-solid {{GTR_ICON}}"></i> {{GTR_DIFF}} ৳
-            </div>
+          <div class="card-bot">
+            <div class="c-price">{{GTR_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
+            <div class="c-chg {{GTR_DIR}}"><i class="fa-solid {{GTR_ICON}}"></i> {{GTR_DIFF}} ৳</div>
           </div>
         </div>
-
       </div>
-
-      <!-- Gold vori strip -->
       <div class="vori-row">
-        <div class="vc vc-gold">
-          <div class="vc-lbl">২২ ক্যারেট · ভরি</div>
-          <div class="vc-val">{{G22_VORI}}</div>
-          <div class="vc-unit">৳ প্রতি ভরি (১১.৬৬৪ গ্রাম)</div>
-        </div>
-        <div class="vc vc-gold">
-          <div class="vc-lbl">২১ ক্যারেট · ভরি</div>
-          <div class="vc-val">{{G21_VORI}}</div>
-          <div class="vc-unit">৳ প্রতি ভরি</div>
-        </div>
-        <div class="vc vc-gold">
-          <div class="vc-lbl">১৮ ক্যারেট · ভরি</div>
-          <div class="vc-val">{{G18_VORI}}</div>
-          <div class="vc-unit">৳ প্রতি ভরি</div>
-        </div>
-        <div class="vc vc-gold" style="opacity:0.82;">
-          <div class="vc-lbl">সনাতন · ভরি</div>
-          <div class="vc-val">{{GTR_VORI}}</div>
-          <div class="vc-unit">৳ প্রতি ভরি</div>
-        </div>
+        <div class="vc"><div class="vc-lbl">২২ ক্যারেট</div><div class="vc-val">{{G22_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
+        <div class="vc"><div class="vc-lbl">২১ ক্যারেট</div><div class="vc-val">{{G21_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
+        <div class="vc"><div class="vc-lbl">১৮ ক্যারেট</div><div class="vc-val">{{G18_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
+        <div class="vc"><div class="vc-lbl">সনাতন</div><div class="vc-val">{{GTR_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
       </div>
-    </div>
+    </section>
 
-    <!-- ── Decorative divider ── -->
-    <div class="section-divider" style="margin:5px 0;">
-      <div class="section-divider-line"></div>
-      <i class="fa-solid fa-diamond" style="font-size:7px;color:rgba(255,210,70,0.50);"></i>
-      <i class="fa-solid fa-diamond" style="font-size:5px;color:rgba(255,210,70,0.28);"></i>
-      <i class="fa-solid fa-diamond" style="font-size:7px;color:rgba(255,210,70,0.50);"></i>
-      <div class="section-divider-line"></div>
-    </div>
-
-    <!-- ══════════ SILVER SECTION ══════════ -->
-    <div class="silver-section">
+    <!-- SILVER SECTION -->
+    <section class="silver-section">
       <div class="sec-hdr silver-hdr">
-        <div class="sec-hdr-line"></div>
-        <div class="sec-hdr-pill">
-          <i class="fa-solid fa-circle-dot"></i>
-          রূপার মূল্য — প্রতি গ্রাম
-          <i class="fa-solid fa-circle-dot"></i>
-        </div>
+        <div class="sec-hdr-pill"><i class="fa-solid fa-circle-dot"></i> রূপার মূল্য — প্রতি গ্রাম</div>
         <div class="sec-hdr-line"></div>
       </div>
-
       <div class="cards">
-
-        <!-- 22K Silver -->
-        <div class="sc">
-          <div class="sc-glow"></div>
-          <div class="sc-slash"><i class="fa-solid fa-coins sc-slash-icon"></i></div>
-          <div class="sc-shimmer"></div>
-          <div class="sc-top">
-            <div class="sc-karat">২২</div>
-            <div class="sc-word">ক্যারেট</div>
+        <div class="card silver">
+          <div class="card-bar"></div>
+          <div class="card-top">
+            <i class="fa-solid fa-coins card-icon"></i>
+            <div class="c-karat">২২</div><div class="c-word">ক্যারেট</div>
           </div>
-          <div class="sc-bot">
-            <div class="sc-price">{{S22_NEW}}/-</div>
-            <div class="sc-unit">প্রতি গ্রাম</div>
-            <div class="sc-chg {{S22_DIR}}">
-              <i class="fa-solid {{S22_ICON}}"></i> {{S22_DIFF}} ৳
-            </div>
+          <div class="card-bot">
+            <div class="c-price">{{S22_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
+            <div class="c-chg {{S22_DIR}}"><i class="fa-solid {{S22_ICON}}"></i> {{S22_DIFF}} ৳</div>
           </div>
         </div>
-
-        <!-- 21K Silver -->
-        <div class="sc">
-          <div class="sc-glow"></div>
-          <div class="sc-slash"><i class="fa-solid fa-ring sc-slash-icon"></i></div>
-          <div class="sc-shimmer"></div>
-          <div class="sc-top">
-            <div class="sc-karat">২১</div>
-            <div class="sc-word">ক্যারেট</div>
+        <div class="card silver">
+          <div class="card-bar"></div>
+          <div class="card-top">
+            <i class="fa-solid fa-ring card-icon"></i>
+            <div class="c-karat">২১</div><div class="c-word">ক্যারেট</div>
           </div>
-          <div class="sc-bot">
-            <div class="sc-price">{{S21_NEW}}/-</div>
-            <div class="sc-unit">প্রতি গ্রাম</div>
-            <div class="sc-chg {{S21_DIR}}">
-              <i class="fa-solid {{S21_ICON}}"></i> {{S21_DIFF}} ৳
-            </div>
+          <div class="card-bot">
+            <div class="c-price">{{S21_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
+            <div class="c-chg {{S21_DIR}}"><i class="fa-solid {{S21_ICON}}"></i> {{S21_DIFF}} ৳</div>
           </div>
         </div>
-
-        <!-- 18K Silver -->
-        <div class="sc">
-          <div class="sc-glow"></div>
-          <div class="sc-slash"><i class="fa-solid fa-medal sc-slash-icon"></i></div>
-          <div class="sc-shimmer"></div>
-          <div class="sc-top">
-            <div class="sc-karat">১৮</div>
-            <div class="sc-word">ক্যারেট</div>
+        <div class="card silver">
+          <div class="card-bar"></div>
+          <div class="card-top">
+            <i class="fa-solid fa-medal card-icon"></i>
+            <div class="c-karat">১৮</div><div class="c-word">ক্যারেট</div>
           </div>
-          <div class="sc-bot">
-            <div class="sc-price">{{S18_NEW}}/-</div>
-            <div class="sc-unit">প্রতি গ্রাম</div>
-            <div class="sc-chg {{S18_DIR}}">
-              <i class="fa-solid {{S18_ICON}}"></i> {{S18_DIFF}} ৳
-            </div>
+          <div class="card-bot">
+            <div class="c-price">{{S18_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
+            <div class="c-chg {{S18_DIR}}"><i class="fa-solid {{S18_ICON}}"></i> {{S18_DIFF}} ৳</div>
           </div>
         </div>
-
-        <!-- Sanaton Silver -->
-        <div class="sc" style="border-color:rgba(128,195,232,0.32);background:linear-gradient(150deg,#0c2840,#081a2c,#050f1e,#030a16);">
-          <div class="sc-glow" style="background:radial-gradient(circle,rgba(128,200,240,0.24) 0%,transparent 70%);"></div>
-          <div class="sc-slash" style="background:linear-gradient(168deg,transparent 0%,rgba(168,218,245,0.78) 30%,rgba(138,195,228,0.90) 52%,rgba(108,170,205,0.68) 70%,transparent 100%);">
-            <i class="fa-solid fa-gem sc-slash-icon" style="color:rgba(10,38,68,0.42);"></i>
+        <div class="card silver">
+          <div class="card-bar"></div>
+          <div class="card-top">
+            <i class="fa-solid fa-gem card-icon"></i>
+            <div class="c-karat-sn">সনাতন</div><div class="c-word">(Traditional)</div>
           </div>
-          <div class="sc-shimmer"></div>
-          <div class="sc-top">
-            <div class="sc-karat-sn">সনাতন</div>
-            <div class="sc-word">পদ্ধতি</div>
-          </div>
-          <div class="sc-bot">
-            <div class="sc-price">{{STR_NEW}}/-</div>
-            <div class="sc-unit">প্রতি গ্রাম</div>
-            <div class="sc-chg {{STR_DIR}}">
-              <i class="fa-solid {{STR_ICON}}"></i> {{STR_DIFF}} ৳
-            </div>
+          <div class="card-bot">
+            <div class="c-price">{{STR_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
+            <div class="c-chg {{STR_DIR}}"><i class="fa-solid {{STR_ICON}}"></i> {{STR_DIFF}} ৳</div>
           </div>
         </div>
-
       </div>
-
-      <!-- Silver vori strip -->
       <div class="vori-row">
-        <div class="vc vc-silver">
-          <div class="vc-lbl">২২ ক্যারেট · ভরি</div>
-          <div class="vc-val">{{S22_VORI}}</div>
-          <div class="vc-unit">৳ প্রতি ভরি (১১.৬৬৪ গ্রাম)</div>
-        </div>
-        <div class="vc vc-silver">
-          <div class="vc-lbl">২১ ক্যারেট · ভরি</div>
-          <div class="vc-val">{{S21_VORI}}</div>
-          <div class="vc-unit">৳ প্রতি ভরি</div>
-        </div>
-        <div class="vc vc-silver">
-          <div class="vc-lbl">১৮ ক্যারেট · ভরি</div>
-          <div class="vc-val">{{S18_VORI}}</div>
-          <div class="vc-unit">৳ প্রতি ভরি</div>
-        </div>
-        <div class="vc vc-silver" style="opacity:0.82;">
-          <div class="vc-lbl">সনাতন · ভরি</div>
-          <div class="vc-val">{{STR_VORI}}</div>
-          <div class="vc-unit">৳ প্রতি ভরি</div>
-        </div>
+        <div class="vc"><div class="vc-lbl">২২ ক্যারেট</div><div class="vc-val">{{S22_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
+        <div class="vc"><div class="vc-lbl">২১ ক্যারেট</div><div class="vc-val">{{S21_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
+        <div class="vc"><div class="vc-lbl">১৮ ক্যারেট</div><div class="vc-val">{{S18_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
+        <div class="vc"><div class="vc-lbl">সনাতন</div><div class="vc-val">{{STR_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
       </div>
-    </div>
+    </section>
 
-    <!-- ── FOOTER ── -->
-    <div class="footer">
-      <div class="ft-left">
-        <div class="ft-src">
-          <i class="fa-solid fa-circle-info"></i>
-          তথ্যসূত্র: <b>বাংলাদেশ জুয়েলার্স সমিতি (বাজুস)</b>
-        </div>
-        <div class="ft-contact">
-          <i class="fa-solid fa-phone"></i> +880 1911-367421
-        </div>
-      </div>
-      <div class="copyright">
-        <div class="copy-main">
-          <i class="fa-regular fa-copyright"></i>
-          New Fashion Jewellers
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /inner -->
-</div><!-- /canvas -->
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="ft-src">তথ্যসূত্র: <a href="https://goldpricebd.pages.dev/">GoldPriceBD</a></div>
+      <div class="ft-contact">+880 1911-367421</div>
+      <div class="copy-main">© New Fashion Jewellers</div>
+    </footer>
+  </div>
+</div>
 </body>
 </html>
