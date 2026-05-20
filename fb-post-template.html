@@ -13,56 +13,99 @@ body {
   height: 1080px;
   overflow: hidden;
   font-family: 'Noto Sans Bengali', sans-serif;
-  background: #1a1008;
+  background: #1a0005;
 }
 
-/* ── CANVAS ─────────────────────────────── */
+/* ── CANVAS ── */
 .canvas {
   width: 1080px;
   height: 1080px;
   position: relative;
   overflow: hidden;
-  /* Rich warm dark brown — like the reference */
+  /* Deep crimson — matching BAJUS reference */
   background:
-    radial-gradient(ellipse 90% 60% at 50% 0%,   #3d2400 0%, transparent 65%),
-    radial-gradient(ellipse 80% 50% at 50% 100%,  #2a1800 0%, transparent 60%),
-    #150e04;
+    radial-gradient(ellipse 110% 60% at 50% -10%, #6b0010 0%, transparent 60%),
+    radial-gradient(ellipse 80% 50% at 80% 110%,  #4a0008 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 10% 90%,   #3d0006 0%, transparent 50%),
+    #1e0008;
 }
 
-/* Subtle vignette */
+/* ── NFJ LOGO WATERMARK (full bg) ── */
+.watermark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+.watermark img {
+  width: 680px;
+  height: 680px;
+  object-fit: contain;
+  opacity: 0.04;
+  filter: grayscale(100%) brightness(3);
+}
+
+/* Subtle diagonal lines texture */
+.texture {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 8px,
+    rgba(255,255,255,0.012) 8px,
+    rgba(255,255,255,0.012) 9px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Vignette */
 .vignette {
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse 85% 85% at 50% 50%, transparent 50%, rgba(0,0,0,0.55) 100%);
+  background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 40%, rgba(0,0,0,0.6) 100%);
   pointer-events: none;
+  z-index: 3;
 }
 
 /* Gold border frame */
 .frame {
   position: absolute;
-  inset: 16px;
-  border: 2px solid rgba(210,165,30,0.7);
+  inset: 14px;
+  border: 2px solid rgba(212,175,55,0.65);
   pointer-events: none;
+  z-index: 20;
 }
 .frame-inner {
   position: absolute;
-  inset: 22px;
-  border: 1px solid rgba(210,165,30,0.25);
+  inset: 20px;
+  border: 1px solid rgba(212,175,55,0.2);
   pointer-events: none;
+  z-index: 20;
 }
 
-/* Corner diamonds */
-.cdot {
+/* Corner ornaments */
+.corner {
   position: absolute;
-  width: 10px; height: 10px;
-  background: #d2a51e;
-  transform: rotate(45deg);
+  width: 24px; height: 24px;
+  z-index: 21;
 }
-.cdot-tl { top: 12px;  left: 12px; }
-.cdot-tr { top: 12px;  right: 12px; }
-.cdot-bl { bottom: 12px; left: 12px; }
-.cdot-br { bottom: 12px; right: 12px; }
+.corner::before, .corner::after {
+  content: '';
+  position: absolute;
+  background: #d4af37;
+}
+.corner-tl { top: 10px; left: 10px; }
+.corner-tr { top: 10px; right: 10px; transform: rotate(90deg); }
+.corner-bl { bottom: 10px; left: 10px; transform: rotate(-90deg); }
+.corner-br { bottom: 10px; right: 10px; transform: rotate(180deg); }
+.corner::before { width: 2px; height: 24px; top: 0; left: 0; }
+.corner::after  { width: 24px; height: 2px; top: 0; left: 0; }
 
-/* ── INNER LAYOUT ────────────────────────── */
+/* ── INNER LAYOUT ── */
 .inner {
   position: relative;
   z-index: 10;
@@ -70,248 +113,401 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 40px 56px 36px;
+  padding: 38px 52px 34px;
+  gap: 0;
 }
 
-/* ── HEADER ──────────────────────────────── */
+/* ── HEADER ── */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
-
 .logo-side {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
 }
-
 .logo-wrap {
-  width: 80px; height: 80px;
-  border-radius: 16px;
-  border: 1.5px solid rgba(210,165,30,0.6);
-  background: rgba(210,165,30,0.1);
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  border: 2px solid rgba(212,175,55,0.7);
+  background: rgba(212,175,55,0.08);
   display: flex; align-items: center; justify-content: center;
   overflow: hidden;
   flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(212,175,55,0.2);
 }
-.logo-wrap img { width: 66px; height: 66px; object-fit: contain; }
-
-.brand-block { display: flex; flex-direction: column; gap: 4px; }
-.brand-name {
+.logo-wrap img { width: 58px; height: 58px; object-fit: contain; }
+.brand-block { display: flex; flex-direction: column; gap: 3px; }
+.brand-en {
   font-family: 'Cinzel', serif;
-  font-size: 22px; font-weight: 900;
+  font-size: 20px; font-weight: 900;
   color: #e8c84a;
   letter-spacing: 2px;
   text-transform: uppercase;
   line-height: 1;
+  text-shadow: 0 0 20px rgba(232,200,74,0.4);
 }
-.brand-tagline {
-  font-size: 13px; color: rgba(232,200,74,0.55);
-  letter-spacing: 3px; text-transform: uppercase;
+.brand-bn {
+  font-size: 13px; font-weight: 600;
+  color: rgba(232,200,74,0.6);
+  letter-spacing: 1px;
+}
+.brand-sub {
+  font-size: 11px; color: rgba(255,255,255,0.35);
+  letter-spacing: 2px; text-transform: uppercase;
 }
 
 .date-block { text-align: right; }
 .date-lbl {
-  font-size: 12px; color: rgba(255,255,255,0.38);
-  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px;
+  font-size: 11px; color: rgba(255,255,255,0.35);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px;
 }
 .date-val {
-  font-size: 22px; font-weight: 800;
-  color: rgba(255,255,255,0.88);
+  font-size: 18px; font-weight: 800;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.2;
 }
 
-/* ── MAIN TITLE BANNER ───────────────────── */
+/* ── TITLE BANNER ── */
 .title-banner {
-  background: linear-gradient(90deg, rgba(210,165,30,0.08), rgba(210,165,30,0.22), rgba(210,165,30,0.08));
-  border: 1.5px solid rgba(210,165,30,0.5);
-  border-radius: 14px;
-  padding: 16px 32px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(212,175,55,0.15) 20%,
+    rgba(212,175,55,0.28) 50%,
+    rgba(212,175,55,0.15) 80%,
+    transparent 100%
+  );
+  border-top: 1px solid rgba(212,175,55,0.5);
+  border-bottom: 1px solid rgba(212,175,55,0.5);
+  padding: 14px 32px;
   text-align: center;
   margin-bottom: 26px;
+  position: relative;
 }
+.title-banner::before, .title-banner::after {
+  content: '✦';
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  color: rgba(212,175,55,0.5);
+  font-size: 14px;
+}
+.title-banner::before { left: 30px; }
+.title-banner::after  { right: 30px; }
 .title-main {
-  font-size: 34px; font-weight: 900;
-  color: #f0d060;
+  font-size: 30px; font-weight: 900;
+  color: #f5e070;
   letter-spacing: 1px;
   line-height: 1;
+  text-shadow: 0 2px 12px rgba(212,175,55,0.3);
 }
 .title-sub {
-  font-size: 14px; color: rgba(240,208,96,0.55);
-  letter-spacing: 3px; text-transform: uppercase; margin-top: 6px;
+  font-size: 12px; color: rgba(240,210,70,0.5);
+  letter-spacing: 3px; text-transform: uppercase; margin-top: 5px;
 }
 
-/* ── PRICE SECTION ───────────────────────── */
-.price-section {
-  border-radius: 20px;
-  padding: 22px 24px;
-  margin-bottom: 18px;
-  position: relative;
-  overflow: hidden;
-}
-
-.gold-section {
-  background: linear-gradient(135deg, rgba(210,165,30,0.18) 0%, rgba(180,130,10,0.08) 100%);
-  border: 1.5px solid rgba(210,165,30,0.45);
-}
-.silver-section {
-  background: linear-gradient(135deg, rgba(180,200,215,0.12) 0%, rgba(150,170,185,0.05) 100%);
-  border: 1.5px solid rgba(180,200,215,0.35);
-}
-
-/* Section label pill */
-.sec-label {
-  position: absolute;
-  top: -1px; left: 50%; transform: translateX(-50%);
-  display: flex; align-items: center; gap: 10px;
-  padding: 6px 28px;
-  border-radius: 0 0 20px 20px;
-  font-size: 13px; font-weight: 700;
-  letter-spacing: 2px; text-transform: uppercase;
-  white-space: nowrap;
-}
-.gold-section .sec-label {
-  background: linear-gradient(90deg, #b8860b, #d4a820, #b8860b);
-  color: #1a0e00;
-}
-.silver-section .sec-label {
-  background: linear-gradient(90deg, #6e8a98, #90aab8, #6e8a98);
-  color: #0a1015;
-}
-
-/* Content row inside section: [price grid] [image] [price grid] */
-.sec-body {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  margin-top: 28px;
-}
-
-/* Price grid — 2 columns, 2 rows = up to 4 karat cells */
-.price-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  flex: 1;
-}
-
-/* Single karat price cell */
-.karat-cell {
-  background: rgba(0,0,0,0.28);
-  border-radius: 14px;
-  padding: 14px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  border: 1px solid rgba(255,255,255,0.07);
-}
-
-.karat-label {
-  font-size: 12px; font-weight: 600;
-  letter-spacing: 1px; text-transform: uppercase;
-}
-.gold-section .karat-label { color: #d4a820; }
-.silver-section .karat-label { color: #90aab8; }
-
-.karat-num {
-  font-size: 36px; font-weight: 900;
-  color: #ffffff;
-  line-height: 1;
-}
-
-.karat-gram {
-  font-size: 17px; font-weight: 700;
-  color: rgba(255,255,255,0.9);
-  line-height: 1;
-}
-.karat-gram-unit { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; }
-
-.karat-vori {
-  font-size: 13px; color: rgba(255,255,255,0.4);
-  margin-top: 2px;
-}
-.karat-vori span { color: rgba(255,255,255,0.65); font-weight: 600; }
-
-/* Change badge */
-.karat-change {
-  display: inline-flex; align-items: center; gap: 4px;
-  margin-top: 5px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 13px; font-weight: 700;
-  width: fit-content;
-}
-.karat-change.up   { background: rgba(52,199,89,0.18);  border:1px solid rgba(52,199,89,0.45);  color: #4cd964; }
-.karat-change.down { background: rgba(255,69,58,0.18);  border:1px solid rgba(255,69,58,0.45);  color: #ff6b6b; }
-.karat-change.neutral { background: rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.4); }
-
-/* Metal image in center */
-.metal-img-wrap {
-  width: 220px;
-  flex-shrink: 0;
+/* ── SECTION LABEL ── */
+.sec-label-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 10px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
-.metal-img-wrap img {
-  width: 200px;
-  object-fit: contain;
-  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6));
+.sec-label-line {
+  flex: 1;
+  height: 1px;
+}
+.gold-lbl .sec-label-line { background: linear-gradient(90deg, transparent, rgba(212,175,55,0.5)); }
+.gold-lbl .sec-label-line:last-child { background: linear-gradient(90deg, rgba(212,175,55,0.5), transparent); }
+.silver-lbl .sec-label-line { background: linear-gradient(90deg, transparent, rgba(180,200,215,0.4)); }
+.silver-lbl .sec-label-line:last-child { background: linear-gradient(90deg, rgba(180,200,215,0.4), transparent); }
+.sec-label-text {
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  padding: 5px 20px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.gold-lbl .sec-label-text {
+  background: linear-gradient(135deg, #b8860b, #d4a820, #c8960d);
+  color: #1a0800;
+  box-shadow: 0 0 16px rgba(212,175,55,0.3);
+}
+.silver-lbl .sec-label-text {
+  background: linear-gradient(135deg, #5a7585, #8aaabb, #6b8898);
+  color: #0a1015;
+  box-shadow: 0 0 16px rgba(140,180,200,0.2);
 }
 
-/* ── FOOTER ──────────────────────────────── */
+/* ── 4-CARD GRID ── */
+.cards-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+/* ── GOLD CARD ── */
+.gold-card {
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  min-height: 168px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(212,175,55,0.5);
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  background:
+    linear-gradient(145deg, #8B1a00 0%, #6B0d00 40%, #4a0800 100%);
+}
+
+/* Diagonal gold slash — like BAJUS reference */
+.gold-card::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -15%;
+  width: 65%;
+  height: 140%;
+  background: linear-gradient(135deg, rgba(212,175,55,0.9) 0%, rgba(180,140,20,0.7) 60%, transparent 100%);
+  transform: skewX(-12deg);
+  z-index: 1;
+}
+
+.gold-card .card-karat-area {
+  position: relative;
+  z-index: 2;
+  padding: 14px 16px 8px;
+}
+.gold-card .karat-tag {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+.gold-card .karat-num {
+  font-size: 46px; font-weight: 900;
+  color: #fff;
+  line-height: 0.9;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.gold-card .karat-word {
+  font-size: 11px; font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+/* Sanaton label instead of number */
+.gold-card .karat-sonatoni {
+  font-size: 24px; font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.gold-card .card-price-area {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  padding: 10px 16px 14px;
+  background: rgba(0,0,0,0.35);
+  border-top: 1px solid rgba(212,175,55,0.2);
+}
+.gold-card .price-val {
+  font-size: 26px; font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+.gold-card .price-unit {
+  font-size: 12px; color: rgba(255,255,255,0.6);
+  font-weight: 500;
+  margin-top: 3px;
+}
+.gold-card .price-change {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 5px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px; font-weight: 700;
+}
+.gold-card .price-change.up   { background: rgba(52,199,89,0.2);  border:1px solid rgba(52,199,89,0.4);  color: #4cd964; }
+.gold-card .price-change.down { background: rgba(255,69,58,0.2);  border:1px solid rgba(255,69,58,0.4);  color: #ff6b6b; }
+.gold-card .price-change.neutral { background: rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); }
+
+/* ── SILVER CARD ── */
+.silver-card {
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(160,185,200,0.4);
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  background:
+    linear-gradient(145deg, #2a3d48 0%, #1e2d38 40%, #152028 100%);
+}
+
+.silver-card::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -15%;
+  width: 65%;
+  height: 140%;
+  background: linear-gradient(135deg, rgba(160,185,200,0.75) 0%, rgba(120,150,170,0.5) 60%, transparent 100%);
+  transform: skewX(-12deg);
+  z-index: 1;
+}
+
+.silver-card .card-karat-area {
+  position: relative;
+  z-index: 2;
+  padding: 14px 16px 8px;
+}
+.silver-card .karat-num {
+  font-size: 46px; font-weight: 900;
+  color: #fff;
+  line-height: 0.9;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.silver-card .karat-word {
+  font-size: 11px; font-weight: 700;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.silver-card .karat-sonatoni {
+  font-size: 24px; font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.silver-card .card-price-area {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  padding: 10px 16px 14px;
+  background: rgba(0,0,0,0.35);
+  border-top: 1px solid rgba(160,185,200,0.18);
+}
+.silver-card .price-val {
+  font-size: 26px; font-weight: 900;
+  color: #e0eef5;
+  line-height: 1;
+}
+.silver-card .price-unit {
+  font-size: 12px; color: rgba(200,225,240,0.55);
+  font-weight: 500;
+  margin-top: 3px;
+}
+.silver-card .price-change {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 5px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px; font-weight: 700;
+}
+.silver-card .price-change.up   { background: rgba(52,199,89,0.2);  border:1px solid rgba(52,199,89,0.4);  color: #4cd964; }
+.silver-card .price-change.down { background: rgba(255,69,58,0.2);  border:1px solid rgba(255,69,58,0.4);  color: #ff6b6b; }
+.silver-card .price-change.neutral { background: rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.35); }
+
+/* ── VORI STRIP (compact) ── */
+.vori-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 6px;
+}
+.vori-chip {
+  border-radius: 10px;
+  padding: 9px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vori-chip.gold-chip {
+  background: rgba(212,175,55,0.1);
+  border: 1px solid rgba(212,175,55,0.3);
+}
+.vori-chip.silver-chip {
+  background: rgba(140,180,200,0.08);
+  border: 1px solid rgba(140,180,200,0.2);
+}
+.vori-lbl {
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;
+}
+.gold-chip .vori-lbl { color: rgba(212,175,55,0.6); }
+.silver-chip .vori-lbl { color: rgba(140,180,200,0.55); }
+.vori-price {
+  font-size: 16px; font-weight: 800;
+}
+.gold-chip .vori-price { color: #f5e070; }
+.silver-chip .vori-price { color: #b0d0e0; }
+.vori-unit { font-size: 10px; color: rgba(255,255,255,0.35); }
+
+/* ── FOOTER ── */
 .footer {
   margin-top: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 14px;
-  border-top: 1px solid rgba(210,165,30,0.22);
+  padding-top: 12px;
+  border-top: 1px solid rgba(212,175,55,0.2);
 }
 .footer-left { display: flex; flex-direction: column; gap: 3px; }
-.footer-source {
-  font-size: 13px; color: rgba(255,255,255,0.3);
-}
-.footer-source b { color: rgba(210,165,30,0.7); font-weight: 700; }
+.footer-source { font-size: 12px; color: rgba(255,255,255,0.32); }
+.footer-source b { color: rgba(212,175,55,0.65); font-weight: 700; }
 .footer-web {
   font-family: 'Cinzel', serif;
-  font-size: 12px; color: rgba(210,165,30,0.5);
+  font-size: 11px; color: rgba(212,175,55,0.4);
   letter-spacing: 0.5px;
 }
 .footer-right { display: flex; align-items: center; gap: 10px; }
-
-.chip {
+.badge {
   display: flex; align-items: center; gap: 6px;
-  border-radius: 8px; padding: 7px 16px;
-  font-size: 12px; font-weight: 700; letter-spacing: 1px;
+  border-radius: 8px; padding: 6px 14px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
 }
-.chip-trust {
+.badge-trust {
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.38);
 }
-.chip-bajus {
-  background: rgba(210,165,30,0.12);
-  border: 1px solid rgba(210,165,30,0.4);
-  color: #d2a51e;
+.badge-bajus {
+  background: rgba(212,175,55,0.12);
+  border: 1px solid rgba(212,175,55,0.4);
+  color: #d4af37;
   font-family: 'Cinzel', serif;
 }
 </style>
 </head>
 <body>
 <div class="canvas">
+  <!-- Watermark -->
+  <div class="watermark">
+    <img src="https://nfjs.odoo.com/web/image/1364-2e93ef11/trans_white.webp" alt=""/>
+  </div>
+
+  <div class="texture"></div>
   <div class="vignette"></div>
   <div class="frame"></div>
   <div class="frame-inner"></div>
-  <div class="cdot cdot-tl"></div>
-  <div class="cdot cdot-tr"></div>
-  <div class="cdot cdot-bl"></div>
-  <div class="cdot cdot-br"></div>
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
 
   <div class="inner">
-
     <!-- HEADER -->
     <div class="header">
       <div class="logo-side">
@@ -319,8 +515,9 @@ body {
           <img src="https://nfjs.odoo.com/web/image/1364-2e93ef11/trans_white.webp" alt="NFJ"/>
         </div>
         <div class="brand-block">
-          <div class="brand-name">New Fashion Jewellers</div>
-          <div class="brand-tagline">NFJ · Since 1990 · Dhaka, Bangladesh</div>
+          <div class="brand-en">New Fashion Jewellers</div>
+          <div class="brand-bn">নিউ ফ্যাশন জুয়েলার্স</div>
+          <div class="brand-sub">NFJ · Since 1990 · Dhaka, BD</div>
         </div>
       </div>
       <div class="date-block">
@@ -329,165 +526,183 @@ body {
       </div>
     </div>
 
-    <!-- TITLE BANNER -->
+    <!-- TITLE -->
     <div class="title-banner">
       <div class="title-main">আজকের স্বর্ণ ও রূপার দর</div>
-      <div class="title-sub">বাজুস অনুমোদিত মূল্য তালিকা</div>
+      <div class="title-sub">বাজুস অনুমোদিত মূল্য তালিকা · প্রতি গ্রাম</div>
     </div>
 
     <!-- ══ GOLD SECTION ══ -->
-    <div class="price-section gold-section">
-      <div class="sec-label">
-        <span>✦</span>
-        <span>স্বর্ণের মূল্য — প্রতি গ্রাম</span>
-        <span>✦</span>
-      </div>
+    <div class="sec-label-row gold-lbl">
+      <div class="sec-label-line"></div>
+      <div class="sec-label-text">✦ স্বর্ণের মূল্য ✦</div>
+      <div class="sec-label-line"></div>
+    </div>
 
-      <div class="sec-body">
-
-        <!-- Left 2 karats -->
-        <div class="price-grid">
-          <!-- 22K -->
-          <div class="karat-cell">
-            <div class="karat-label">ক্যারেট</div>
+    <div class="cards-row">
+      <!-- 22K Gold -->
+      <div class="gold-card">
+        <div class="card-karat-area">
+          <div class="karat-tag">
             <div class="karat-num">২২</div>
-            <div class="karat-gram">{{G22_NEW}} <span class="karat-gram-unit">৳/গ্রাম</span></div>
-            <div class="karat-vori">ভরি: <span>{{G22_VORI}} ৳</span></div>
-            <div class="karat-change {{G22_DIR}}">{{G22_ARROW}} {{G22_DIFF}} ৳</div>
-          </div>
-          <!-- 21K -->
-          <div class="karat-cell">
-            <div class="karat-label">ক্যারেট</div>
-            <div class="karat-num">২১</div>
-            <div class="karat-gram">{{G21_NEW}} <span class="karat-gram-unit">৳/গ্রাম</span></div>
-            <div class="karat-vori">ভরি: <span>{{G21_VORI}} ৳</span></div>
-            <div class="karat-change {{G21_DIR}}">{{G21_ARROW}} {{G21_DIFF}} ৳</div>
-          </div>
-          <!-- 18K -->
-          <div class="karat-cell">
-            <div class="karat-label">ক্যারেট</div>
-            <div class="karat-num">১৮</div>
-            <div class="karat-gram">{{G18_NEW}} <span class="karat-gram-unit">৳/গ্রাম</span></div>
-            <div class="karat-vori">ভরি: <span>{{G18_VORI}} ৳</span></div>
-            <div class="karat-change {{G18_DIR}}">{{G18_ARROW}} {{G18_DIFF}} ৳</div>
-          </div>
-          <!-- Sanaton (traditional) — static label, same value as 18K prev standard -->
-          <div class="karat-cell" style="background:rgba(210,165,30,0.08); border-color:rgba(210,165,30,0.2);">
-            <div class="karat-label" style="color:rgba(210,165,30,0.6)">সনাতন</div>
-            <div class="karat-num" style="font-size:28px; color:rgba(255,255,255,0.7)">পদ্ধতি</div>
-            <div class="karat-gram" style="color:rgba(255,255,255,0.5); font-size:14px">বাজুস নির্ধারিত</div>
+            <div class="karat-word">ক্যারেট</div>
           </div>
         </div>
-
-        <!-- Center gold bar image -->
-        <div class="metal-img-wrap">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Gold_block.jpg/320px-Gold_block.jpg"
-            alt="Gold Bar"
-          />
+        <div class="card-price-area">
+          <div class="price-val">{{G22_NEW}}/-</div>
+          <div class="price-unit">প্রতি গ্রাম</div>
+          <div class="price-change {{G22_DIR}}">{{G22_ARROW}} {{G22_DIFF}} ৳</div>
         </div>
-
-        <!-- Right: repeat 22K & 21K large for visual balance (same values) -->
-        <!-- Actually show gram & vori in a clean summary panel -->
-        <div style="flex:0.7; display:flex; flex-direction:column; gap:12px;">
-          <div style="background:rgba(0,0,0,0.3); border-radius:14px; padding:18px 20px; border:1px solid rgba(210,165,30,0.2);">
-            <div style="font-size:11px; color:rgba(210,165,30,0.55); letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">প্রতি ভরি (১১.৬৬৪ গ্রাম)</div>
-            <div style="display:flex; flex-direction:column; gap:10px;">
-              <div style="display:flex; justify-content:space-between; align-items:baseline;">
-                <span style="font-size:14px; color:rgba(255,255,255,0.5); font-weight:600;">২২ ক্যারেট</span>
-                <span style="font-size:20px; font-weight:900; color:#f0d060;">{{G22_VORI}} ৳</span>
-              </div>
-              <div style="height:1px; background:rgba(210,165,30,0.12);"></div>
-              <div style="display:flex; justify-content:space-between; align-items:baseline;">
-                <span style="font-size:14px; color:rgba(255,255,255,0.5); font-weight:600;">২১ ক্যারেট</span>
-                <span style="font-size:20px; font-weight:900; color:#f0d060;">{{G21_VORI}} ৳</span>
-              </div>
-              <div style="height:1px; background:rgba(210,165,30,0.12);"></div>
-              <div style="display:flex; justify-content:space-between; align-items:baseline;">
-                <span style="font-size:14px; color:rgba(255,255,255,0.5); font-weight:600;">১৮ ক্যারেট</span>
-                <span style="font-size:20px; font-weight:900; color:#f0d060;">{{G18_VORI}} ৳</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
-    </div><!-- /gold-section -->
+      <!-- 21K Gold -->
+      <div class="gold-card">
+        <div class="card-karat-area">
+          <div class="karat-tag">
+            <div class="karat-num">২১</div>
+            <div class="karat-word">ক্যারেট</div>
+          </div>
+        </div>
+        <div class="card-price-area">
+          <div class="price-val">{{G21_NEW}}/-</div>
+          <div class="price-unit">প্রতি গ্রাম</div>
+          <div class="price-change {{G21_DIR}}">{{G21_ARROW}} {{G21_DIFF}} ৳</div>
+        </div>
+      </div>
+      <!-- 18K Gold -->
+      <div class="gold-card">
+        <div class="card-karat-area">
+          <div class="karat-tag">
+            <div class="karat-num">১৮</div>
+            <div class="karat-word">ক্যারেট</div>
+          </div>
+        </div>
+        <div class="card-price-area">
+          <div class="price-val">{{G18_NEW}}/-</div>
+          <div class="price-unit">প্রতি গ্রাম</div>
+          <div class="price-change {{G18_DIR}}">{{G18_ARROW}} {{G18_DIFF}} ৳</div>
+        </div>
+      </div>
+      <!-- Sanaton Gold -->
+      <div class="gold-card" style="border-color:rgba(212,175,55,0.35);">
+        <div class="card-karat-area">
+          <div class="karat-tag">
+            <div class="karat-sonatoni">সনাতন</div>
+            <div class="karat-word">পদ্ধতি</div>
+          </div>
+        </div>
+        <div class="card-price-area">
+          <div class="price-val">{{GTR_NEW}}/-</div>
+          <div class="price-unit">প্রতি গ্রাম</div>
+          <div class="price-change {{GTR_DIR}}">{{GTR_ARROW}} {{GTR_DIFF}} ৳</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gold Vori Strip -->
+    <div class="vori-strip" style="margin-bottom:22px;">
+      <div class="vori-chip gold-chip">
+        <div class="vori-lbl">২২ ক্যারেট · ভরি</div>
+        <div class="vori-price">{{G22_VORI}}</div>
+        <div class="vori-unit">৳ প্রতি ভরি (১১.৬৬৪ গ্রাম)</div>
+      </div>
+      <div class="vori-chip gold-chip">
+        <div class="vori-lbl">২১ ক্যারেট · ভরি</div>
+        <div class="vori-price">{{G21_VORI}}</div>
+        <div class="vori-unit">৳ প্রতি ভরি</div>
+      </div>
+      <div class="vori-chip gold-chip">
+        <div class="vori-lbl">১৮ ক্যারেট · ভরি</div>
+        <div class="vori-price">{{G18_VORI}}</div>
+        <div class="vori-unit">৳ প্রতি ভরি</div>
+      </div>
+      <div class="vori-chip gold-chip" style="opacity:0.75;">
+        <div class="vori-lbl">সনাতন · ভরি</div>
+        <div class="vori-price">{{GTR_VORI}}</div>
+        <div class="vori-unit">৳ প্রতি ভরি</div>
+      </div>
+    </div>
 
     <!-- ══ SILVER SECTION ══ -->
-    <div class="price-section silver-section">
-      <div class="sec-label">
-        <span>✦</span>
-        <span>রূপার মূল্য — প্রতি গ্রাম</span>
-        <span>✦</span>
+    <div class="sec-label-row silver-lbl">
+      <div class="sec-label-line"></div>
+      <div class="sec-label-text">✦ রূপার মূল্য ✦</div>
+      <div class="sec-label-line"></div>
+    </div>
+
+    <div class="cards-row">
+      <!-- 22K Silver -->
+      <div class="silver-card">
+        <div class="card-karat-area">
+          <div class="karat-num">২২</div>
+          <div class="karat-word">ক্যারেট</div>
+        </div>
+        <div class="card-price-area">
+          <div class="price-val">{{S22_NEW}}/-</div>
+          <div class="price-unit">প্রতি গ্রাম</div>
+          <div class="price-change {{S22_DIR}}">{{S22_ARROW}} {{S22_DIFF}} ৳</div>
+        </div>
       </div>
-
-      <div class="sec-body">
-
-        <!-- Left price grid -->
-        <div class="price-grid">
-          <div class="karat-cell">
-            <div class="karat-label">ক্যারেট</div>
-            <div class="karat-num">২২</div>
-            <div class="karat-gram">{{S22_NEW}} <span class="karat-gram-unit">৳/গ্রাম</span></div>
-            <div class="karat-vori">ভরি: <span>{{S22_VORI}} ৳</span></div>
-            <div class="karat-change {{S22_DIR}}">{{S22_ARROW}} {{S22_DIFF}} ৳</div>
-          </div>
-          <div class="karat-cell">
-            <div class="karat-label">ক্যারেট</div>
-            <div class="karat-num">২১</div>
-            <div class="karat-gram">{{S21_NEW}} <span class="karat-gram-unit">৳/গ্রাম</span></div>
-            <div class="karat-vori">ভরি: <span>{{S21_VORI}} ৳</span></div>
-            <div class="karat-change {{S21_DIR}}">{{S21_ARROW}} {{S21_DIFF}} ৳</div>
-          </div>
-          <div class="karat-cell">
-            <div class="karat-label">ক্যারেট</div>
-            <div class="karat-num">১৮</div>
-            <div class="karat-gram">{{S18_NEW}} <span class="karat-gram-unit">৳/গ্রাম</span></div>
-            <div class="karat-vori">ভরি: <span>{{S18_VORI}} ৳</span></div>
-            <div class="karat-change {{S18_DIR}}">{{S18_ARROW}} {{S18_DIFF}} ৳</div>
-          </div>
-          <div class="karat-cell" style="background:rgba(150,180,200,0.06); border-color:rgba(150,180,200,0.15);">
-            <div class="karat-label" style="color:rgba(150,180,200,0.5)">সনাতন</div>
-            <div class="karat-num" style="font-size:28px; color:rgba(255,255,255,0.7)">পদ্ধতি</div>
-            <div class="karat-gram" style="color:rgba(255,255,255,0.5); font-size:14px">বাজুস নির্ধারিত</div>
-          </div>
+      <!-- 21K Silver -->
+      <div class="silver-card">
+        <div class="card-karat-area">
+          <div class="karat-num">২১</div>
+          <div class="karat-word">ক্যারেট</div>
         </div>
-
-        <!-- Center silver bar image -->
-        <div class="metal-img-wrap">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Silver_bullion_bars.jpg/320px-Silver_bullion_bars.jpg"
-            alt="Silver Bars"
-            style="filter: drop-shadow(0 8px 24px rgba(0,0,0,0.7)) brightness(0.9) saturate(0.8);"
-          />
+        <div class="card-price-area">
+          <div class="price-val">{{S21_NEW}}/-</div>
+          <div class="price-unit">প্রতি গ্রাম</div>
+          <div class="price-change {{S21_DIR}}">{{S21_ARROW}} {{S21_DIFF}} ৳</div>
         </div>
-
-        <!-- Right vori summary -->
-        <div style="flex:0.7; display:flex; flex-direction:column; gap:12px;">
-          <div style="background:rgba(0,0,0,0.3); border-radius:14px; padding:18px 20px; border:1px solid rgba(150,180,200,0.15);">
-            <div style="font-size:11px; color:rgba(150,180,200,0.5); letter-spacing:2px; text-transform:uppercase; margin-bottom:10px;">প্রতি ভরি (১১.৬৬৪ গ্রাম)</div>
-            <div style="display:flex; flex-direction:column; gap:10px;">
-              <div style="display:flex; justify-content:space-between; align-items:baseline;">
-                <span style="font-size:14px; color:rgba(255,255,255,0.5); font-weight:600;">২২ ক্যারেট</span>
-                <span style="font-size:20px; font-weight:900; color:#b0ccd8;">{{S22_VORI}} ৳</span>
-              </div>
-              <div style="height:1px; background:rgba(150,180,200,0.1);"></div>
-              <div style="display:flex; justify-content:space-between; align-items:baseline;">
-                <span style="font-size:14px; color:rgba(255,255,255,0.5); font-weight:600;">২১ ক্যারেট</span>
-                <span style="font-size:20px; font-weight:900; color:#b0ccd8;">{{S21_VORI}} ৳</span>
-              </div>
-              <div style="height:1px; background:rgba(150,180,200,0.1);"></div>
-              <div style="display:flex; justify-content:space-between; align-items:baseline;">
-                <span style="font-size:14px; color:rgba(255,255,255,0.5); font-weight:600;">১৮ ক্যারেট</span>
-                <span style="font-size:20px; font-weight:900; color:#b0ccd8;">{{S18_VORI}} ৳</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
-    </div><!-- /silver-section -->
+      <!-- 18K Silver -->
+      <div class="silver-card">
+        <div class="card-karat-area">
+          <div class="karat-num">১৮</div>
+          <div class="karat-word">ক্যারেট</div>
+        </div>
+        <div class="card-price-area">
+          <div class="price-val">{{S18_NEW}}/-</div>
+          <div class="price-unit">প্রতি গ্রাম</div>
+          <div class="price-change {{S18_DIR}}">{{S18_ARROW}} {{S18_DIFF}} ৳</div>
+        </div>
+      </div>
+      <!-- Sanaton Silver -->
+      <div class="silver-card" style="border-color:rgba(140,180,200,0.3);">
+        <div class="card-karat-area">
+          <div class="karat-sonatoni">সনাতন</div>
+          <div class="karat-word">পদ্ধতি</div>
+        </div>
+        <div class="card-price-area">
+          <div class="price-val">{{STR_NEW}}/-</div>
+          <div class="price-unit">প্রতি গ্রাম</div>
+          <div class="price-change {{STR_DIR}}">{{STR_ARROW}} {{STR_DIFF}} ৳</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Silver Vori Strip -->
+    <div class="vori-strip">
+      <div class="vori-chip silver-chip">
+        <div class="vori-lbl">২২ ক্যারেট · ভরি</div>
+        <div class="vori-price">{{S22_VORI}}</div>
+        <div class="vori-unit">৳ প্রতি ভরি (১১.৬৬৪ গ্রাম)</div>
+      </div>
+      <div class="vori-chip silver-chip">
+        <div class="vori-lbl">২১ ক্যারেট · ভরি</div>
+        <div class="vori-price">{{S21_VORI}}</div>
+        <div class="vori-unit">৳ প্রতি ভরি</div>
+      </div>
+      <div class="vori-chip silver-chip">
+        <div class="vori-lbl">১৮ ক্যারেট · ভরি</div>
+        <div class="vori-price">{{S18_VORI}}</div>
+        <div class="vori-unit">৳ প্রতি ভরি</div>
+      </div>
+      <div class="vori-chip silver-chip" style="opacity:0.75;">
+        <div class="vori-lbl">সনাতন · ভরি</div>
+        <div class="vori-price">{{STR_VORI}}</div>
+        <div class="vori-unit">৳ প্রতি ভরি</div>
+      </div>
+    </div>
 
     <!-- FOOTER -->
     <div class="footer">
@@ -496,13 +711,10 @@ body {
         <div class="footer-web">nfjs.odoo.com · +880 1911-367421</div>
       </div>
       <div class="footer-right">
-        <div class="chip chip-trust">৩৫+ বছরের বিশ্বস্ততা</div>
-        <div class="chip chip-bajus">
-          ★ BAJUS Approved
-        </div>
+        <div class="badge badge-trust">৩৫+ বছরের বিশ্বস্ততা</div>
+        <div class="badge badge-bajus">★ BAJUS Approved</div>
       </div>
     </div>
-
   </div><!-- /inner -->
 </div><!-- /canvas -->
 </body>

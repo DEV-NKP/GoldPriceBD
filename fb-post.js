@@ -13,12 +13,10 @@
  *   FB_PAGE_ACCESS_TOKEN  — long-lived Page Access Token
  *   FB_PAGE_ID            — numeric Facebook Page ID
  */
-
 const fs   = require("fs");
 const path = require("path");
 
 // ── helpers ──────────────────────────────────────────────────────────────────
-
 const DATA_DIR         = path.resolve(__dirname, "data");
 const LATEST_JSON      = path.join(DATA_DIR, "latest.json");
 const LAST_POSTED_JSON = path.join(DATA_DIR, "fb_last_posted.json");
@@ -28,7 +26,7 @@ const OUTPUT_IMAGE     = path.join(__dirname, "fb-post-output.png");
 /** Grams per vori */
 const GRAMS_PER_VORI = 11.664;
 
-/** Convert English digits → Bengali digits (no decimal rounding artifact) */
+/** Convert English digits → Bengali digits */
 function toBengaliNum(num, decimals = 2) {
   if (num === null || num === undefined || isNaN(parseFloat(num))) return "—";
   return parseFloat(num)
@@ -45,20 +43,17 @@ function toVori(pricePerGram) {
   return toBengaliNum(parseFloat(pricePerGram) * GRAMS_PER_VORI, 0);
 }
 
-/** Format today's date in Bengali — fixed version */
+/** Format today's date in Bengali */
 function bengaliDate() {
   const now  = new Date();
   const days = ["রবিবার","সোমবার","মঙ্গলবার","বুধবার","বৃহস্পতিবার","শুক্রবার","শনিবার"];
   const months = ["জানুয়ারি","ফেব্রুয়ারি","মার্চ","এপ্রিল","মে","জুন",
                   "জুলাই","আগস্ট","সেপ্টেম্বর","অক্টোবর","নভেম্বর","ডিসেম্বর"];
-
-  // Use integer-only Bengali conversion to avoid ".০০" in date parts
   const toInt = (n) => String(n)
     .replace(/0/g,"০").replace(/1/g,"১").replace(/2/g,"২")
     .replace(/3/g,"৩").replace(/4/g,"৪").replace(/5/g,"৫")
     .replace(/6/g,"৬").replace(/7/g,"৭").replace(/8/g,"৮")
     .replace(/9/g,"৯");
-
   const d  = toInt(now.getDate());
   const m  = months[now.getMonth()];
   const y  = toInt(now.getFullYear());
@@ -90,7 +85,7 @@ function prefixDelta(prefix, d) {
   };
 }
 
-/** Render HTML template with real data */
+/** Render HTML template with real data — now includes সনাতন (GTR/STR) */
 function renderTemplate(latest, prev) {
   let html = fs.readFileSync(TEMPLATE_HTML, "utf-8");
 
@@ -102,41 +97,43 @@ function renderTemplate(latest, prev) {
   const fields = {
     DATE: bengaliDate(),
 
-    // Gold — gram price
+    // ── Gold gram prices ──
     G22_NEW:  toBengaliNum(g.bajus_g22, 0),
-    G22_PREV: toBengaliNum(pg.bajus_g22, 0),
     ...prefixDelta("G22", delta(g.bajus_g22, pg.bajus_g22)),
 
     G21_NEW:  toBengaliNum(g.bajus_g21, 0),
-    G21_PREV: toBengaliNum(pg.bajus_g21, 0),
     ...prefixDelta("G21", delta(g.bajus_g21, pg.bajus_g21)),
 
     G18_NEW:  toBengaliNum(g.bajus_g18, 0),
-    G18_PREV: toBengaliNum(pg.bajus_g18, 0),
     ...prefixDelta("G18", delta(g.bajus_g18, pg.bajus_g18)),
 
-    // Gold — vori price
+    GTR_NEW:  toBengaliNum(g.bajus_gtr, 0),  // সনাতন gold
+    ...prefixDelta("GTR", delta(g.bajus_gtr, pg.bajus_gtr)),
+
+    // ── Gold vori prices ──
     G22_VORI: toVori(g.bajus_g22),
     G21_VORI: toVori(g.bajus_g21),
     G18_VORI: toVori(g.bajus_g18),
+    GTR_VORI: toVori(g.bajus_gtr),
 
-    // Silver — gram price
+    // ── Silver gram prices ──
     S22_NEW:  toBengaliNum(s.bajus_s22, 0),
-    S22_PREV: toBengaliNum(ps.bajus_s22, 0),
     ...prefixDelta("S22", delta(s.bajus_s22, ps.bajus_s22)),
 
     S21_NEW:  toBengaliNum(s.bajus_s21, 0),
-    S21_PREV: toBengaliNum(ps.bajus_s21, 0),
     ...prefixDelta("S21", delta(s.bajus_s21, ps.bajus_s21)),
 
     S18_NEW:  toBengaliNum(s.bajus_s18, 0),
-    S18_PREV: toBengaliNum(ps.bajus_s18, 0),
     ...prefixDelta("S18", delta(s.bajus_s18, ps.bajus_s18)),
 
-    // Silver — vori price
+    STR_NEW:  toBengaliNum(s.bajus_str, 0),  // সনাতন silver
+    ...prefixDelta("STR", delta(s.bajus_str, ps.bajus_str)),
+
+    // ── Silver vori prices ──
     S22_VORI: toVori(s.bajus_s22),
     S21_VORI: toVori(s.bajus_s21),
     S18_VORI: toVori(s.bajus_s18),
+    STR_VORI: toVori(s.bajus_str),
   };
 
   for (const [k, v] of Object.entries(fields)) {
@@ -160,12 +157,14 @@ async function generateImage(html) {
       "--font-render-hinting=none",
     ],
   });
+
   const page = await browser.newPage();
   await page.setViewport({ width: 1080, height: 1080, deviceScaleFactor: 2 });
   await page.goto(`file://${tmpHtml}`, { waitUntil: "networkidle0", timeout: 30000 });
   await new Promise(r => setTimeout(r, 3000)); // wait for Google Fonts
   await page.screenshot({ path: OUTPUT_IMAGE, type: "png", fullPage: false });
   await browser.close();
+
   fs.unlinkSync(tmpHtml);
   console.log(`✅ Image saved: ${OUTPUT_IMAGE}`);
   return OUTPUT_IMAGE;
@@ -181,60 +180,52 @@ function buildCaption(latest, prev) {
   const d22  = delta(g.bajus_g22, pg.bajus_g22);
   const ds22 = delta(s.bajus_s22, ps.bajus_s22);
 
-  // Direction label in Bengali
   function dirLabel(d, diffBn) {
-    if (d.dir === "up")      return `📈 ${diffBn} ৳ বৃদ্ধি`;
-    if (d.dir === "down")    return `📉 ${diffBn} ৳ হ্রাস`;
+    if (d.dir === "up")   return `📈 ${diffBn} ৳ বৃদ্ধি`;
+    if (d.dir === "down") return `📉 ${diffBn} ৳ হ্রাস`;
     return "অপরিবর্তিত";
   }
 
-  // Format price cleanly (no Bengali for caption — FB renders raw numbers fine)
-  const fmt = (v) => v ? Number(v).toLocaleString("en-BD") : "—";
+  const fmt  = (v) => v ? Number(v).toLocaleString("en-BD") : "—";
   const vori = (v) => v ? Math.round(parseFloat(v) * GRAMS_PER_VORI).toLocaleString("en-BD") : "—";
 
-  const date    = bengaliDate();
-  const time    = bengaliTime();
-  const dir22   = dirLabel(d22,  d22.diffBn);
-  const dirs22  = dirLabel(ds22, ds22.diffBn);
+  const date   = bengaliDate();
+  const time   = bengaliTime();
+  const dir22  = dirLabel(d22,  d22.diffBn);
+  const dirs22 = dirLabel(ds22, ds22.diffBn);
 
   return `✨ নিউ ফ্যাশন জুয়েলার্স (NFJ) — আজকের স্বর্ণ ও রূপার মূল্য
-
 📅 ${date} | 🕐 ${time}
-
 ━━━━━━━━━━━━━━━━━━
 🥇 স্বর্ণের মূল্য (বাজুস অনুমোদিত)
 ━━━━━━━━━━━━━━━━━━
 ▸ ২২ ক্যারেট
    প্রতি গ্রাম : ${fmt(g.bajus_g22)} ৳  |  প্রতি ভরি : ${vori(g.bajus_g22)} ৳
    পরিবর্তন   : ${dir22}
-
 ▸ ২১ ক্যারেট
    প্রতি গ্রাম : ${fmt(g.bajus_g21)} ৳  |  প্রতি ভরি : ${vori(g.bajus_g21)} ৳
-
 ▸ ১৮ ক্যারেট
    প্রতি গ্রাম : ${fmt(g.bajus_g18)} ৳  |  প্রতি ভরি : ${vori(g.bajus_g18)} ৳
-
+▸ সনাতন পদ্ধতি
+   প্রতি গ্রাম : ${fmt(g.bajus_gtr)} ৳  |  প্রতি ভরি : ${vori(g.bajus_gtr)} ৳
 ━━━━━━━━━━━━━━━━━━
 🥈 রূপার মূল্য (বাজুস অনুমোদিত)
 ━━━━━━━━━━━━━━━━━━
 ▸ ২২ ক্যারেট
    প্রতি গ্রাম : ${fmt(s.bajus_s22)} ৳  |  প্রতি ভরি : ${vori(s.bajus_s22)} ৳
    পরিবর্তন   : ${dirs22}
-
 ▸ ২১ ক্যারেট
    প্রতি গ্রাম : ${fmt(s.bajus_s21)} ৳  |  প্রতি ভরি : ${vori(s.bajus_s21)} ৳
-
 ▸ ১৮ ক্যারেট
    প্রতি গ্রাম : ${fmt(s.bajus_s18)} ৳  |  প্রতি ভরি : ${vori(s.bajus_s18)} ৳
-
+▸ সনাতন পদ্ধতি
+   প্রতি গ্রাম : ${fmt(s.bajus_str)} ৳  |  প্রতি ভরি : ${vori(s.bajus_str)} ৳
 ━━━━━━━━━━━━━━━━━━
 📌 তথ্যসূত্র : বাংলাদেশ জুয়েলার্স সমিতি (বাজুস)
 🌐 ওয়েবসাইট  : https://nfjs.odoo.com
 📞 যোগাযোগ   : +880 1911-367421
-
 💍 নিউ ফ্যাশন জুয়েলার্স — ৩৫+ বছরের বিশ্বস্ততা ও অভিজ্ঞতায় আপনার পাশে।
 সোনা কেনা বা বেচার আগে সঠিক মূল্য জানুন — আমাদের পেজ ফলো করুন এবং বন্ধুদের সাথে শেয়ার করুন! 🔔
-
 #NFJ #নিউফ্যাশনজুয়েলার্স #স্বর্ণমূল্য #রূপামূল্য #বাজুস #আজকেরসোনারদাম #GoldPriceBD #SilverPriceBD #SonarDam #বাংলাদেশ #ঢাকা #জুয়েলারি #NewFashionJewellers #GoldRate #HallmarkedGold`;
 }
 
@@ -245,8 +236,8 @@ function pricesChanged(latest, prev) {
   const pg = prev.gold     || {};
   const ps = prev.silver   || {};
 
-  const gKeys = ["bajus_g22","bajus_g21","bajus_g18"];
-  const sKeys = ["bajus_s22","bajus_s21","bajus_s18"];
+  const gKeys = ["bajus_g22","bajus_g21","bajus_g18","bajus_gtr"];
+  const sKeys = ["bajus_s22","bajus_s21","bajus_s18","bajus_str"];
 
   for (const k of gKeys) {
     if (parseFloat(g[k]) !== parseFloat(pg[k])) {
@@ -267,7 +258,6 @@ function pricesChanged(latest, prev) {
 async function postToFacebook(imagePath, caption) {
   const token  = process.env.FB_PAGE_ACCESS_TOKEN;
   const pageId = process.env.FB_PAGE_ID;
-
   if (!token || !pageId) {
     throw new Error("❌ Missing FB_PAGE_ACCESS_TOKEN or FB_PAGE_ID env vars");
   }
@@ -298,12 +288,12 @@ async function postToFacebook(imagePath, caption) {
 }
 
 // ── main ─────────────────────────────────────────────────────────────────────
-
 async function main() {
   if (!fs.existsSync(LATEST_JSON)) {
     console.log("⚠️  latest.json not found — skipping FB post");
     process.exit(0);
   }
+
   const latest = JSON.parse(fs.readFileSync(LATEST_JSON, "utf-8"));
 
   if (!latest.bajus_ok) {
