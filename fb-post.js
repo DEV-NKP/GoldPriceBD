@@ -67,25 +67,26 @@ function bengaliTime() {
   return now.toLocaleTimeString("bn-BD", { hour: "2-digit", minute: "2-digit" });
 }
 
-/** Compute direction class + arrow + absolute diff */
+/** Compute direction class + arrow + icon + absolute diff */
 function delta(newVal, oldVal) {
   const n    = parseFloat(newVal) || 0;
   const o    = parseFloat(oldVal) || 0;
   const diff = n - o;
-  if (!o || diff === 0) return { dir: "neutral", arrow: "→", diffBn: "০.০০", diffNum: 0 };
-  if (diff > 0) return { dir: "up",   arrow: "↑", diffBn: toBengaliNum(diff),            diffNum: diff };
-  return              { dir: "down",  arrow: "↓", diffBn: toBengaliNum(Math.abs(diff)),   diffNum: Math.abs(diff) };
+  if (!o || diff === 0) return { dir: "neutral", arrow: "→", icon: "fa-arrow-right", diffBn: "০.০০", diffNum: 0 };
+  if (diff > 0) return { dir: "up",   arrow: "↑", icon: "fa-arrow-trend-up",   diffBn: toBengaliNum(diff),          diffNum: diff };
+  return              { dir: "down",  arrow: "↓", icon: "fa-arrow-trend-down", diffBn: toBengaliNum(Math.abs(diff)), diffNum: Math.abs(diff) };
 }
 
 function prefixDelta(prefix, d) {
   return {
     [`${prefix}_DIR`]:   d.dir,
     [`${prefix}_ARROW`]: d.arrow,
+    [`${prefix}_ICON`]:  d.icon,
     [`${prefix}_DIFF`]:  d.diffBn,
   };
 }
 
-/** Render HTML template with real data — now includes সনাতন (GTR/STR) */
+/** Render HTML template with real data */
 function renderTemplate(latest, prev) {
   let html = fs.readFileSync(TEMPLATE_HTML, "utf-8");
 
@@ -97,39 +98,49 @@ function renderTemplate(latest, prev) {
   const fields = {
     DATE: bengaliDate(),
 
-    // ── Gold gram prices ──
+    // Gold — gram price
     G22_NEW:  toBengaliNum(g.bajus_g22, 0),
+    G22_PREV: toBengaliNum(pg.bajus_g22, 0),
     ...prefixDelta("G22", delta(g.bajus_g22, pg.bajus_g22)),
 
     G21_NEW:  toBengaliNum(g.bajus_g21, 0),
+    G21_PREV: toBengaliNum(pg.bajus_g21, 0),
     ...prefixDelta("G21", delta(g.bajus_g21, pg.bajus_g21)),
 
     G18_NEW:  toBengaliNum(g.bajus_g18, 0),
+    G18_PREV: toBengaliNum(pg.bajus_g18, 0),
     ...prefixDelta("G18", delta(g.bajus_g18, pg.bajus_g18)),
 
-    GTR_NEW:  toBengaliNum(g.bajus_gtr, 0),  // সনাতন gold
+    // Gold — traditional (সনাতন)
+    GTR_NEW:  toBengaliNum(g.bajus_gtr, 0),
+    GTR_PREV: toBengaliNum(pg.bajus_gtr, 0),
     ...prefixDelta("GTR", delta(g.bajus_gtr, pg.bajus_gtr)),
 
-    // ── Gold vori prices ──
+    // Gold — vori prices
     G22_VORI: toVori(g.bajus_g22),
     G21_VORI: toVori(g.bajus_g21),
     G18_VORI: toVori(g.bajus_g18),
     GTR_VORI: toVori(g.bajus_gtr),
 
-    // ── Silver gram prices ──
+    // Silver — gram price
     S22_NEW:  toBengaliNum(s.bajus_s22, 0),
+    S22_PREV: toBengaliNum(ps.bajus_s22, 0),
     ...prefixDelta("S22", delta(s.bajus_s22, ps.bajus_s22)),
 
     S21_NEW:  toBengaliNum(s.bajus_s21, 0),
+    S21_PREV: toBengaliNum(ps.bajus_s21, 0),
     ...prefixDelta("S21", delta(s.bajus_s21, ps.bajus_s21)),
 
     S18_NEW:  toBengaliNum(s.bajus_s18, 0),
+    S18_PREV: toBengaliNum(ps.bajus_s18, 0),
     ...prefixDelta("S18", delta(s.bajus_s18, ps.bajus_s18)),
 
-    STR_NEW:  toBengaliNum(s.bajus_str, 0),  // সনাতন silver
+    // Silver — traditional (সনাতন)
+    STR_NEW:  toBengaliNum(s.bajus_str, 0),
+    STR_PREV: toBengaliNum(ps.bajus_str, 0),
     ...prefixDelta("STR", delta(s.bajus_str, ps.bajus_str)),
 
-    // ── Silver vori prices ──
+    // Silver — vori prices
     S22_VORI: toVori(s.bajus_s22),
     S21_VORI: toVori(s.bajus_s21),
     S18_VORI: toVori(s.bajus_s18),
@@ -141,7 +152,6 @@ function renderTemplate(latest, prev) {
   }
   return html;
 }
-
 /** Use Puppeteer to screenshot the filled HTML → PNG */
 async function generateImage(html) {
   const puppeteer = require("puppeteer");
@@ -253,6 +263,7 @@ function pricesChanged(latest, prev) {
   }
   return false;
 }
+
 
 /** Upload image + caption to Facebook Page */
 async function postToFacebook(imagePath, caption) {
