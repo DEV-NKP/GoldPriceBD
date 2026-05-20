@@ -9,15 +9,61 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',sans-serif;}
+:root{
+  --gold-1:#fff4b0;
+  --gold-2:#f8d44f;
+  --gold-3:#d9a514;
+  --gold-4:#9b6400;
+  --gold-5:#5b3200;
 
+  --ruby-1:#5c0008;
+  --ruby-2:#3b0005;
+  --ruby-3:#220003;
+
+  --silver-1:#eef7ff;
+  --silver-2:#b8d7ea;
+  --silver-3:#6ea4c7;
+  --silver-4:#27485d;
+}
 /* ── CANVAS ── */
 .canvas{
-  width:1080px;height:1080px;position:relative;overflow:hidden;
-  background:linear-gradient(160deg,#2d0e18 0%,#1a0810 30%,#0f0508 60%,#1c0a0f 100%);
+  width:1080px;
+  height:1080px;
+  position:relative;
+  overflow:hidden;
+
+  background:
+    radial-gradient(circle at top left, rgba(180,40,20,0.22), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(120,20,10,0.18), transparent 35%),
+    linear-gradient(
+      160deg,
+      #3b0008 0%,
+      #240006 20%,
+      #120003 45%,
+      #090001 70%,
+      #160004 100%
+    );
 }
 
 /* ── Ambient glows ── */
-.glow1{position:absolute;top:-100px;left:-100px;width:620px;height:620px;border-radius:50%;background:radial-gradient(circle,rgba(165,60,38,0.18) 0%,transparent 65%);z-index:1;pointer-events:none;}
+.glow1{
+  position:absolute;
+  top:-120px;
+  left:-120px;
+  width:700px;
+  height:700px;
+  border-radius:50%;
+
+  background:radial-gradient(
+    circle,
+    rgba(255,60,20,0.18) 0%,
+    rgba(180,20,10,0.10) 35%,
+    transparent 70%
+  );
+
+  z-index:1;
+  pointer-events:none;
+}
 .glow2{position:absolute;bottom:-80px;right:-80px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(120,40,18,0.15) 0%,transparent 65%);z-index:1;pointer-events:none;}
 .glow3{position:absolute;top:28%;left:50%;transform:translateX(-50%);width:820px;height:280px;background:radial-gradient(ellipse,rgba(200,140,28,0.07) 0%,transparent 62%);z-index:1;pointer-events:none;}
 
@@ -56,7 +102,19 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
 }
 
 /* ── Gold border frame ── */
-.frame-outer{position:absolute;inset:10px;border:1.5px solid rgba(212,175,55,0.52);pointer-events:none;z-index:20;}
+.frame-outer{
+  position:absolute;
+  inset:10px;
+
+  border:2px solid rgba(255,215,90,0.72);
+
+  box-shadow:
+    0 0 0 1px rgba(255,240,180,0.18) inset,
+    0 0 24px rgba(212,175,55,0.12);
+
+  pointer-events:none;
+  z-index:20;
+}
 .frame-inner{position:absolute;inset:16px;border:0.5px solid rgba(212,175,55,0.16);pointer-events:none;z-index:20;}
 
 /* ── Corner L-bars ── */
@@ -153,9 +211,22 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
 .gold-hdr .sec-hdr-line{background:linear-gradient(90deg,transparent,rgba(212,175,55,0.65));}
 .gold-hdr .sec-hdr-line:last-child{background:linear-gradient(90deg,rgba(212,175,55,0.65),transparent);}
 .gold-hdr .sec-hdr-pill{
-  background:linear-gradient(135deg,#9e6e00,#d4a820,#e8c030,#c09010,#9e6e00);
-  color:#160900;
-  box-shadow:0 2px 12px rgba(212,175,55,0.35),0 0 24px rgba(212,175,55,0.1);
+  background:
+    linear-gradient(
+      180deg,
+      #ffe98a 0%,
+      #f0c126 35%,
+      #c88700 70%,
+      #8f5900 100%
+    );
+
+  color:#2b1200;
+
+  border:1px solid rgba(255,225,140,0.5);
+
+  box-shadow:
+    0 0 12px rgba(255,210,70,0.35),
+    0 4px 18px rgba(0,0,0,0.45);
 }
 .silver-hdr .sec-hdr-line{background:linear-gradient(90deg,transparent,rgba(165,205,228,0.52));}
 .silver-hdr .sec-hdr-line:last-child{background:linear-gradient(90deg,rgba(165,205,228,0.52),transparent);}
@@ -180,11 +251,32 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
    GOLD CARDS
    ════════════════════ */
 .gc{
-  border-radius:13px;overflow:hidden;position:relative;
-  display:flex;flex-direction:column;
-  border:1px solid rgba(212,175,55,0.38);
-  background:linear-gradient(150deg,#3c1b08 0%,#2b1105 35%,#1e0b03 65%,#150702 100%);
-  box-shadow:0 6px 24px rgba(0,0,0,0.62),0 1px 0 rgba(255,205,80,0.07) inset;
+  border-radius:14px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+
+  border:1px solid rgba(255,210,80,0.55);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,220,120,0.05) 0%,
+      transparent 18%
+    ),
+    linear-gradient(
+      145deg,
+      #3f1300 0%,
+      #2b0a00 35%,
+      #160400 70%,
+      #0c0200 100%
+    );
+
+  box-shadow:
+    0 0 0 1px rgba(255,215,120,0.08) inset,
+    0 10px 30px rgba(0,0,0,0.7),
+    0 0 18px rgba(212,175,55,0.12);
 }
 .gc-glow{
   position:absolute;top:-22px;left:-22px;width:108px;height:108px;border-radius:50%;
@@ -192,10 +284,27 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
   z-index:1;pointer-events:none;
 }
 .gc-slash{
-  position:absolute;z-index:2;top:-25%;right:-10%;width:46%;height:150%;
-  background:linear-gradient(168deg,
-    transparent 0%,rgba(232,178,45,0.76) 30%,rgba(202,150,20,0.9) 52%,rgba(180,132,10,0.7) 70%,transparent 100%);
-  transform:skewX(-18deg);overflow:hidden;pointer-events:none;
+  position:absolute;
+  z-index:2;
+  top:-25%;
+  right:-10%;
+  width:46%;
+  height:150%;
+
+  background:linear-gradient(
+    168deg,
+    transparent 0%,
+    #ffef9a 10%,
+    #f6c73c 28%,
+    #d99c08 45%,
+    #a56500 62%,
+    #ffdd72 75%,
+    transparent 100%
+  );
+
+  transform:skewX(-18deg);
+  overflow:hidden;
+  pointer-events:none;
 }
 .gc-slash-icon{
   position:absolute;top:50%;left:50%;
@@ -209,7 +318,14 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
 .gc-top{position:relative;z-index:3;padding:18px 14px 6px;}
 .gc-karat{
   font-size:64px;font-weight:900;line-height:0.82;
-  background:linear-gradient(180deg,#fff8e2 0%,#f5d858 50%,#c89210 100%);
+  background:linear-gradient(
+  180deg,
+  #fff9dc 0%,
+  #ffe982 22%,
+  #f7c93d 48%,
+  #d69805 72%,
+  #8f5800 100%
+);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 .gc-karat-sn{
@@ -226,7 +342,14 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
 }
 .gc-price{
   font-size:28px;font-weight:900;line-height:1;
-  background:linear-gradient(180deg,#fff5d2 0%,#f0d050 50%,#d4a000 100%);
+  background:linear-gradient(
+  180deg,
+  #fff9dc 0%,
+  #ffe982 22%,
+  #f7c93d 48%,
+  #d69805 72%,
+  #8f5800 100%
+);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 .gc-unit{font-size:9.5px;color:rgba(255,218,125,0.28);font-weight:500;margin-top:2px;}
@@ -243,11 +366,32 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
    SILVER CARDS
    ════════════════════ */
 .sc{
-  border-radius:13px;overflow:hidden;position:relative;
-  display:flex;flex-direction:column;
-  border:1px solid rgba(148,194,222,0.3);
-  background:linear-gradient(150deg,#0b1926 0%,#07111a 35%,#040c14 65%,#020810 100%);
-  box-shadow:0 6px 24px rgba(0,0,0,0.62),0 1px 0 rgba(155,210,240,0.05) inset;
+  border-radius:13px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+
+  border:1px solid rgba(140,210,255,0.42);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.04) 0%,
+      transparent 20%
+    ),
+    linear-gradient(
+      145deg,
+      #062033 0%,
+      #041521 35%,
+      #020d16 70%,
+      #01070d 100%
+    );
+
+  box-shadow:
+    0 0 0 1px rgba(180,220,255,0.05) inset,
+    0 10px 28px rgba(0,0,0,0.72),
+    0 0 14px rgba(120,180,220,0.12);
 }
 .sc-glow{
   position:absolute;top:-20px;left:-20px;width:95px;height:95px;border-radius:50%;
@@ -255,10 +399,27 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
   z-index:1;pointer-events:none;
 }
 .sc-slash{
-  position:absolute;z-index:2;top:-25%;right:-10%;width:46%;height:150%;
-  background:linear-gradient(168deg,
-    transparent 0%,rgba(165,210,238,0.72) 30%,rgba(140,190,218,0.84) 52%,rgba(110,168,200,0.62) 70%,transparent 100%);
-  transform:skewX(-18deg);overflow:hidden;pointer-events:none;
+  position:absolute;
+  z-index:2;
+  top:-25%;
+  right:-10%;
+  width:46%;
+  height:150%;
+
+  background:linear-gradient(
+    168deg,
+    transparent 0%,
+    #ffffff 10%,
+    #cde8f7 30%,
+    #93c3dd 50%,
+    #5785a2 70%,
+    #d7f1ff 82%,
+    transparent 100%
+  );
+
+  transform:skewX(-18deg);
+  overflow:hidden;
+  pointer-events:none;
 }
 .sc-slash-icon{
   position:absolute;top:50%;left:50%;
