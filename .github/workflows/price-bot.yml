@@ -1,7 +1,7 @@
 name: 🔄 SonarGold Price Bot
+
 on:
   schedule:
-    # Every hour UTC
     - cron: "0 * * * *"
   workflow_dispatch:
     inputs:
@@ -14,13 +14,12 @@ on:
         required: false
         default: "false"
 
-# ✅ Required for push access
 permissions:
   contents: write
 
 jobs:
   # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 1: Existing price scraper
+  # JOB 1: Price scraper
   # ─────────────────────────────────────────────────────────────────────────────
   update-prices:
     runs-on: ubuntu-latest
@@ -29,18 +28,19 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Always fetch the latest state of the branch
+          ref: ${{ github.ref }}
+          fetch-depth: 0
 
-      # 2. Setup Node.js 24
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: "24"
           cache: "npm"
 
-      # 3. Install Chromium dependencies
       - name: Install Chromium dependencies
         run: |
           sudo apt-get update -q
@@ -50,11 +50,9 @@ jobs:
             libgbm1 libasound2t64 libpango-1.0-0 libpangocairo-1.0-0 \
             fonts-liberation xdg-utils
 
-      # 4. Install dependencies
       - name: Install npm dependencies
         run: npm ci --prefer-offline || npm install
 
-      # 5. Run scraper
       - name: Run price scraper
         run: |
           SOURCE="${{ github.event.inputs.source || 'all' }}"
@@ -64,53 +62,53 @@ jobs:
             node scraper.js --source=$SOURCE
           fi
 
-      # 6. Show results
       - name: Show results
         run: |
-          echo "=== latest.json (gold) ==="
+          echo "=== latest.json ==="
           node -e "
             try {
               const d = require('./data/latest.json');
               console.log('bajus_ok:', d.bajus_ok, '| intl_ok:', d.intl_ok, '| fx_ok:', d.fx_ok);
               console.log('Gold 22K:', d.gold?.bajus_g22, 'BDT/g | XAU:', d.gold?.intl_usd_oz, 'USD/oz');
               console.log('Silver 22K:', d.silver?.bajus_s22, 'BDT/g | XAG:', d.silver?.intl_usd_oz, 'USD/oz');
-              console.log('Counts:', d.counts);
-            } catch(e) {
-              console.log('(latest.json not found)');
-            }
-          "
-          echo ""
-          echo "=== Last gold entry ==="
-          node -e "
-            try {
-              const f = require('./data/gold_prices.json');
-              console.log(JSON.stringify(f[f.length-1], null, 2));
-            } catch(e) {
-              console.log('(no gold file)');
-            }
+            } catch(e) { console.log('(latest.json not found)'); }
           "
 
-      # 7. Commit changes
-      - name: Commit changes
+      - name: Configure git
         run: |
           git config user.name  "sonargold-bot"
           git config user.email "sonargold-bot@users.noreply.github.com"
+
+      - name: Commit and push with retry
+        # Stash any untracked/unstaged changes before rebasing, then pop them
+        # Retry up to 5 times to survive concurrent cron collisions
+        run: |
           git add data/ logs/
           if git diff --staged --quiet; then
             echo "No changes to commit"
-          else
-            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
-            git commit -m "🔄 Update prices — $TIMESTAMP"
+            exit 0
           fi
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+          git commit -m "🔄 Update prices — $TIMESTAMP"
 
-      # 8. Push changes (rebase protects against overlapping cron runs)
-      - name: Push changes
-        run: |
-          git pull --rebase
-          git push
+          for i in 1 2 3 4 5; do
+            echo "Push attempt $i..."
+            # Stash any local modifications (e.g. package-lock diffs) before rebasing
+            git stash --include-untracked || true
+            git pull --rebase origin ${{ github.ref_name }}
+            git stash pop || true
+            if git push origin HEAD:${{ github.ref_name }}; then
+              echo "✅ Push succeeded on attempt $i"
+              exit 0
+            fi
+            echo "Push failed — retrying in 5s..."
+            sleep 5
+          done
+          echo "❌ All push attempts failed"
+          exit 1
 
   # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 2: Facebook post (only runs if update-prices succeeded)
+  # JOB 2: Facebook post (runs only after Job 1 succeeds)
   # ─────────────────────────────────────────────────────────────────────────────
   post-to-facebook:
     runs-on: ubuntu-latest
@@ -122,18 +120,19 @@ jobs:
       FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
 
     steps:
-      # 1. Checkout repository (auto-detect default branch)
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Fresh checkout AFTER Job 1 has pushed — gets the latest data files
+          ref: ${{ github.ref }}
+          fetch-depth: 0
 
-      # 2. Setup Node.js 24
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: "24"
           cache: "npm"
 
-      # 3. Install Chromium + Bengali font dependencies
       - name: Install system dependencies (Chromium + Bengali fonts)
         run: |
           sudo apt-get update -q
@@ -145,36 +144,44 @@ jobs:
             fonts-noto fonts-noto-cjk \
             fonts-beng fonts-beng-extra
 
-      # 4. Install Node deps
       - name: Install npm dependencies
         run: npm ci --prefer-offline || npm install
 
-      # 5. Handle force-post flag
       - name: Handle force FB post flag
         if: ${{ github.event.inputs.force_fb_post == 'true' }}
         run: |
           echo "⚡ Force post enabled — clearing last posted snapshot"
           rm -f data/fb_last_posted.json
 
-      # 6. Generate image & post to Facebook
       - name: Generate image & post to Facebook
         run: node fb-post.js
 
-      # 7. Commit fb_last_posted.json snapshot
-      - name: Commit FB snapshot
+      - name: Configure git
         run: |
           git config user.name  "sonargold-bot"
           git config user.email "sonargold-bot@users.noreply.github.com"
+
+      - name: Commit and push FB snapshot with retry
+        run: |
           git add data/fb_last_posted.json
           if git diff --staged --quiet; then
             echo "No FB snapshot changes to commit"
-          else
-            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
-            git commit -m "📸 FB post snapshot — $TIMESTAMP"
+            exit 0
           fi
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+          git commit -m "📸 FB post snapshot — $TIMESTAMP"
 
-      # 8. Push snapshot (rebase pulls Job 1's commit first so push succeeds)
-      - name: Push FB snapshot
-        run: |
-          git pull --rebase
-          git push
+          for i in 1 2 3 4 5; do
+            echo "Push attempt $i..."
+            git stash --include-untracked || true
+            git pull --rebase origin ${{ github.ref_name }}
+            git stash pop || true
+            if git push origin HEAD:${{ github.ref_name }}; then
+              echo "✅ Push succeeded on attempt $i"
+              exit 0
+            fi
+            echo "Push failed — retrying in 5s..."
+            sleep 5
+          done
+          echo "❌ All push attempts failed"
+          exit 1
