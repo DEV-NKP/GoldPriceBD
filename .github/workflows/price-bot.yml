@@ -141,8 +141,11 @@ jobs:
             libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
             libgbm1 libasound2t64 libpango-1.0-0 libpangocairo-1.0-0 \
             fonts-liberation xdg-utils \
-            fonts-noto fonts-noto-cjk \
-            fonts-beng fonts-beng-extra
+            fonts-beng fonts-beng-extra \
+            fonts-lohit-beng-bengali \
+            fonts-noto-core
+          # Refresh font cache so Puppeteer/Chrome picks up the new fonts
+          sudo fc-cache -fv
 
       - name: Install npm dependencies
         run: npm ci --prefer-offline || npm install
