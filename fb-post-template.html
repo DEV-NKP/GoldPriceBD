@@ -21,7 +21,7 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
     #5a0f1a;
 }
 
-/* ── Hex-mesh background texture ── */
+/* ── Dot-mesh background texture ── */
 .hex-bg{
   position:absolute;inset:0;z-index:1;pointer-events:none;
   background-image:
@@ -31,29 +31,17 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
   background-position:0 0, 9.5px 9.5px;
 }
 
-/* ── Diagonal gold beam ── */
+/* ── Diagonal gold beams ── */
 .beam{
   position:absolute;z-index:2;pointer-events:none;
-  top:-20%;left:-10%;
-  width:55%;height:140%;
-  background:linear-gradient(105deg,
-    transparent 0%,
-    rgba(212,175,55,0.03) 40%,
-    rgba(212,175,55,0.07) 50%,
-    rgba(212,175,55,0.03) 60%,
-    transparent 100%
-  );
+  top:-20%;left:-10%;width:55%;height:140%;
+  background:linear-gradient(105deg,transparent 0%,rgba(212,175,55,0.03) 40%,rgba(212,175,55,0.07) 50%,rgba(212,175,55,0.03) 60%,transparent 100%);
   transform:skewX(-15deg);
 }
 .beam2{
   position:absolute;z-index:2;pointer-events:none;
-  top:-20%;right:-10%;
-  width:30%;height:140%;
-  background:linear-gradient(105deg,
-    transparent 0%,
-    rgba(212,175,55,0.02) 50%,
-    transparent 100%
-  );
+  top:-20%;right:-10%;width:30%;height:140%;
+  background:linear-gradient(105deg,transparent 0%,rgba(212,175,55,0.02) 50%,transparent 100%);
   transform:skewX(-15deg);
 }
 
@@ -101,30 +89,30 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
 .co-br{bottom:11px;right:11px;transform:scale(-1);}
 
 /* ════════════════════════════════
-   INNER LAYOUT
+   INNER LAYOUT — fills 1080×1080
    ════════════════════════════════ */
 .inner{
   position:relative;z-index:10;width:100%;height:100%;
   display:flex;flex-direction:column;
-  padding:30px 42px 26px;
+  padding:32px 42px 24px;
 }
 
 /* ── HEADER ── */
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-shrink:0;}
 
 .logo-side{display:flex;align-items:center;gap:14px;}
 .logo-ring{
-  width:72px;height:72px;border-radius:50%;flex-shrink:0;
+  width:74px;height:74px;border-radius:50%;flex-shrink:0;
   border:1.5px solid #d4af37;
   background:radial-gradient(circle at 35% 35%, rgba(212,175,55,0.18), rgba(212,175,55,0.04));
   box-shadow:0 0 20px rgba(212,175,55,0.3),0 0 40px rgba(212,175,55,0.1),inset 0 0 14px rgba(212,175,55,0.1);
   display:flex;align-items:center;justify-content:center;
 }
-.logo-ring img{width:52px;height:52px;object-fit:contain;}
+.logo-ring img{width:54px;height:54px;object-fit:contain;}
 
 .brand-block{display:flex;flex-direction:column;gap:2px;}
 .brand-en{
-  font-family:'Cinzel',serif;font-size:21px;font-weight:900;
+  font-family:'Cinzel',serif;font-size:22px;font-weight:900;
   color:#e8c84a;letter-spacing:2px;line-height:1;
   text-shadow:0 0 30px rgba(212,175,55,0.5),0 1px 0 rgba(0,0,0,0.8);
 }
@@ -137,21 +125,17 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
 
 .date-box{text-align:right;}
 .date-lbl{font-size:10px;color:rgba(255,255,255,0.28);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
-.date-val{font-size:19px;font-weight:800;color:rgba(255,255,255,0.88);line-height:1.3;}
+.date-val{font-size:20px;font-weight:800;color:rgba(255,255,255,0.88);line-height:1.3;}
 .date-val i{font-size:15px;color:rgba(212,175,55,0.6);margin-right:5px;}
 
 /* ── TITLE BAND ── */
 .title-band{
   position:relative;text-align:center;
-  padding:13px 50px;margin-bottom:14px;
+  padding:16px 50px;margin-bottom:18px;flex-shrink:0;
   background:linear-gradient(90deg,
-    transparent 0%,
-    rgba(212,175,55,0.06) 15%,
-    rgba(212,175,55,0.18) 35%,
-    rgba(212,175,55,0.26) 50%,
-    rgba(212,175,55,0.18) 65%,
-    rgba(212,175,55,0.06) 85%,
-    transparent 100%
+    transparent 0%,rgba(212,175,55,0.06) 15%,rgba(212,175,55,0.18) 35%,
+    rgba(212,175,55,0.26) 50%,rgba(212,175,55,0.18) 65%,
+    rgba(212,175,55,0.06) 85%,transparent 100%
   );
   border-top:1px solid rgba(212,175,55,0.5);
   border-bottom:1px solid rgba(212,175,55,0.5);
@@ -168,30 +152,26 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
 .title-orn-l{left:12px;}.title-orn-r{right:12px;}
 .title-orn i{font-size:13px;color:rgba(212,175,55,0.55);}
 .title-main{
-  font-size:32px;font-weight:900;
+  font-size:34px;font-weight:900;
   background:linear-gradient(180deg,#fff5c0 0%,#f5e06a 45%,#d4a800 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   letter-spacing:0.5px;line-height:1;
 }
-.title-sub{font-size:11px;color:rgba(212,175,55,0.45);letter-spacing:3px;text-transform:uppercase;margin-top:5px;}
+.title-sub{font-size:11px;color:rgba(212,175,55,0.45);letter-spacing:3px;text-transform:uppercase;margin-top:6px;}
 .title-sub i{font-size:9px;color:rgba(212,175,55,0.35);margin:0 3px;}
 
-/* ── SECTION HEADER ── */
-.sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+/* ── SECTION HEADERS ── */
+.sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-shrink:0;}
 .sec-hdr-line{flex:1;height:1px;}
 .sec-hdr-pill{
-  font-size:11px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;
-  padding:5px 18px;border-radius:20px;white-space:nowrap;
+  font-size:12px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;
+  padding:6px 20px;border-radius:20px;white-space:nowrap;
   display:flex;align-items:center;gap:7px;
 }
 .sec-hdr-pill i{font-size:12px;}
 
-.gold-hdr .sec-hdr-line{
-  background:linear-gradient(90deg,transparent,rgba(212,175,55,0.7));
-}
-.gold-hdr .sec-hdr-line:last-child{
-  background:linear-gradient(90deg,rgba(212,175,55,0.7),transparent);
-}
+.gold-hdr .sec-hdr-line{background:linear-gradient(90deg,transparent,rgba(212,175,55,0.7));}
+.gold-hdr .sec-hdr-line:last-child{background:linear-gradient(90deg,rgba(212,175,55,0.7),transparent);}
 .gold-hdr .sec-hdr-pill{
   background:linear-gradient(135deg,#c08c00,#e8c030,#c08c00);
   color:#1a0c00;
@@ -199,12 +179,8 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
 }
 .gold-hdr .sec-hdr-pill i{color:#5a3800;}
 
-.silver-hdr .sec-hdr-line{
-  background:linear-gradient(90deg,transparent,rgba(180,210,230,0.55));
-}
-.silver-hdr .sec-hdr-line:last-child{
-  background:linear-gradient(90deg,rgba(180,210,230,0.55),transparent);
-}
+.silver-hdr .sec-hdr-line{background:linear-gradient(90deg,transparent,rgba(180,210,230,0.55));}
+.silver-hdr .sec-hdr-line:last-child{background:linear-gradient(90deg,rgba(180,210,230,0.55),transparent);}
 .silver-hdr .sec-hdr-pill{
   background:linear-gradient(135deg,#4a6d80,#8bbccc,#4a6d80);
   color:#020c10;
@@ -213,47 +189,60 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
 .silver-hdr .sec-hdr-pill i{color:#0a2530;}
 
 /* ════════════════════════════════
+   FLEX SECTIONS — fill remaining space
+   ════════════════════════════════ */
+.gold-section{
+  flex:1.18;display:flex;flex-direction:column;gap:12px;
+}
+.silver-section{
+  flex:1;display:flex;flex-direction:column;gap:12px;
+}
+
+/* ── DECORATIVE DIVIDER ── */
+.section-divider{
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+  padding:2px 0;
+}
+.section-divider-line{flex:1;height:0.5px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.25),transparent);}
+.section-divider i{font-size:8px;color:rgba(212,175,55,0.35);}
+
+/* ════════════════════════════════
+   CARD GRID — grows to fill section
+   ════════════════════════════════ */
+.cards{
+  flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
+  min-height:0;
+}
+
+/* ════════════════════════════════
    GOLD CARDS
    ════════════════════════════════ */
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:10px;}
-
 .gc{
-  border-radius:13px;overflow:hidden;position:relative;
-  display:flex;flex-direction:column;min-height:178px;
+  border-radius:14px;overflow:hidden;position:relative;
+  display:flex;flex-direction:column;
   border:1px solid rgba(212,175,55,0.38);
   box-shadow:
-    0 6px 24px rgba(0,0,0,0.7),
+    0 8px 32px rgba(0,0,0,0.7),
     0 1px 0 rgba(255,255,255,0.06) inset,
     0 0 0 0.5px rgba(212,175,55,0.1) inset;
 }
-
-/* Dark red-tinted gold base */
 .gc-bg{
   position:absolute;inset:0;
-  background:linear-gradient(150deg,
-    #1e0a0e 0%,
-    #140608 35%,
-    #0c0305 65%,
-    #050102 100%
-  );
+  background:linear-gradient(150deg,#1e0a0e 0%,#140608 35%,#0c0305 65%,#050102 100%);
 }
-
-/* Glowing top-left corner accent */
 .gc-glow{
   position:absolute;top:-30px;left:-30px;z-index:1;pointer-events:none;
   width:120px;height:120px;
   background:radial-gradient(circle,rgba(212,175,55,0.2) 0%,transparent 70%);
 }
 
-/* The diagonal slash — filled with icon + gradient */
+/* Diagonal gold slash with icon */
 .gc-slash{
   position:absolute;z-index:2;
-  top:-25%;right:-6%;width:52%;height:150%;
+  top:-25%;right:-8%;width:48%;height:150%;
   background:linear-gradient(170deg,
-    rgba(255,220,80,0.0) 0%,
-    rgba(240,190,40,0.82) 30%,
-    rgba(212,165,20,0.92) 55%,
-    rgba(190,145,10,0.75) 75%,
+    rgba(255,220,80,0.0) 0%,rgba(240,190,40,0.8) 28%,
+    rgba(212,165,20,0.9) 52%,rgba(190,145,10,0.7) 72%,
     rgba(212,175,55,0.0) 100%
   );
   transform:skewX(-18deg);
@@ -261,42 +250,52 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
   overflow:hidden;
 }
 .gc-slash-icon{
-  position:absolute;
-  top:50%;left:50%;
+  position:absolute;top:50%;left:50%;
   transform:translate(-50%,-50%) skewX(18deg) rotate(-15deg);
-  font-size:40px;
-  color:rgba(120,80,0,0.55);
-  pointer-events:none;
+  font-size:48px;color:rgba(120,80,0,0.45);pointer-events:none;
 }
 
-.gc-top{position:relative;z-index:3;padding:14px 14px 6px;}
+/* Static shimmer/sheen overlay */
+.gc-shimmer{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(
+    115deg,
+    transparent 22%,
+    rgba(255,255,255,0.02) 38%,
+    rgba(255,255,255,0.06) 47%,
+    rgba(255,255,255,0.02) 56%,
+    transparent 72%
+  );
+}
+
+.gc-top{position:relative;z-index:3;padding:20px 16px 8px;}
 .gc-karat{
-  font-size:54px;font-weight:900;color:#fff;line-height:0.88;
-  text-shadow:0 2px 12px rgba(0,0,0,0.9),0 0 20px rgba(0,0,0,0.5);
+  font-size:68px;font-weight:900;color:#fff;line-height:0.82;
+  text-shadow:0 2px 14px rgba(0,0,0,0.9),0 0 24px rgba(0,0,0,0.5);
 }
 .gc-karat-sn{
-  font-size:26px;font-weight:900;color:#fff;line-height:1.1;
-  text-shadow:0 2px 12px rgba(0,0,0,0.9);
+  font-size:32px;font-weight:900;color:#fff;line-height:1.1;
+  text-shadow:0 2px 14px rgba(0,0,0,0.9);
 }
 .gc-word{
-  font-size:10.5px;font-weight:700;color:rgba(255,255,255,0.6);
-  letter-spacing:2.5px;text-transform:uppercase;margin-top:2px;
+  font-size:11px;font-weight:700;color:rgba(255,255,255,0.5);
+  letter-spacing:3px;text-transform:uppercase;margin-top:4px;
 }
 
 .gc-bot{
   position:relative;z-index:3;margin-top:auto;
-  padding:9px 14px 12px;
-  background:linear-gradient(180deg,rgba(0,0,0,0.55),rgba(0,0,0,0.72));
-  border-top:1px solid rgba(212,175,55,0.18);
+  padding:14px 16px 18px;
+  background:linear-gradient(180deg,rgba(0,0,0,0.5),rgba(0,0,0,0.7));
+  border-top:1px solid rgba(212,175,55,0.16);
 }
-.gc-icon-row{display:flex;align-items:center;gap:5px;margin-bottom:4px;}
-.gc-icon-row i{font-size:10px;color:rgba(212,175,55,0.5);}
-.gc-price{font-size:25px;font-weight:900;color:#fff;line-height:1;}
-.gc-unit{font-size:10px;color:rgba(255,255,255,0.45);font-weight:500;margin-top:2px;}
+.gc-icon-row{display:flex;align-items:center;gap:5px;margin-bottom:6px;}
+.gc-icon-row i{font-size:10px;color:rgba(212,175,55,0.45);}
+.gc-price{font-size:30px;font-weight:900;color:#fff;line-height:1;}
+.gc-unit{font-size:10px;color:rgba(255,255,255,0.38);font-weight:500;margin-top:3px;}
 .gc-chg{
   display:inline-flex;align-items:center;gap:3px;
-  margin-top:5px;padding:3px 8px;border-radius:10px;
-  font-size:10.5px;font-weight:800;line-height:1.3;
+  margin-top:7px;padding:4px 10px;border-radius:12px;
+  font-size:11px;font-weight:800;line-height:1.3;
 }
 .gc-chg i{font-size:9px;}
 .up{background:rgba(52,199,89,0.16);border:0.5px solid rgba(52,199,89,0.45);color:#30d158;}
@@ -307,21 +306,14 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
    SILVER CARDS
    ════════════════════════════════ */
 .sc{
-  border-radius:13px;overflow:hidden;position:relative;
-  display:flex;flex-direction:column;min-height:148px;
+  border-radius:14px;overflow:hidden;position:relative;
+  display:flex;flex-direction:column;
   border:1px solid rgba(160,200,225,0.32);
-  box-shadow:
-    0 6px 24px rgba(0,0,0,0.7),
-    0 1px 0 rgba(255,255,255,0.04) inset;
+  box-shadow:0 8px 32px rgba(0,0,0,0.7),0 1px 0 rgba(255,255,255,0.04) inset;
 }
 .sc-bg{
   position:absolute;inset:0;
-  background:linear-gradient(150deg,
-    #080e16 0%,
-    #050a12 35%,
-    #03060e 65%,
-    #010408 100%
-  );
+  background:linear-gradient(150deg,#080e16 0%,#050a12 35%,#03060e 65%,#010408 100%);
 }
 .sc-glow{
   position:absolute;top:-25px;left:-25px;z-index:1;pointer-events:none;
@@ -330,53 +322,54 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
 }
 .sc-slash{
   position:absolute;z-index:2;
-  top:-25%;right:-6%;width:52%;height:150%;
+  top:-25%;right:-8%;width:48%;height:150%;
   background:linear-gradient(170deg,
-    rgba(200,230,245,0.0) 0%,
-    rgba(175,215,235,0.75) 30%,
-    rgba(150,195,220,0.85) 55%,
-    rgba(120,175,205,0.65) 75%,
+    rgba(200,230,245,0.0) 0%,rgba(175,215,235,0.72) 28%,
+    rgba(150,195,220,0.82) 52%,rgba(120,175,205,0.6) 72%,
     rgba(160,200,225,0.0) 100%
   );
-  transform:skewX(-18deg);
-  overflow:hidden;
+  transform:skewX(-18deg);overflow:hidden;
 }
 .sc-slash-icon{
-  position:absolute;
-  top:50%;left:50%;
+  position:absolute;top:50%;left:50%;
   transform:translate(-50%,-50%) skewX(18deg) rotate(-15deg);
-  font-size:34px;
-  color:rgba(20,60,90,0.55);
-  pointer-events:none;
+  font-size:38px;color:rgba(20,60,90,0.45);pointer-events:none;
 }
-.sc-top{position:relative;z-index:3;padding:12px 14px 5px;}
-.sc-karat{font-size:48px;font-weight:900;color:#fff;line-height:0.88;text-shadow:0 2px 12px rgba(0,0,0,0.9);}
-.sc-karat-sn{font-size:23px;font-weight:900;color:#fff;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,0.9);}
-.sc-word{font-size:10.5px;font-weight:700;color:rgba(255,255,255,0.55);letter-spacing:2.5px;text-transform:uppercase;margin-top:2px;}
+.sc-shimmer{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(
+    115deg,transparent 22%,rgba(255,255,255,0.02) 38%,
+    rgba(255,255,255,0.05) 47%,rgba(255,255,255,0.02) 56%,transparent 72%
+  );
+}
+.sc-top{position:relative;z-index:3;padding:16px 14px 6px;}
+.sc-karat{font-size:58px;font-weight:900;color:#fff;line-height:0.82;text-shadow:0 2px 14px rgba(0,0,0,0.9);}
+.sc-karat-sn{font-size:27px;font-weight:900;color:#fff;line-height:1.1;text-shadow:0 2px 14px rgba(0,0,0,0.9);}
+.sc-word{font-size:11px;font-weight:700;color:rgba(255,255,255,0.45);letter-spacing:3px;text-transform:uppercase;margin-top:4px;}
 .sc-bot{
   position:relative;z-index:3;margin-top:auto;
-  padding:8px 14px 10px;
-  background:linear-gradient(180deg,rgba(0,0,0,0.5),rgba(0,0,0,0.68));
-  border-top:1px solid rgba(160,200,225,0.14);
+  padding:12px 14px 16px;
+  background:linear-gradient(180deg,rgba(0,0,0,0.45),rgba(0,0,0,0.65));
+  border-top:1px solid rgba(160,200,225,0.12);
 }
-.sc-icon-row{display:flex;align-items:center;gap:5px;margin-bottom:3px;}
-.sc-icon-row i{font-size:10px;color:rgba(160,210,235,0.45);}
-.sc-price{font-size:23px;font-weight:900;color:#d8eef8;line-height:1;}
-.sc-unit{font-size:10px;color:rgba(200,230,245,0.4);font-weight:500;margin-top:2px;}
+.sc-icon-row{display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.sc-icon-row i{font-size:10px;color:rgba(160,210,235,0.4);}
+.sc-price{font-size:27px;font-weight:900;color:#d8eef8;line-height:1;}
+.sc-unit{font-size:10px;color:rgba(200,230,245,0.35);font-weight:500;margin-top:3px;}
 .sc-chg{
   display:inline-flex;align-items:center;gap:3px;
-  margin-top:4px;padding:3px 8px;border-radius:10px;
-  font-size:10.5px;font-weight:800;line-height:1.3;
+  margin-top:6px;padding:4px 10px;border-radius:12px;
+  font-size:11px;font-weight:800;line-height:1.3;
 }
 .sc-chg i{font-size:9px;}
 
 /* ════════════════════════════════
    VORI STRIPS
    ════════════════════════════════ */
-.vori-row{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:12px;}
-.vc{border-radius:9px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;}
+.vori-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;flex-shrink:0;}
+.vc{border-radius:10px;padding:10px 14px;display:flex;flex-direction:column;gap:3px;}
 .vc-gold{
-  background:linear-gradient(135deg,rgba(212,175,55,0.1),rgba(212,175,55,0.05));
+  background:linear-gradient(135deg,rgba(212,175,55,0.1),rgba(212,175,55,0.04));
   border:0.5px solid rgba(212,175,55,0.3);
 }
 .vc-silver{
@@ -390,78 +383,34 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
 .vc-lbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
 .vc-gold .vc-lbl{color:rgba(212,175,55,0.58);}
 .vc-silver .vc-lbl{color:rgba(140,190,220,0.52);}
-.vc-val{font-size:17px;font-weight:900;}
+.vc-val{font-size:18px;font-weight:900;}
 .vc-gold .vc-val{color:#f2dc65;}
 .vc-silver .vc-val{color:#a8d0e8;}
-.vc-unit{font-size:9.5px;color:rgba(255,255,255,0.25);}
+.vc-unit{font-size:9.5px;color:rgba(255,255,255,0.2);}
 
 /* ════════════════════════════════
-   WEBSITE PROMO STRIP
-   ════════════════════════════════ */
-.promo-strip{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:8px 20px;margin-bottom:10px;border-radius:8px;
-  background:linear-gradient(90deg,
-    transparent 0%,
-    rgba(212,175,55,0.07) 20%,
-    rgba(212,175,55,0.14) 50%,
-    rgba(212,175,55,0.07) 80%,
-    transparent 100%
-  );
-  border:0.5px solid rgba(212,175,55,0.22);
-}
-.promo-strip i{font-size:12px;color:rgba(212,175,55,0.65);}
-.promo-text{font-size:12px;color:rgba(255,255,255,0.55);}
-.promo-text b{color:#d4af37;font-weight:800;letter-spacing:0.3px;}
-.promo-link{font-size:12px;color:#e8c84a;font-weight:700;letter-spacing:0.5px;}
-.promo-link i{font-size:10px;color:#e8c84a;margin-left:2px;}
-
-/* ════════════════════════════════
-   FOOTER
+   FOOTER — clean & focused
    ════════════════════════════════ */
 .footer{
-  display:flex;justify-content:space-between;align-items:flex-end;
-  padding-top:9px;border-top:0.5px solid rgba(212,175,55,0.18);
-  position:relative;
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:14px;border-top:0.5px solid rgba(212,175,55,0.18);
+  flex-shrink:0;
 }
-.ft-left{display:flex;flex-direction:column;gap:2px;}
-.ft-src{font-size:11px;color:rgba(255,255,255,0.28);}
+.ft-left{display:flex;flex-direction:column;gap:3px;}
+.ft-src{font-size:11.5px;color:rgba(255,255,255,0.32);}
 .ft-src i{font-size:10px;color:rgba(212,175,55,0.5);margin-right:4px;}
 .ft-src b{color:rgba(212,175,55,0.65);font-weight:700;}
-.ft-web{font-size:11px;color:rgba(212,175,55,0.4);margin-top:1px;}
-.ft-web i{font-size:9px;color:rgba(212,175,55,0.35);margin-right:3px;}
+.ft-contact{font-size:11px;color:rgba(255,255,255,0.22);}
+.ft-contact i{font-size:9px;color:rgba(212,175,55,0.35);margin-right:4px;}
 
-.ft-center{position:absolute;left:50%;transform:translateX(-50%);bottom:0;}
-.ft-badges{display:flex;gap:8px;align-items:center;}
-.badge{
-  display:flex;align-items:center;gap:5px;
-  border-radius:7px;padding:5px 12px;
-  font-size:10.5px;font-weight:700;letter-spacing:1px;
-  white-space:nowrap;
-}
-.badge i{font-size:10px;}
-.badge-trust{
-  background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.1);
-  color:rgba(255,255,255,0.33);
-}
-.badge-trust i{color:rgba(255,255,255,0.3);}
-.badge-bajus{
-  background:linear-gradient(135deg,rgba(212,175,55,0.12),rgba(212,175,55,0.06));
-  border:0.5px solid rgba(212,175,55,0.38);
-  color:#d4af37;font-family:'Cinzel',serif;
-}
-.badge-bajus i{color:#d4af37;}
-
-/* Copyright bottom-right */
 .copyright{
-  text-align:right;display:flex;flex-direction:column;gap:1px;align-items:flex-end;
+  text-align:right;display:flex;flex-direction:column;gap:2px;align-items:flex-end;
 }
 .copy-main{
-  font-size:10px;color:rgba(212,175,55,0.4);letter-spacing:0.5px;
-  display:flex;align-items:center;gap:3px;
+  font-size:10.5px;color:rgba(212,175,55,0.4);letter-spacing:0.5px;
+  display:flex;align-items:center;gap:4px;
 }
-.copy-main i{font-size:8px;color:rgba(212,175,55,0.35);}
-.copy-sub{font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:0.3px;}
+.copy-main i{font-size:9px;color:rgba(212,175,55,0.35);}
 </style>
 </head>
 <body>
@@ -509,7 +458,7 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
       </div>
     </div>
 
-    <!-- ── TITLE ── -->
+    <!-- ── TITLE BAND ── -->
     <div class="title-band">
       <div class="title-orn title-orn-l">
         <i class="fa-solid fa-star-of-david"></i>
@@ -528,285 +477,286 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
     </div>
 
     <!-- ══════════ GOLD SECTION ══════════ -->
-    <div class="sec-hdr gold-hdr">
-      <div class="sec-hdr-line"></div>
-      <div class="sec-hdr-pill">
-        <i class="fa-solid fa-coins"></i>
-        স্বর্ণের মূল্য — প্রতি গ্রাম
-        <i class="fa-solid fa-coins"></i>
+    <div class="gold-section">
+      <div class="sec-hdr gold-hdr">
+        <div class="sec-hdr-line"></div>
+        <div class="sec-hdr-pill">
+          <i class="fa-solid fa-coins"></i>
+          স্বর্ণের মূল্য — প্রতি গ্রাম
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <div class="sec-hdr-line"></div>
       </div>
-      <div class="sec-hdr-line"></div>
+
+      <div class="cards">
+        <!-- 22K Gold -->
+        <div class="gc">
+          <div class="gc-bg"></div>
+          <div class="gc-glow"></div>
+          <div class="gc-slash"><i class="fa-solid fa-coins gc-slash-icon"></i></div>
+          <div class="gc-shimmer"></div>
+          <div class="gc-top">
+            <div class="gc-karat">২২</div>
+            <div class="gc-word">ক্যারেট</div>
+          </div>
+          <div class="gc-bot">
+            <div class="gc-icon-row">
+              <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+              <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(212,175,55,0.3);"></i>
+              <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <div class="gc-price">{{G22_NEW}}/-</div>
+            <div class="gc-unit">প্রতি গ্রাম</div>
+            <div class="gc-chg {{G22_DIR}}">
+              <i class="fa-solid {{G22_ICON}}"></i> {{G22_DIFF}} ৳
+            </div>
+          </div>
+        </div>
+
+        <!-- 21K Gold -->
+        <div class="gc">
+          <div class="gc-bg"></div>
+          <div class="gc-glow"></div>
+          <div class="gc-slash"><i class="fa-solid fa-ring gc-slash-icon"></i></div>
+          <div class="gc-shimmer"></div>
+          <div class="gc-top">
+            <div class="gc-karat">২১</div>
+            <div class="gc-word">ক্যারেট</div>
+          </div>
+          <div class="gc-bot">
+            <div class="gc-icon-row">
+              <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+              <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(212,175,55,0.3);"></i>
+              <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <div class="gc-price">{{G21_NEW}}/-</div>
+            <div class="gc-unit">প্রতি গ্রাম</div>
+            <div class="gc-chg {{G21_DIR}}">
+              <i class="fa-solid {{G21_ICON}}"></i> {{G21_DIFF}} ৳
+            </div>
+          </div>
+        </div>
+
+        <!-- 18K Gold -->
+        <div class="gc">
+          <div class="gc-bg"></div>
+          <div class="gc-glow"></div>
+          <div class="gc-slash"><i class="fa-solid fa-medal gc-slash-icon"></i></div>
+          <div class="gc-shimmer"></div>
+          <div class="gc-top">
+            <div class="gc-karat">১৮</div>
+            <div class="gc-word">ক্যারেট</div>
+          </div>
+          <div class="gc-bot">
+            <div class="gc-icon-row">
+              <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+              <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(212,175,55,0.3);"></i>
+              <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <div class="gc-price">{{G18_NEW}}/-</div>
+            <div class="gc-unit">প্রতি গ্রাম</div>
+            <div class="gc-chg {{G18_DIR}}">
+              <i class="fa-solid {{G18_ICON}}"></i> {{G18_DIFF}} ৳
+            </div>
+          </div>
+        </div>
+
+        <!-- Sanaton Gold -->
+        <div class="gc" style="border-color:rgba(212,175,55,0.22);">
+          <div class="gc-bg" style="background:linear-gradient(150deg,#160a0c,#0a0506,#040203);"></div>
+          <div class="gc-glow" style="background:radial-gradient(circle,rgba(180,140,30,0.15) 0%,transparent 70%);"></div>
+          <div class="gc-slash" style="background:linear-gradient(170deg,rgba(210,165,30,0.0) 0%,rgba(190,145,15,0.72) 38%,rgba(165,125,10,0.82) 55%,rgba(190,145,15,0.0) 100%);">
+            <i class="fa-solid fa-gem gc-slash-icon"></i>
+          </div>
+          <div class="gc-shimmer"></div>
+          <div class="gc-top">
+            <div class="gc-karat-sn">সনাতন</div>
+            <div class="gc-word">পদ্ধতি</div>
+          </div>
+          <div class="gc-bot">
+            <div class="gc-icon-row">
+              <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+              <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(212,175,55,0.3);"></i>
+              <i class="fa-solid fa-landmark"></i>
+            </div>
+            <div class="gc-price">{{GTR_NEW}}/-</div>
+            <div class="gc-unit">প্রতি গ্রাম</div>
+            <div class="gc-chg {{GTR_DIR}}">
+              <i class="fa-solid {{GTR_ICON}}"></i> {{GTR_DIFF}} ৳
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gold vori strip -->
+      <div class="vori-row">
+        <div class="vc vc-gold">
+          <div class="vc-lbl-row"><i class="fa-solid fa-coins"></i><span class="vc-lbl">২২ ক্যারেট · ভরি</span></div>
+          <div class="vc-val">{{G22_VORI}}</div>
+          <div class="vc-unit">৳ প্রতি ভরি (১১.৬৬৪ গ্রাম)</div>
+        </div>
+        <div class="vc vc-gold">
+          <div class="vc-lbl-row"><i class="fa-solid fa-coins"></i><span class="vc-lbl">২১ ক্যারেট · ভরি</span></div>
+          <div class="vc-val">{{G21_VORI}}</div>
+          <div class="vc-unit">৳ প্রতি ভরি</div>
+        </div>
+        <div class="vc vc-gold">
+          <div class="vc-lbl-row"><i class="fa-solid fa-coins"></i><span class="vc-lbl">১৮ ক্যারেট · ভরি</span></div>
+          <div class="vc-val">{{G18_VORI}}</div>
+          <div class="vc-unit">৳ প্রতি ভরি</div>
+        </div>
+        <div class="vc vc-gold" style="opacity:0.75;">
+          <div class="vc-lbl-row"><i class="fa-solid fa-gem"></i><span class="vc-lbl">সনাতন · ভরি</span></div>
+          <div class="vc-val">{{GTR_VORI}}</div>
+          <div class="vc-unit">৳ প্রতি ভরি</div>
+        </div>
+      </div>
     </div>
 
-    <div class="cards">
-      <!-- 22K Gold -->
-      <div class="gc">
-        <div class="gc-bg"></div>
-        <div class="gc-glow"></div>
-        <div class="gc-slash">
-          <i class="fa-solid fa-coins gc-slash-icon"></i>
-        </div>
-        <div class="gc-top">
-          <div class="gc-karat">২২</div>
-          <div class="gc-word">ক্যারেট</div>
-        </div>
-        <div class="gc-bot">
-          <div class="gc-icon-row">
-            <i class="fa-solid fa-bangladeshi-taka-sign"></i>
-            <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(212,175,55,0.3);"></i>
-            <i class="fa-solid fa-scale-balanced"></i>
-          </div>
-          <div class="gc-price">{{G22_NEW}}/-</div>
-          <div class="gc-unit">প্রতি গ্রাম</div>
-          <div class="gc-chg {{G22_DIR}}">
-            <i class="fa-solid {{G22_ICON}}"></i> {{G22_DIFF}} ৳
-          </div>
-        </div>
-      </div>
-
-      <!-- 21K Gold -->
-      <div class="gc">
-        <div class="gc-bg"></div>
-        <div class="gc-glow"></div>
-        <div class="gc-slash">
-          <i class="fa-solid fa-ring gc-slash-icon"></i>
-        </div>
-        <div class="gc-top">
-          <div class="gc-karat">২১</div>
-          <div class="gc-word">ক্যারেট</div>
-        </div>
-        <div class="gc-bot">
-          <div class="gc-icon-row">
-            <i class="fa-solid fa-bangladeshi-taka-sign"></i>
-            <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(212,175,55,0.3);"></i>
-            <i class="fa-solid fa-scale-balanced"></i>
-          </div>
-          <div class="gc-price">{{G21_NEW}}/-</div>
-          <div class="gc-unit">প্রতি গ্রাম</div>
-          <div class="gc-chg {{G21_DIR}}">
-            <i class="fa-solid {{G21_ICON}}"></i> {{G21_DIFF}} ৳
-          </div>
-        </div>
-      </div>
-
-      <!-- 18K Gold -->
-      <div class="gc">
-        <div class="gc-bg"></div>
-        <div class="gc-glow"></div>
-        <div class="gc-slash">
-          <i class="fa-solid fa-medal gc-slash-icon"></i>
-        </div>
-        <div class="gc-top">
-          <div class="gc-karat">১৮</div>
-          <div class="gc-word">ক্যারেট</div>
-        </div>
-        <div class="gc-bot">
-          <div class="gc-icon-row">
-            <i class="fa-solid fa-bangladeshi-taka-sign"></i>
-            <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(212,175,55,0.3);"></i>
-            <i class="fa-solid fa-scale-balanced"></i>
-          </div>
-          <div class="gc-price">{{G18_NEW}}/-</div>
-          <div class="gc-unit">প্রতি গ্রাম</div>
-          <div class="gc-chg {{G18_DIR}}">
-            <i class="fa-solid {{G18_ICON}}"></i> {{G18_DIFF}} ৳
-          </div>
-        </div>
-      </div>
-
-      <!-- Sanaton Gold -->
-      <div class="gc" style="border-color:rgba(212,175,55,0.22);">
-        <div class="gc-bg" style="background:linear-gradient(150deg,#160a0c,#0a0506,#040203);"></div>
-        <div class="gc-glow" style="background:radial-gradient(circle,rgba(180,140,30,0.15) 0%,transparent 70%);"></div>
-        <div class="gc-slash" style="background:linear-gradient(170deg,rgba(210,165,30,0.0) 0%,rgba(190,145,15,0.75) 40%,rgba(165,125,10,0.85) 60%,rgba(190,145,15,0.0) 100%);">
-          <i class="fa-solid fa-gem gc-slash-icon"></i>
-        </div>
-        <div class="gc-top">
-          <div class="gc-karat-sn">সনাতন</div>
-          <div class="gc-word">পদ্ধতি</div>
-        </div>
-        <div class="gc-bot">
-          <div class="gc-icon-row">
-            <i class="fa-solid fa-bangladeshi-taka-sign"></i>
-            <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(212,175,55,0.3);"></i>
-            <i class="fa-solid fa-landmark"></i>
-          </div>
-          <div class="gc-price">{{GTR_NEW}}/-</div>
-          <div class="gc-unit">প্রতি গ্রাম</div>
-          <div class="gc-chg {{GTR_DIR}}">
-            <i class="fa-solid {{GTR_ICON}}"></i> {{GTR_DIFF}} ৳
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Gold vori strip -->
-    <div class="vori-row">
-      <div class="vc vc-gold">
-        <div class="vc-lbl-row"><i class="fa-solid fa-coins"></i><span class="vc-lbl">২২ ক্যারেট · ভরি</span></div>
-        <div class="vc-val">{{G22_VORI}}</div>
-        <div class="vc-unit">৳ প্রতি ভরি (১১.৬৬৪ গ্রাম)</div>
-      </div>
-      <div class="vc vc-gold">
-        <div class="vc-lbl-row"><i class="fa-solid fa-coins"></i><span class="vc-lbl">২১ ক্যারেট · ভরি</span></div>
-        <div class="vc-val">{{G21_VORI}}</div>
-        <div class="vc-unit">৳ প্রতি ভরি</div>
-      </div>
-      <div class="vc vc-gold">
-        <div class="vc-lbl-row"><i class="fa-solid fa-coins"></i><span class="vc-lbl">১৮ ক্যারেট · ভরি</span></div>
-        <div class="vc-val">{{G18_VORI}}</div>
-        <div class="vc-unit">৳ প্রতি ভরি</div>
-      </div>
-      <div class="vc vc-gold" style="opacity:0.75;">
-        <div class="vc-lbl-row"><i class="fa-solid fa-gem"></i><span class="vc-lbl">সনাতন · ভরি</span></div>
-        <div class="vc-val">{{GTR_VORI}}</div>
-        <div class="vc-unit">৳ প্রতি ভরি</div>
-      </div>
+    <!-- ── Decorative divider ── -->
+    <div class="section-divider">
+      <div class="section-divider-line"></div>
+      <i class="fa-solid fa-diamond"></i>
+      <i class="fa-solid fa-diamond" style="font-size:6px;opacity:0.5;"></i>
+      <i class="fa-solid fa-diamond"></i>
+      <div class="section-divider-line"></div>
     </div>
 
     <!-- ══════════ SILVER SECTION ══════════ -->
-    <div class="sec-hdr silver-hdr">
-      <div class="sec-hdr-line"></div>
-      <div class="sec-hdr-pill">
-        <i class="fa-solid fa-circle-dot"></i>
-        রূপার মূল্য — প্রতি গ্রাম
-        <i class="fa-solid fa-circle-dot"></i>
-      </div>
-      <div class="sec-hdr-line"></div>
-    </div>
-
-    <div class="cards">
-      <!-- 22K Silver -->
-      <div class="sc">
-        <div class="sc-bg"></div>
-        <div class="sc-glow"></div>
-        <div class="sc-slash">
-          <i class="fa-solid fa-coins sc-slash-icon"></i>
+    <div class="silver-section">
+      <div class="sec-hdr silver-hdr">
+        <div class="sec-hdr-line"></div>
+        <div class="sec-hdr-pill">
+          <i class="fa-solid fa-circle-dot"></i>
+          রূপার মূল্য — প্রতি গ্রাম
+          <i class="fa-solid fa-circle-dot"></i>
         </div>
-        <div class="sc-top">
-          <div class="sc-karat">২২</div>
-          <div class="sc-word">ক্যারেট</div>
-        </div>
-        <div class="sc-bot">
-          <div class="sc-icon-row">
-            <i class="fa-solid fa-bangladeshi-taka-sign"></i>
-            <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(160,210,235,0.3);"></i>
-            <i class="fa-solid fa-weight-scale"></i>
-          </div>
-          <div class="sc-price">{{S22_NEW}}/-</div>
-          <div class="sc-unit">প্রতি গ্রাম</div>
-          <div class="sc-chg {{S22_DIR}}">
-            <i class="fa-solid {{S22_ICON}}"></i> {{S22_DIFF}} ৳
-          </div>
-        </div>
+        <div class="sec-hdr-line"></div>
       </div>
 
-      <!-- 21K Silver -->
-      <div class="sc">
-        <div class="sc-bg"></div>
-        <div class="sc-glow"></div>
-        <div class="sc-slash">
-          <i class="fa-solid fa-ring sc-slash-icon"></i>
-        </div>
-        <div class="sc-top">
-          <div class="sc-karat">২১</div>
-          <div class="sc-word">ক্যারেট</div>
-        </div>
-        <div class="sc-bot">
-          <div class="sc-icon-row">
-            <i class="fa-solid fa-bangladeshi-taka-sign"></i>
-            <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(160,210,235,0.3);"></i>
-            <i class="fa-solid fa-weight-scale"></i>
+      <div class="cards">
+        <!-- 22K Silver -->
+        <div class="sc">
+          <div class="sc-bg"></div>
+          <div class="sc-glow"></div>
+          <div class="sc-slash"><i class="fa-solid fa-coins sc-slash-icon"></i></div>
+          <div class="sc-shimmer"></div>
+          <div class="sc-top">
+            <div class="sc-karat">২২</div>
+            <div class="sc-word">ক্যারেট</div>
           </div>
-          <div class="sc-price">{{S21_NEW}}/-</div>
-          <div class="sc-unit">প্রতি গ্রাম</div>
-          <div class="sc-chg {{S21_DIR}}">
-            <i class="fa-solid {{S21_ICON}}"></i> {{S21_DIFF}} ৳
+          <div class="sc-bot">
+            <div class="sc-icon-row">
+              <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+              <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(160,210,235,0.3);"></i>
+              <i class="fa-solid fa-weight-scale"></i>
+            </div>
+            <div class="sc-price">{{S22_NEW}}/-</div>
+            <div class="sc-unit">প্রতি গ্রাম</div>
+            <div class="sc-chg {{S22_DIR}}">
+              <i class="fa-solid {{S22_ICON}}"></i> {{S22_DIFF}} ৳
+            </div>
+          </div>
+        </div>
+
+        <!-- 21K Silver -->
+        <div class="sc">
+          <div class="sc-bg"></div>
+          <div class="sc-glow"></div>
+          <div class="sc-slash"><i class="fa-solid fa-ring sc-slash-icon"></i></div>
+          <div class="sc-shimmer"></div>
+          <div class="sc-top">
+            <div class="sc-karat">২১</div>
+            <div class="sc-word">ক্যারেট</div>
+          </div>
+          <div class="sc-bot">
+            <div class="sc-icon-row">
+              <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+              <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(160,210,235,0.3);"></i>
+              <i class="fa-solid fa-weight-scale"></i>
+            </div>
+            <div class="sc-price">{{S21_NEW}}/-</div>
+            <div class="sc-unit">প্রতি গ্রাম</div>
+            <div class="sc-chg {{S21_DIR}}">
+              <i class="fa-solid {{S21_ICON}}"></i> {{S21_DIFF}} ৳
+            </div>
+          </div>
+        </div>
+
+        <!-- 18K Silver -->
+        <div class="sc">
+          <div class="sc-bg"></div>
+          <div class="sc-glow"></div>
+          <div class="sc-slash"><i class="fa-solid fa-medal sc-slash-icon"></i></div>
+          <div class="sc-shimmer"></div>
+          <div class="sc-top">
+            <div class="sc-karat">১৮</div>
+            <div class="sc-word">ক্যারেট</div>
+          </div>
+          <div class="sc-bot">
+            <div class="sc-icon-row">
+              <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+              <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(160,210,235,0.3);"></i>
+              <i class="fa-solid fa-weight-scale"></i>
+            </div>
+            <div class="sc-price">{{S18_NEW}}/-</div>
+            <div class="sc-unit">প্রতি গ্রাম</div>
+            <div class="sc-chg {{S18_DIR}}">
+              <i class="fa-solid {{S18_ICON}}"></i> {{S18_DIFF}} ৳
+            </div>
+          </div>
+        </div>
+
+        <!-- Sanaton Silver -->
+        <div class="sc" style="border-color:rgba(140,185,210,0.2);">
+          <div class="sc-bg" style="background:linear-gradient(150deg,#040a12,#020608,#010306);"></div>
+          <div class="sc-glow" style="background:radial-gradient(circle,rgba(120,175,210,0.15) 0%,transparent 70%);"></div>
+          <div class="sc-slash" style="background:linear-gradient(170deg,rgba(160,200,225,0.0) 0%,rgba(140,185,210,0.65) 38%,rgba(115,165,195,0.75) 55%,rgba(140,185,210,0.0) 100%);">
+            <i class="fa-solid fa-gem sc-slash-icon" style="color:rgba(15,40,65,0.45);"></i>
+          </div>
+          <div class="sc-shimmer"></div>
+          <div class="sc-top">
+            <div class="sc-karat-sn">সনাতন</div>
+            <div class="sc-word">পদ্ধতি</div>
+          </div>
+          <div class="sc-bot">
+            <div class="sc-icon-row">
+              <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+              <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(160,210,235,0.3);"></i>
+              <i class="fa-solid fa-landmark"></i>
+            </div>
+            <div class="sc-price">{{STR_NEW}}/-</div>
+            <div class="sc-unit">প্রতি গ্রাম</div>
+            <div class="sc-chg {{STR_DIR}}">
+              <i class="fa-solid {{STR_ICON}}"></i> {{STR_DIFF}} ৳
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 18K Silver -->
-      <div class="sc">
-        <div class="sc-bg"></div>
-        <div class="sc-glow"></div>
-        <div class="sc-slash">
-          <i class="fa-solid fa-medal sc-slash-icon"></i>
+      <!-- Silver vori strip -->
+      <div class="vori-row">
+        <div class="vc vc-silver">
+          <div class="vc-lbl-row"><i class="fa-solid fa-circle-dot"></i><span class="vc-lbl">২২ ক্যারেট · ভরি</span></div>
+          <div class="vc-val">{{S22_VORI}}</div>
+          <div class="vc-unit">৳ প্রতি ভরি (১১.৬৬৪ গ্রাম)</div>
         </div>
-        <div class="sc-top">
-          <div class="sc-karat">১৮</div>
-          <div class="sc-word">ক্যারেট</div>
+        <div class="vc vc-silver">
+          <div class="vc-lbl-row"><i class="fa-solid fa-circle-dot"></i><span class="vc-lbl">২১ ক্যারেট · ভরি</span></div>
+          <div class="vc-val">{{S21_VORI}}</div>
+          <div class="vc-unit">৳ প্রতি ভরি</div>
         </div>
-        <div class="sc-bot">
-          <div class="sc-icon-row">
-            <i class="fa-solid fa-bangladeshi-taka-sign"></i>
-            <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(160,210,235,0.3);"></i>
-            <i class="fa-solid fa-weight-scale"></i>
-          </div>
-          <div class="sc-price">{{S18_NEW}}/-</div>
-          <div class="sc-unit">প্রতি গ্রাম</div>
-          <div class="sc-chg {{S18_DIR}}">
-            <i class="fa-solid {{S18_ICON}}"></i> {{S18_DIFF}} ৳
-          </div>
+        <div class="vc vc-silver">
+          <div class="vc-lbl-row"><i class="fa-solid fa-circle-dot"></i><span class="vc-lbl">১৮ ক্যারেট · ভরি</span></div>
+          <div class="vc-val">{{S18_VORI}}</div>
+          <div class="vc-unit">৳ প্রতি ভরি</div>
         </div>
-      </div>
-
-      <!-- Sanaton Silver -->
-      <div class="sc" style="border-color:rgba(140,185,210,0.2);">
-        <div class="sc-bg" style="background:linear-gradient(150deg,#040a12,#020608,#010306);"></div>
-        <div class="sc-glow" style="background:radial-gradient(circle,rgba(120,175,210,0.15) 0%,transparent 70%);"></div>
-        <div class="sc-slash" style="background:linear-gradient(170deg,rgba(160,200,225,0.0) 0%,rgba(140,185,210,0.7) 40%,rgba(115,165,195,0.8) 60%,rgba(140,185,210,0.0) 100%);">
-          <i class="fa-solid fa-gem sc-slash-icon" style="color:rgba(15,40,65,0.55);"></i>
-        </div>
-        <div class="sc-top">
-          <div class="sc-karat-sn">সনাতন</div>
-          <div class="sc-word">পদ্ধতি</div>
-        </div>
-        <div class="sc-bot">
-          <div class="sc-icon-row">
-            <i class="fa-solid fa-bangladeshi-taka-sign"></i>
-            <i class="fa-solid fa-circle" style="font-size:3px;color:rgba(160,210,235,0.3);"></i>
-            <i class="fa-solid fa-landmark"></i>
-          </div>
-          <div class="sc-price">{{STR_NEW}}/-</div>
-          <div class="sc-unit">প্রতি গ্রাম</div>
-          <div class="sc-chg {{STR_DIR}}">
-            <i class="fa-solid {{STR_ICON}}"></i> {{STR_DIFF}} ৳
-          </div>
+        <div class="vc vc-silver" style="opacity:0.75;">
+          <div class="vc-lbl-row"><i class="fa-solid fa-gem"></i><span class="vc-lbl">সনাতন · ভরি</span></div>
+          <div class="vc-val">{{STR_VORI}}</div>
+          <div class="vc-unit">৳ প্রতি ভরি</div>
         </div>
       </div>
-    </div>
-
-    <!-- Silver vori strip -->
-    <div class="vori-row" style="margin-bottom:10px;">
-      <div class="vc vc-silver">
-        <div class="vc-lbl-row"><i class="fa-solid fa-circle-dot"></i><span class="vc-lbl">২২ ক্যারেট · ভরি</span></div>
-        <div class="vc-val">{{S22_VORI}}</div>
-        <div class="vc-unit">৳ প্রতি ভরি (১১.৬৬৪ গ্রাম)</div>
-      </div>
-      <div class="vc vc-silver">
-        <div class="vc-lbl-row"><i class="fa-solid fa-circle-dot"></i><span class="vc-lbl">২১ ক্যারেট · ভরি</span></div>
-        <div class="vc-val">{{S21_VORI}}</div>
-        <div class="vc-unit">৳ প্রতি ভরি</div>
-      </div>
-      <div class="vc vc-silver">
-        <div class="vc-lbl-row"><i class="fa-solid fa-circle-dot"></i><span class="vc-lbl">১৮ ক্যারেট · ভরি</span></div>
-        <div class="vc-val">{{S18_VORI}}</div>
-        <div class="vc-unit">৳ প্রতি ভরি</div>
-      </div>
-      <div class="vc vc-silver" style="opacity:0.75;">
-        <div class="vc-lbl-row"><i class="fa-solid fa-gem"></i><span class="vc-lbl">সনাতন · ভরি</span></div>
-        <div class="vc-val">{{STR_VORI}}</div>
-        <div class="vc-unit">৳ প্রতি ভরি</div>
-      </div>
-    </div>
-
-    <!-- ── WEBSITE PROMO ── -->
-    <div class="promo-strip">
-      <i class="fa-solid fa-globe"></i>
-      <span class="promo-text">লাইভ স্বর্ণ ও রূপার মূল্য আপডেট পেতে ভিজিট করুন</span>
-      <i class="fa-solid fa-arrow-right" style="font-size:10px;color:rgba(212,175,55,0.5);"></i>
-      <span class="promo-link">goldpricebd.pages.dev <i class="fa-solid fa-up-right-from-square"></i></span>
     </div>
 
     <!-- ── FOOTER ── -->
@@ -816,29 +766,15 @@ body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',
           <i class="fa-solid fa-circle-info"></i>
           তথ্যসূত্র: <b>বাংলাদেশ জুয়েলার্স সমিতি (বাজুস)</b>
         </div>
-        <div class="ft-web">
-          <i class="fa-solid fa-globe"></i> nfjs.odoo.com &nbsp;·&nbsp;
+        <div class="ft-contact">
           <i class="fa-solid fa-phone"></i> +880 1911-367421
         </div>
       </div>
-
-      <div class="ft-center">
-        <div class="ft-badges">
-          <div class="badge badge-trust">
-            <i class="fa-solid fa-shield-halved"></i>৩৫+ বছরের বিশ্বস্ততা
-          </div>
-          <div class="badge badge-bajus">
-            <i class="fa-solid fa-certificate"></i> BAJUS Approved
-          </div>
-        </div>
-      </div>
-
       <div class="copyright">
         <div class="copy-main">
           <i class="fa-regular fa-copyright"></i>
-          GoldPriceBD
+          New Fashion Jewellers
         </div>
-        <div class="copy-sub">goldpricebd.pages.dev</div>
       </div>
     </div>
 
