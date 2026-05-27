@@ -3973,5 +3973,20 @@
     "silver_chg_pct": null,
     "silver_gram_bdt": 305.3082,
     "usd_bdt": 122.709947
+  },
+  {
+    "date": "2026-05-27",
+    "timestamp": "2026-05-27T00:01:23.788Z",
+    "gold_usd_oz": 4523.5,
+    "gold_prev_usd_oz": null,
+    "gold_chg_usd": null,
+    "gold_chg_pct": null,
+    "gold_gram_bdt": 17846.17,
+    "silver_usd_oz": 77.574997,
+    "silver_prev_usd_oz": null,
+    "silver_chg_usd": null,
+    "silver_chg_pct": null,
+    "silver_gram_bdt": 306.0499,
+    "usd_bdt": 122.709947
   }
 ]
