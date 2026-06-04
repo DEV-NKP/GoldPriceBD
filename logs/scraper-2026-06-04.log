@@ -144,3 +144,26 @@
 [2026-06-04T21:21:00.633Z] [INFO ] Intl: updated same-day entry
 [2026-06-04T21:21:00.832Z] [INFO ] latest.json written | Final source: cache
 [2026-06-04T21:21:00.833Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-04T22:58:55.058Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-04T22:58:55.060Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-06-04T22:58:55.061Z] [INFO ] Mode: LIVE
+[2026-06-04T22:58:55.061Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-04T22:58:55.063Z] [INFO ] History size — Gold: 220, Silver: 213, Intl: 261
+[2026-06-04T22:58:55.064Z] [INFO ] ════════════════════════════════
+[2026-06-04T22:58:55.064Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-06-04T22:58:55.065Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-06-04T22:58:56.376Z] [WARN ] BAJUSCTG API failed: invalid json response body at https://bajushub.com/ reason: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+[2026-06-04T22:58:56.376Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-06-04T22:58:56.623Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-06-04T22:58:57.043Z] [WARN ] GoldR.org parsed but data invalid
+[2026-06-04T22:58:57.044Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-06-04T22:58:57.291Z] [INFO ] Trying Strategy 4: Wayback Machine...
+[2026-06-04T22:59:02.469Z] [WARN ] Wayback failed: No snapshot
+[2026-06-04T22:59:02.470Z] [INFO ] Using cached prices from 2026-06-02 (66h old)
+[2026-06-04T22:59:02.470Z] [WARN ] ALL LIVE SOURCES FAILED — Using cached prices (mandatory fallback)
+[2026-06-04T22:59:02.471Z] [INFO ] Fetching international prices...
+[2026-06-04T22:59:02.805Z] [INFO ] Gold: no change — skipping append
+[2026-06-04T22:59:02.806Z] [INFO ] Silver: no change — skipping append
+[2026-06-04T22:59:02.806Z] [INFO ] Intl: updated same-day entry
+[2026-06-04T22:59:02.833Z] [INFO ] latest.json written | Final source: cache
+[2026-06-04T22:59:02.834Z] [INFO ] ══════════════════════════════════════════════
