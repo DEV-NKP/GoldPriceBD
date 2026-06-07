@@ -200,3 +200,27 @@
 [2026-06-07T20:58:03.927Z] [INFO ] Intl: no change — skipping append
 [2026-06-07T20:58:04.184Z] [INFO ] latest.json written | Final source: cache
 [2026-06-07T20:58:04.185Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-07T22:00:16.854Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-07T22:00:16.855Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-06-07T22:00:16.856Z] [INFO ] Mode: LIVE
+[2026-06-07T22:00:16.857Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-07T22:00:16.859Z] [INFO ] History size — Gold: 221, Silver: 214, Intl: 264
+[2026-06-07T22:00:16.859Z] [INFO ] ════════════════════════════════
+[2026-06-07T22:00:16.860Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-06-07T22:00:16.861Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-06-07T22:00:18.173Z] [WARN ] BAJUSCTG API failed: HTTP 401
+[2026-06-07T22:00:18.174Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-06-07T22:00:18.580Z] [WARN ] BAJUSCTG HTML failed: HTTP 401
+[2026-06-07T22:00:18.581Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-06-07T22:00:19.073Z] [WARN ] GoldR.org parsed but data invalid
+[2026-06-07T22:00:19.074Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-06-07T22:00:19.284Z] [INFO ] Trying Strategy 4: Wayback Machine...
+[2026-06-07T22:00:19.638Z] [WARN ] Wayback failed: request to https://archive.org/wayback/available?url=bajus.org/gold-price failed, reason: read ECONNRESET
+[2026-06-07T22:00:19.639Z] [INFO ] Using cached prices from 2026-06-05 (61h old)
+[2026-06-07T22:00:19.640Z] [WARN ] ALL LIVE SOURCES FAILED — Using cached prices (mandatory fallback)
+[2026-06-07T22:00:19.640Z] [INFO ] Fetching international prices...
+[2026-06-07T22:00:20.224Z] [INFO ] Gold: no change — skipping append
+[2026-06-07T22:00:20.225Z] [INFO ] Silver: no change — skipping append
+[2026-06-07T22:00:20.225Z] [INFO ] Intl: no change — skipping append
+[2026-06-07T22:00:20.251Z] [INFO ] latest.json written | Final source: cache
+[2026-06-07T22:00:20.252Z] [INFO ] ══════════════════════════════════════════════
