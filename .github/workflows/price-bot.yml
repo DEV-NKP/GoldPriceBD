@@ -18,9 +18,6 @@ permissions:
   contents: write
 
 jobs:
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 1: Price scraper
-  # ─────────────────────────────────────────────────────────────────────────────
   update-prices:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -52,9 +49,10 @@ jobs:
       - name: Install npm dependencies
         run: npm ci --prefer-offline || npm install
 
-      # 👇 ADD THIS STEP - Install Chrome for Puppeteer
       - name: Install Chrome for Puppeteer
-        run: npx puppeteer browsers install chrome
+        run: |
+          rm -rf ~/.cache/puppeteer
+          npx puppeteer browsers install chrome
 
       - name: Run price scraper
         run: |
@@ -107,9 +105,6 @@ jobs:
           echo "❌ All push attempts failed"
           exit 1
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 2: Facebook post (runs only after Job 1 succeeds)
-  # ─────────────────────────────────────────────────────────────────────────────
   post-to-facebook:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -148,9 +143,10 @@ jobs:
       - name: Install npm dependencies
         run: npm ci --prefer-offline || npm install
 
-      # 👇 ADD THIS STEP - Install Chrome for Puppeteer
       - name: Install Chrome for Puppeteer
-        run: npx puppeteer browsers install chrome
+        run: |
+          rm -rf ~/.cache/puppeteer
+          npx puppeteer browsers install chrome
 
       - name: Handle force FB post flag
         if: ${{ github.event.inputs.force_fb_post == 'true' }}
