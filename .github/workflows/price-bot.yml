@@ -114,9 +114,10 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       FB_PAGE_ACCESS_TOKEN: ${{ secrets.FB_PAGE_ACCESS_TOKEN }}
       FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
-      # Tell Puppeteer's postinstall to skip auto-downloading Chrome.
-      # We install it explicitly ourselves below, after wiping any partial cache.
+      # Skip Puppeteer's bundled Chrome download — we use system Chrome instead.
       PUPPETEER_SKIP_DOWNLOAD: "true"
+      # Tell Puppeteer exactly where the system Chrome binary is.
+      PUPPETEER_EXECUTABLE_PATH: "/usr/bin/google-chrome-stable"
 
     steps:
       - name: Checkout repository
@@ -131,10 +132,11 @@ jobs:
           node-version: "24"
           cache: "npm"
 
-      - name: Install system dependencies (Chromium + Bengali fonts)
+      - name: Install system dependencies (Chrome + Bengali fonts)
         run: |
           sudo apt-get update -q
-          sudo apt-get install -y -q \
+          # Install Google Chrome stable (pre-listed in runner's apt sources)
+          sudo apt-get install -y -q google-chrome-stable \
             libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 \
             libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
             libgbm1 libasound2t64 libpango-1.0-0 libpangocairo-1.0-0 \
@@ -143,19 +145,13 @@ jobs:
             fonts-lohit-beng-bengali \
             fonts-noto-core
           sudo fc-cache -fv
+          # Confirm Chrome is present and print its version
+          google-chrome-stable --version
 
       - name: Install npm dependencies
-        # PUPPETEER_SKIP_DOWNLOAD=true (set in env above) prevents the
-        # postinstall script from creating a partial/corrupt Chrome cache folder.
-        # We then install Chrome cleanly ourselves in the next step.
+        # PUPPETEER_SKIP_DOWNLOAD is set in env, so npm install won't try
+        # to download Chrome and won't create any partial cache folders.
         run: npm install
-
-      - name: Install Chrome for Puppeteer (clean)
-        # Wipe any partial cache that npm's postinstall may have left behind,
-        # then do a fresh install so Puppeteer finds a complete Chrome binary.
-        run: |
-          rm -rf ~/.cache/puppeteer
-          npx puppeteer browsers install chrome
 
       - name: Handle force FB post flag
         if: ${{ github.event.inputs.force_fb_post == 'true' }}
