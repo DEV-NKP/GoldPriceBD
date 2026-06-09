@@ -31,7 +31,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Always fetch the latest state of the branch
           ref: ${{ github.ref }}
           fetch-depth: 0
 
@@ -80,8 +79,6 @@ jobs:
           git config user.email "sonargold-bot@users.noreply.github.com"
 
       - name: Commit and push with retry
-        # Stash any untracked/unstaged changes before rebasing, then pop them
-        # Retry up to 5 times to survive concurrent cron collisions
         run: |
           git add data/ logs/
           if git diff --staged --quiet; then
@@ -93,7 +90,6 @@ jobs:
 
           for i in 1 2 3 4 5; do
             echo "Push attempt $i..."
-            # Stash any local modifications (e.g. package-lock diffs) before rebasing
             git stash --include-untracked || true
             git pull --rebase origin ${{ github.ref_name }}
             git stash pop || true
@@ -118,12 +114,14 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       FB_PAGE_ACCESS_TOKEN: ${{ secrets.FB_PAGE_ACCESS_TOKEN }}
       FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+      # Tell Puppeteer's postinstall to skip auto-downloading Chrome.
+      # We install it explicitly ourselves below, after wiping any partial cache.
+      PUPPETEER_SKIP_DOWNLOAD: "true"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Fresh checkout AFTER Job 1 has pushed — gets the latest data files
           ref: ${{ github.ref }}
           fetch-depth: 0
 
@@ -144,14 +142,20 @@ jobs:
             fonts-beng fonts-beng-extra \
             fonts-lohit-beng-bengali \
             fonts-noto-core
-          # Refresh font cache so Puppeteer/Chrome picks up the new fonts
           sudo fc-cache -fv
 
       - name: Install npm dependencies
-        run: npm ci --prefer-offline || npm install
+        # PUPPETEER_SKIP_DOWNLOAD=true (set in env above) prevents the
+        # postinstall script from creating a partial/corrupt Chrome cache folder.
+        # We then install Chrome cleanly ourselves in the next step.
+        run: npm install
 
-      - name: Install Chrome for Puppeteer
-        run: npx puppeteer browsers install chrome
+      - name: Install Chrome for Puppeteer (clean)
+        # Wipe any partial cache that npm's postinstall may have left behind,
+        # then do a fresh install so Puppeteer finds a complete Chrome binary.
+        run: |
+          rm -rf ~/.cache/puppeteer
+          npx puppeteer browsers install chrome
 
       - name: Handle force FB post flag
         if: ${{ github.event.inputs.force_fb_post == 'true' }}
