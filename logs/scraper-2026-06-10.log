@@ -156,3 +156,26 @@
 [2026-06-10T21:36:48.080Z] [INFO ] Intl: updated same-day entry
 [2026-06-10T21:36:48.095Z] [INFO ] latest.json written | Final source: fallback
 [2026-06-10T21:36:48.096Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-10T23:39:10.744Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-10T23:39:10.746Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-06-10T23:39:10.746Z] [INFO ] Mode: LIVE
+[2026-06-10T23:39:10.747Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-10T23:39:10.749Z] [INFO ] History size — Gold: 221, Silver: 214, Intl: 267
+[2026-06-10T23:39:10.750Z] [INFO ] ════════════════════════════════
+[2026-06-10T23:39:10.750Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-06-10T23:39:10.751Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-06-10T23:39:12.767Z] [WARN ] BAJUSCTG API failed: invalid json response body at https://bajushub.com/ reason: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+[2026-06-10T23:39:12.768Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-06-10T23:39:13.057Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-06-10T23:39:13.376Z] [WARN ] GoldR.org parsed but data invalid
+[2026-06-10T23:39:13.376Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-06-10T23:39:13.602Z] [INFO ] Trying Strategy 4: Wayback Machine...
+[2026-06-10T23:39:18.974Z] [WARN ] Wayback failed: No snapshot
+[2026-06-10T23:39:18.976Z] [WARN ] Cache too old (135h)
+[2026-06-10T23:39:18.976Z] [ERROR] CRITICAL FAILURE — All sources + cache unavailable. Using zero fallback.
+[2026-06-10T23:39:18.977Z] [INFO ] Fetching international prices...
+[2026-06-10T23:39:19.582Z] [INFO ] Gold: no change — skipping append
+[2026-06-10T23:39:19.583Z] [INFO ] Silver: no change — skipping append
+[2026-06-10T23:39:19.583Z] [INFO ] Intl: updated same-day entry
+[2026-06-10T23:39:19.610Z] [INFO ] latest.json written | Final source: fallback
+[2026-06-10T23:39:19.611Z] [INFO ] ══════════════════════════════════════════════
