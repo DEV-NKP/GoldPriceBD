@@ -28,7 +28,7 @@ puppeteer.use(StealthPlugin());
 /* ─── CONFIG ─── */
 const CFG = {
   // Primary
-  BAJUSCTG_API: 'https://www.bajusctg.org/pricesx.php',
+  BAJUSCTG_API: 'https://bajushub.com/pricesx.php',
   BAJUSCTG_HOME: 'https://www.bajusctg.org/',
 
   // Mirrors
