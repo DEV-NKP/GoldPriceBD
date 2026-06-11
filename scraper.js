@@ -1,15 +1,18 @@
 /**
- * GoldPriceBD — Price Scraper v4.0 (Multi-Source Robust + Mandatory Cache)
+ * GoldPriceBD — Price Scraper v4.1 (Multi-Source Robust + Mandatory Cache)
  * ============================================================
  * Runs every 4 hours via GitHub Actions.
  * Uses multiple BAJUS mirrors + cache fallback. Never returns blank prices.
  *
  * Sources (tried in order, stops at first success):
- * 1. bajusctg.org (API + HTML)
+ * 0. bajus.org.bd (Official)
+ * 1. bajushub.com (HTML Tables - FIXED)
  * 2. goldr.org homepage (tables with gram/vori)
  * 3. bdgoldprice.com (clean BAJUS mirror)
- * 4. Wayback Machine (bajus.org archive)
- * 5. Cache (last good price — mandatory)
+ * 4. goldpricebd.com (Additional mirror)
+ * 5. bajusctg.org (Legacy API + HTML)
+ * 6. Wayback Machine (bajus.org.bd archive)
+ * 7. Cache (last good price — mandatory 7 days)
  *
  * Output files:
  * data/gold_prices.json, silver_prices.json, intl_prices.json, latest.json
@@ -27,22 +30,28 @@ puppeteer.use(StealthPlugin());
 
 /* ─── CONFIG ─── */
 const CFG = {
-  // Primary
+  // Primary Official
+  BAJUS_OFFICIAL: 'https://bajus.org.bd/',
+  
+  // Mirrors
+  BAJUSHUB_HOME: 'https://bajushub.com/',
+  GOLDR_HOME: 'https://www.goldr.org/',
+  BDGOLDPRICE_HOME: 'https://www.bdgoldprice.com/',
+  GOLDPRICEBD_HOME: 'https://goldpricebd.com/',
+
+  // Legacy
   BAJUSCTG_API: 'https://www.bajusctg.org/pricesx.php',
   BAJUSCTG_HOME: 'https://www.bajusctg.org/',
 
-  // Mirrors
-  GOLDR_HOME: 'https://www.goldr.org/',
-  BDGOLDPRICE_HOME: 'https://www.bdgoldprice.com/',
-
   // Wayback
-  WAYBACK_CDX_URL: 'https://archive.org/wayback/available?url=bajus.org/gold-price',
+  WAYBACK_CDX_URL: 'https://archive.org/wayback/available?url=bajus.org.bd/',
   WAYBACK_BASE: 'https://web.archive.org/web/',
 
   // International
   INTL_GOLD_URL: 'https://api.gold-api.com/price/XAU',
   INTL_SILVER_URL: 'https://api.gold-api.com/price/XAG',
   FX_URL: 'https://open.er-api.com/v6/latest/USD',
+  FX_URL_2: 'https://api.exchangerate-api.com/v4/latest/USD',
 
   DATA_DIR: path.join(__dirname, 'data'),
   LOG_DIR: path.join(__dirname, 'logs'),
@@ -56,7 +65,7 @@ const CFG = {
   TIMEOUT: 45000,
   MAX_RETRIES: 2,
   LOG_KEEP_DAYS: 30,
-  CACHE_MAX_AGE_MS: 3 * 24 * 60 * 60 * 1000, // 3 days
+  CACHE_MAX_AGE_MS: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
 const VORI = 11.664;
@@ -174,7 +183,6 @@ async function fetchWithHeaders(url) {
         ? new SocksProxyAgent(proxyUrl) 
         : new HttpsProxyAgent(proxyUrl);
       options.agent = agent;
-      info(`Using proxy for ${url}`);
     } catch (e) {
       warn(`Proxy setup failed: ${e.message}`);
     }
@@ -186,20 +194,175 @@ async function fetchWithHeaders(url) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   STRATEGY 1: BAJUSCTG (Primary)
+   UNIVERSAL HTML TABLE PARSER (Handles IDs, Classes, Raw Text)
+   ═══════════════════════════════════════════════════════════ */
+function parseGenericHTMLTable(html, sourceName) {
+  if (!html || html.length < 200) return null;
+  const $ = cheerio.load(html);
+  
+  const result = {
+    gold: { g22: null, g21: null, g18: null, gtr: null },
+    silver: { s22: null, s21: null, s18: null, str: null },
+    raw: sourceName,
+    source: sourceName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+  };
+
+  // Iterate through all table rows in the page
+  $('tr').each((i, row) => {
+    const rowText = convertBengaliToArabic($(row).text());
+    
+    // Find all numbers in the row
+    const numbers = rowText.match(/([\d,]{3,7})/g);
+    if (!numbers || numbers.length === 0) return;
+    
+    // Usually the price is the last large number in the row
+    const priceStr = numbers[numbers.length - 1];
+    const price = extractPrice(priceStr);
+    if (!price || price < 100) return; // Ignore tiny numbers (e.g., dates, karat numbers)
+
+    // Auto-detect Vori vs Gram (Vori > 50,000 typically, Gram < 20,000)
+    const isVori = price > 50000;
+    const gramPrice = isVori ? Math.round(price / VORI) : price;
+
+    // Match Karats
+    if (rowText.includes('22') && !result.gold.g22) result.gold.g22 = gramPrice;
+    else if (rowText.includes('21') && !result.gold.g21) result.gold.g21 = gramPrice;
+    else if (rowText.includes('18') && !result.gold.g18) result.gold.g18 = gramPrice;
+    else if ((rowText.includes('সনাতন') || rowText.toLowerCase().includes('traditional')) && !result.gold.gtr) {
+      result.gold.gtr = gramPrice;
+    }
+    // Match Silver
+    else if ((rowText.includes('রুপা') || rowText.toLowerCase().includes('silver')) && !result.silver.s22) {
+      result.silver.s22 = isVori ? Math.round(price / VORI) : price;
+    }
+  });
+
+  return result;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   STRATEGY 0: BAJUS Official (bajus.org.bd)
+   ═══════════════════════════════════════════════════════════ */
+async function fetchFromBajusOfficial() {
+  info('Trying Strategy 0: BAJUS Official (bajus.org.bd)...');
+  try {
+    const html = await fetchWithHeaders(CFG.BAJUS_OFFICIAL);
+    const parsed = parseGenericHTMLTable(html, 'bajus-official');
+    
+    if (parsed && isValidGold(parsed)) {
+      info(`✓ BAJUS Official success: 22K gram = ${parsed.gold.g22}`);
+      return parsed;
+    } else {
+      warn('BAJUS Official parsed but data invalid');
+    }
+  } catch (e) {
+    warn(`BAJUS Official failed: ${e.message}`);
+  }
+  return null;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STRATEGY 1: BajusHub (bajushub.com) - HTML PARSER FIX
+   ═══════════════════════════════════════════════════════════ */
+async function fetchFromBajusHub() {
+  info('Trying Strategy 1: BajusHub (bajushub.com)...');
+  try {
+    // We know this returns HTML, NOT JSON
+    const html = await fetchWithHeaders(CFG.BAJUSHUB_HOME);
+    const parsed = parseGenericHTMLTable(html, 'bajushub');
+    
+    if (parsed && isValidGold(parsed)) {
+      info(`✓ BajusHub success: 22K gram = ${parsed.gold.g22}`);
+      return parsed;
+    } else {
+      warn('BajusHub parsed but data invalid');
+    }
+  } catch (e) {
+    warn(`BajusHub failed: ${e.message}`);
+  }
+  return null;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STRATEGY 2: GoldR.org Homepage
+   ═══════════════════════════════════════════════════════════ */
+async function fetchFromGoldR() {
+  info('Trying Strategy 2: GoldR.org homepage...');
+  try {
+    const html = await fetchWithHeaders(CFG.GOLDR_HOME);
+    const parsed = parseGenericHTMLTable(html, 'goldr-homepage');
+    
+    if (parsed && isValidGold(parsed)) {
+      info(`✓ GoldR.org success: 22K gram ≈ ${parsed.gold.g22}`);
+      return parsed;
+    } else {
+      warn('GoldR.org parsed but data invalid');
+    }
+  } catch (e) {
+    warn(`GoldR.org failed: ${e.message}`);
+  }
+  return null;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STRATEGY 3: BDGoldPrice.com
+   ═══════════════════════════════════════════════════════════ */
+async function fetchFromBDGoldPrice() {
+  info('Trying Strategy 3: bdgoldprice.com...');
+  try {
+    const html = await fetchWithHeaders(CFG.BDGOLDPRICE_HOME);
+    const parsed = parseGenericHTMLTable(html, 'bdgoldprice');
+    
+    if (parsed && isValidGold(parsed)) {
+      info(`✓ BDGoldPrice success: 22K gram = ${parsed.gold.g22}`);
+      return parsed;
+    }
+  } catch (e) {
+    warn(`BDGoldPrice failed: ${e.message}`);
+  }
+  return null;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STRATEGY 4: GoldPriceBD.com
+   ═══════════════════════════════════════════════════════════ */
+async function fetchFromGoldPriceBD() {
+  info('Trying Strategy 4: goldpricebd.com...');
+  try {
+    const html = await fetchWithHeaders(CFG.GOLDPRICEBD_HOME);
+    const parsed = parseGenericHTMLTable(html, 'goldpricebd');
+    
+    if (parsed && isValidGold(parsed)) {
+      info(`✓ GoldPriceBD success: 22K gram = ${parsed.gold.g22}`);
+      return parsed;
+    }
+  } catch (e) {
+    warn(`GoldPriceBD failed: ${e.message}`);
+  }
+  return null;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STRATEGY 5: BAJUSCTG (Legacy)
    ═══════════════════════════════════════════════════════════ */
 async function fetchFromBajusCTG() {
-  info('Trying Strategy 1: BAJUSCTG API...');
+  info('Trying Strategy 5: BAJUSCTG API...');
   try {
     const { default: fetch } = await import('node-fetch');
     const res = await fetch(CFG.BAJUSCTG_API, {
       headers: { 'User-Agent': rndUA() },
-      signal: AbortSignal.timeout(15000)
+      signal: AbortSignal.timeout(10000)
     });
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error(`Not JSON (${contentType.substring(0, 20)})`);
+    }
+    
     const data = await res.json();
-
     if (!data) throw new Error('Empty response');
 
     const result = {
@@ -220,21 +383,21 @@ async function fetchFromBajusCTG() {
     };
 
     if (isValidGold(result)) {
-      info(`✓ BAJUSCTG success: 22K gram ≈ ${result.gold.g22}`);
+      info(`✓ BAJUSCTG API success: 22K gram ≈ ${result.gold.g22}`);
       return result;
     }
   } catch (e) {
     warn(`BAJUSCTG API failed: ${e.message}`);
   }
 
-  // HTML fallback if API fails
+  // HTML fallback
   try {
     info('Trying BAJUSCTG HTML fallback...');
     const html = await fetchWithHeaders(CFG.BAJUSCTG_HOME);
-    const parsed = parseBajusCTGHTML(html);
+    const parsed = parseGenericHTMLTable(html, 'bajusctg-html');
     if (parsed && isValidGold(parsed)) {
       info(`✓ BAJUSCTG HTML success`);
-      return { ...parsed, source: 'bajusctg-html' };
+      return parsed;
     }
   } catch (e) {
     warn(`BAJUSCTG HTML failed: ${e.message}`);
@@ -243,103 +406,10 @@ async function fetchFromBajusCTG() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   STRATEGY 2: GoldR.org Homepage
-   ═══════════════════════════════════════════════════════════ */
-async function fetchFromGoldR() {
-  info('Trying Strategy 2: GoldR.org homepage...');
-  try {
-    const html = await fetchWithHeaders(CFG.GOLDR_HOME);
-    const $ = cheerio.load(html);
-
-    const result = {
-      gold: { g22: null, g21: null, g18: null, gtr: null },
-      silver: { s22: null, s21: null, s18: null, str: null },
-      raw: 'GoldR.org HTML',
-      source: 'goldr-homepage',
-    };
-
-    // Extract from vori table (most reliable)
-    const voriTableText = $('#table-vori').text() || $('table').text();
-    const convText = convertBengaliToArabic(voriTableText);
-
-    // Gold
-    if (convText.includes('22 Karat') || convText.includes('২২')) {
-      const match22 = convText.match(/22.*?(\d{3,6})/i);
-      if (match22) result.gold.g22 = extractPrice(match22[0]) / VORI;
-    }
-    if (convText.includes('21 Karat') || convText.includes('২১')) {
-      const match21 = convText.match(/21.*?(\d{3,6})/i);
-      if (match21) result.gold.g21 = extractPrice(match21[0]) / VORI;
-    }
-    if (convText.includes('18 Karat') || convText.includes('১৮')) {
-      const match18 = convText.match(/18.*?(\d{3,6})/i);
-      if (match18) result.gold.g18 = extractPrice(match18[0]) / VORI;
-    }
-    if (convText.includes('Traditional') || convText.includes('সনাতন')) {
-      const matchTr = convText.match(/Traditional|সনাতন.*?(\d{3,6})/i);
-      if (matchTr) result.gold.gtr = extractPrice(matchTr[0]) / VORI;
-    }
-
-    // Silver (similar)
-    if (convText.includes('Silver') || convText.includes('রুপা')) {
-      const s22Match = convText.match(/22.*?Silver.*?(\d{3,5})/i);
-      if (s22Match) result.silver.s22 = extractPrice(s22Match[0]) / VORI;
-    }
-
-    if (isValidGold(result)) {
-      info(`✓ GoldR.org success: 22K ≈ ${Math.round(result.gold.g22 * VORI)}/vori`);
-      return result;
-    } else {
-      warn('GoldR.org parsed but data invalid');
-    }
-  } catch (e) {
-    warn(`GoldR.org failed: ${e.message}`);
-  }
-  return null;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   STRATEGY 3: BDGoldPrice.com
-   ═══════════════════════════════════════════════════════════ */
-async function fetchFromBDGoldPrice() {
-  info('Trying Strategy 3: bdgoldprice.com...');
-  try {
-    const html = await fetchWithHeaders(CFG.BDGOLDPRICE_HOME);
-    const $ = cheerio.load(html);
-    const bodyText = convertBengaliToArabic($('body').text());
-
-    const result = {
-      gold: { g22: null, g21: null, g18: null, gtr: null },
-      silver: { s22: null, s21: null, s18: null, str: null },
-      raw: 'BDGoldPrice',
-      source: 'bdgoldprice',
-    };
-
-    // Look for gram prices (common on this site)
-    const gram22 = bodyText.match(/22K.*?(\d{4,6})/i);
-    if (gram22) result.gold.g22 = extractPrice(gram22[0]);
-
-    const gram21 = bodyText.match(/21K.*?(\d{4,6})/i);
-    if (gram21) result.gold.g21 = extractPrice(gram21[0]);
-
-    const gram18 = bodyText.match(/18K.*?(\d{4,6})/i);
-    if (gram18) result.gold.g18 = extractPrice(gram18[0]);
-
-    if (isValidGold(result)) {
-      info(`✓ BDGoldPrice success`);
-      return result;
-    }
-  } catch (e) {
-    warn(`BDGoldPrice failed: ${e.message}`);
-  }
-  return null;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   STRATEGY 4: Wayback Machine
+   STRATEGY 6: Wayback Machine
    ═══════════════════════════════════════════════════════════ */
 async function fetchFromWayback() {
-  info('Trying Strategy 4: Wayback Machine...');
+  info('Trying Strategy 6: Wayback Machine...');
   try {
     const { default: fetch } = await import('node-fetch');
     const cdxRes = await fetch(CFG.WAYBACK_CDX_URL, { signal: AbortSignal.timeout(15000) });
@@ -356,73 +426,15 @@ async function fetchFromWayback() {
     if (!pageRes.ok) throw new Error(`HTTP ${pageRes.status}`);
     const html = await pageRes.text();
 
-    const parsed = parseBajusHTML(html, 'wayback');
+    const parsed = parseGenericHTMLTable(html, 'wayback');
     if (parsed && isValidGold(parsed)) {
       info(`✓ Wayback success`);
-      return { ...parsed, source: 'wayback' };
+      return parsed;
     }
   } catch (e) {
     warn(`Wayback failed: ${e.message}`);
   }
   return null;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   PARSE FUNCTIONS
-   ═══════════════════════════════════════════════════════════ */
-function parseBajusCTGHTML(html) {
-  if (!html || html.length < 500) return null;
-  const $ = cheerio.load(html);
-  const result = {
-    gold: { g22: null, g21: null, g18: null, gtr: null },
-    silver: { s22: null, s21: null, s18: null, str: null },
-    raw: 'BAJUSCTG HTML',
-    source: 'bajusctg-html',
-  };
-
-  // Try ID selectors first
-  result.gold.g22 = extractPrice($('#gold-22k').text());
-  result.gold.g21 = extractPrice($('#gold-21k').text());
-  result.gold.g18 = extractPrice($('#gold-18k').text());
-  result.gold.gtr = extractPrice($('#gold-trad').text());
-
-  if (!result.gold.g22) {
-    // Fallback to text search
-    const bodyConv = convertBengaliToArabic($('body').text());
-    const g22m = bodyConv.match(/22k.*?(\d{4,6})/i);
-    if (g22m) result.gold.g22 = extractPrice(g22m[0]);
-  }
-
-  return result;
-}
-
-function parseBajusHTML(html, sourceUrl) {
-  if (!html || html.length < 500) return null;
-  const $ = cheerio.load(html);
-  const bodyText = $('body').text().replace(/[\n\r\t]+/g, ' ').replace(/\s{2,}/g, ' ');
-  const convText = convertBengaliToArabic(bodyText);
-
-  const result = {
-    gold: { g22: null, g21: null, g18: null, gtr: null },
-    silver: { s22: null, s21: null, s18: null, str: null },
-    raw: bodyText.substring(0, 500),
-    source: sourceUrl || 'html',
-  };
-
-  // Simple number extraction for 22K etc.
-  const g22Match = convText.match(/22.*?(\d{4,6})/i);
-  if (g22Match) result.gold.g22 = extractPrice(g22Match[0]);
-
-  const g21Match = convText.match(/21.*?(\d{4,6})/i);
-  if (g21Match) result.gold.g21 = extractPrice(g21Match[0]);
-
-  const g18Match = convText.match(/18.*?(\d{4,6})/i);
-  if (g18Match) result.gold.g18 = extractPrice(g18Match[0]);
-
-  const trMatch = convText.match(/traditional|সনাতন.*?(\d{4,6})/i);
-  if (trMatch) result.gold.gtr = extractPrice(trMatch[0]);
-
-  return result;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -463,28 +475,33 @@ function getLastGoodBajus(goldHist, silverHist) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   INTERNATIONAL PRICES (unchanged)
+   INTERNATIONAL PRICES
    ═══════════════════════════════════════════════════════════ */
 async function fetchInternational() {
   info('Fetching international prices...');
   const { default: fetch } = await import('node-fetch');
 
-  const fetchJSON = async (url, label) => {
-    try {
-      const r = await fetch(url, {
-        signal: AbortSignal.timeout(15000),
-        headers: { 'User-Agent': rndUA() }
-      });
-      return await r.json();
-    } catch (e) {
-      error(`${label} fetch failed: ${e.message}`);
-      return null;
+  const fetchJSON = async (urls, label) => {
+    for (const url of urls) {
+      try {
+        const r = await fetch(url, {
+          signal: AbortSignal.timeout(15000),
+          headers: { 'User-Agent': rndUA() }
+        });
+        if (!r.ok) continue;
+        const data = await r.json();
+        if (data) return data;
+      } catch (e) {
+        warn(`${label} failed from ${url}: ${e.message}`);
+      }
     }
+    error(`${label}: all sources failed`);
+    return null;
   };
 
-  const gold = await fetchJSON(CFG.INTL_GOLD_URL, 'XAU');
-  const silver = await fetchJSON(CFG.INTL_SILVER_URL, 'XAG');
-  const fx = await fetchJSON(CFG.FX_URL, 'FX');
+  const gold = await fetchJSON([CFG.INTL_GOLD_URL], 'XAU');
+  const silver = await fetchJSON([CFG.INTL_SILVER_URL], 'XAG');
+  const fx = await fetchJSON([CFG.FX_URL, CFG.FX_URL_2], 'FX');
 
   const pick = (obj, ...keys) => {
     for (const k of keys) {
@@ -588,39 +605,27 @@ function persist(entry, history, file, keys, label) {
    ═══════════════════════════════════════════════════════════ */
 async function scrapeBajus() {
   info('════════════════════════════════');
-  info('Starting BAJUS scrape v4.0 (sequential)...');
+  info('Starting BAJUS scrape v4.1 (sequential)...');
 
-  let result = null;
+  const strategies = [
+    { name: 'BAJUS Official', fn: fetchFromBajusOfficial },
+    { name: 'BajusHub', fn: fetchFromBajusHub },
+    { name: 'GoldR.org', fn: fetchFromGoldR },
+    { name: 'BDGoldPrice', fn: fetchFromBDGoldPrice },
+    { name: 'GoldPriceBD', fn: fetchFromGoldPriceBD },
+    { name: 'BAJUSCTG', fn: fetchFromBajusCTG },
+    { name: 'Wayback', fn: fetchFromWayback },
+  ];
 
-  // 1. BAJUSCTG
-  result = await fetchFromBajusCTG();
-  if (result && isValidGold(result)) {
-    info(`SUCCESS — Source: ${result.source}`);
-    return result;
+  for (const strategy of strategies) {
+    const result = await strategy.fn();
+    if (result && isValidGold(result)) {
+      info(`SUCCESS — Source: ${result.source}`);
+      return result;
+    }
   }
 
-  // 2. GoldR.org
-  result = await fetchFromGoldR();
-  if (result && isValidGold(result)) {
-    info(`SUCCESS — Source: ${result.source}`);
-    return result;
-  }
-
-  // 3. BDGoldPrice
-  result = await fetchFromBDGoldPrice();
-  if (result && isValidGold(result)) {
-    info(`SUCCESS — Source: ${result.source}`);
-    return result;
-  }
-
-  // 4. Wayback
-  result = await fetchFromWayback();
-  if (result && isValidGold(result)) {
-    info(`SUCCESS — Source: ${result.source}`);
-    return result;
-  }
-
-  // 5. Cache (mandatory)
+  // Cache fallback
   const goldHist = readJSON(CFG.GOLD_FILE, []);
   const silverHist = readJSON(CFG.SILVER_FILE, []);
   const cached = getLastGoodBajus(goldHist, silverHist);
@@ -630,10 +635,10 @@ async function scrapeBajus() {
     return cached;
   }
 
-  // Ultimate fallback (should rarely reach here)
+  // Ultimate fallback
   error('CRITICAL FAILURE — All sources + cache unavailable. Using zero fallback.');
   return {
-    gold: { g22: 21000, g21: 20000, g18: 17000, gtr: 14000 }, // safe dummy
+    gold: { g22: 21000, g21: 20000, g18: 17000, gtr: 14000 },
     silver: { s22: 450, s21: 430, s18: 380, str: 280 },
     raw: 'ultimate-fallback',
     source: 'fallback',
@@ -647,7 +652,7 @@ async function main() {
   const onlySource = args.find(a => a.startsWith('--source='))?.split('=')[1];
 
   info('══════════════════════════════════════════════');
-  info('SonarGold Scraper v4.0 starting...');
+  info('SonarGold Scraper v4.1 starting...');
   info(`Mode: ${dryRun ? 'DRY RUN' : 'LIVE'}`);
   if (process.env.WARP_PROXY) info(`Proxy: ${process.env.WARP_PROXY}`);
   info('══════════════════════════════════════════════');
