@@ -160,3 +160,26 @@ For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides
 [2026-06-11T04:34:37.742Z] [INFO ] Intl: updated same-day entry
 [2026-06-11T04:34:37.773Z] [INFO ] latest.json written | Final source: bajushub
 [2026-06-11T04:34:37.774Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-11T04:37:52.823Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-11T04:37:52.825Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-06-11T04:37:52.825Z] [INFO ] Mode: LIVE
+[2026-06-11T04:37:52.826Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-11T04:37:52.828Z] [INFO ] History size — Gold: 222, Silver: 215, Intl: 268
+[2026-06-11T04:37:52.828Z] [INFO ] ════════════════════════════════
+[2026-06-11T04:37:52.829Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-06-11T04:37:52.830Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-06-11T04:37:53.590Z] [WARN ] BAJUSCTG API failed: request to https://bajushub.com/ failed, reason: 
+[2026-06-11T04:37:53.590Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-06-11T04:37:53.844Z] [WARN ] BAJUSCTG HTML failed: request to https://www.bajusctg.org/ failed, reason: 
+[2026-06-11T04:37:53.845Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-06-11T04:37:54.088Z] [WARN ] GoldR.org parsed but data invalid
+[2026-06-11T04:37:54.089Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-06-11T04:37:54.197Z] [INFO ] Trying Strategy 4: Wayback Machine...
+[2026-06-11T04:37:54.902Z] [INFO ] Using cached prices from 2026-06-11 (0h old)
+[2026-06-11T04:37:54.902Z] [WARN ] ALL LIVE SOURCES FAILED — Using cached prices (mandatory fallback)
+[2026-06-11T04:37:54.903Z] [INFO ] Fetching international prices...
+[2026-06-11T04:37:55.849Z] [INFO ] Gold: no change — skipping append
+[2026-06-11T04:37:55.849Z] [INFO ] Silver: no change — skipping append
+[2026-06-11T04:37:55.850Z] [INFO ] Intl: updated same-day entry
+[2026-06-11T04:37:55.862Z] [INFO ] latest.json written | Final source: cache
+[2026-06-11T04:37:55.862Z] [INFO ] ══════════════════════════════════════════════
