@@ -1,8 +1,6 @@
 /**
- * GoldPriceBD — Price Scraper v4.2 (Puppeteer-Rendered + Multi-Source)
+ * GoldPriceBD — Price Scraper v4.3 (System Chrome + Puppeteer-Rendered)
  * ============================================================
- * Uses Puppeteer to render JS-heavy sites (bajushub, goldr, etc.)
- * before parsing, ensuring DOM tables are fully loaded.
  */
 
 'use strict';
@@ -100,16 +98,34 @@ const isValidGold = (p) => {
 };
 
 /* ═══════════════════════════════════════════════════════════
-   PUPPETEER BROWSER MANAGEMENT (Crucial for JS Sites)
+   PUPPETEER BROWSER MANAGEMENT (System Chrome Fix)
    ═══════════════════════════════════════════════════════════ */
 let browser = null;
 let page = null;
 
+// GitHub Actions runners have Chrome pre-installed. We find it here.
+function getSystemChromePath() {
+  const paths = [
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+  ];
+  for (const p of paths) {
+    if (fs.existsSync(p)) return p;
+  }
+  return undefined;
+}
+
 async function getPage() {
   if (!browser) {
     info('Launching headless browser...');
+    const execPath = getSystemChromePath();
+    if (execPath) info(`Using system Chrome: ${execPath}`);
+
     browser = await puppeteer.launch({
       headless: 'new',
+      executablePath: execPath, // Uses system Chrome if found, otherwise falls back to Puppeteer's bundled one
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
     });
     page = await browser.newPage();
@@ -133,11 +149,9 @@ async function fetchPageHTML(url) {
   try {
     p = await getPage();
     await p.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
-    // Extra delay to ensure React/Vue tables finish rendering
     await new Promise(r => setTimeout(r, 2000)); 
     return await p.content();
   } catch (e) {
-    // If page crashes browser, reset instance
     if (browser) {
       try { await browser.close(); } catch (_) {}
       browser = null; page = null;
@@ -165,12 +179,10 @@ function parseGenericHTMLTable(html, sourceName) {
     const numbers = rowText.match(/([\d,]{3,7})/g);
     if (!numbers || numbers.length === 0) return;
     
-    // Take the last large number in the row (usually the price column)
     const priceStr = numbers[numbers.length - 1];
     const price = extractPrice(priceStr);
     if (!price || price < 100) return;
 
-    // Auto-detect Vori (>50,000) vs Gram (<20,000)
     const isVori = price > 50000;
     const gramPrice = isVori ? Math.round(price / VORI) : price;
 
@@ -200,7 +212,7 @@ async function fetchFromBajusOfficial() {
       info(`✓ BAJUS Official success: 22K gram = ${parsed.gold.g22}`);
       return parsed;
     } else { warn('BAJUS Official parsed but data invalid'); }
-  } catch (e) { warn(`BAJUS Official failed: ${e.message}`); }
+  } catch (e) { warn(`BAJUS Official failed: ${e.message.split('\n')[0]}`); } // Only log first line of error to keep logs clean
   return null;
 }
 
@@ -213,7 +225,7 @@ async function fetchFromBajusHub() {
       info(`✓ BajusHub success: 22K gram = ${parsed.gold.g22}`);
       return parsed;
     } else { warn('BajusHub parsed but data invalid'); }
-  } catch (e) { warn(`BajusHub failed: ${e.message}`); }
+  } catch (e) { warn(`BajusHub failed: ${e.message.split('\n')[0]}`); }
   return null;
 }
 
@@ -226,7 +238,7 @@ async function fetchFromGoldR() {
       info(`✓ GoldR.org success: 22K gram ≈ ${parsed.gold.g22}`);
       return parsed;
     } else { warn('GoldR.org parsed but data invalid'); }
-  } catch (e) { warn(`GoldR.org failed: ${e.message}`); }
+  } catch (e) { warn(`GoldR.org failed: ${e.message.split('\n')[0]}`); }
   return null;
 }
 
@@ -239,7 +251,7 @@ async function fetchFromBDGoldPrice() {
       info(`✓ BDGoldPrice success: 22K gram = ${parsed.gold.g22}`);
       return parsed;
     }
-  } catch (e) { warn(`BDGoldPrice failed: ${e.message}`); }
+  } catch (e) { warn(`BDGoldPrice failed: ${e.message.split('\n')[0]}`); }
   return null;
 }
 
@@ -252,14 +264,13 @@ async function fetchFromGoldPriceBD() {
       info(`✓ GoldPriceBD success: 22K gram = ${parsed.gold.g22}`);
       return parsed;
     }
-  } catch (e) { warn(`GoldPriceBD failed: ${e.message}`); }
+  } catch (e) { warn(`GoldPriceBD failed: ${e.message.split('\n')[0]}`); }
   return null;
 }
 
 async function fetchFromBajusCTG() {
   info('Trying Strategy 5: BAJUSCTG API...');
   try {
-    // API uses fast node-fetch
     const { default: fetch } = await import('node-fetch');
     const res = await fetch(CFG.BAJUSCTG_API, {
       headers: { 'User-Agent': rndUA() },
@@ -281,7 +292,6 @@ async function fetchFromBajusCTG() {
     }
   } catch (e) { warn(`BAJUSCTG API failed: ${e.message}`); }
 
-  // HTML Fallback uses Puppeteer
   try {
     info('Trying BAJUSCTG HTML fallback...');
     const html = await fetchPageHTML(CFG.BAJUSCTG_HOME);
@@ -290,7 +300,7 @@ async function fetchFromBajusCTG() {
       info(`✓ BAJUSCTG HTML success`);
       return parsed;
     }
-  } catch (e) { warn(`BAJUSCTG HTML failed: ${e.message}`); }
+  } catch (e) { warn(`BAJUSCTG HTML failed: ${e.message.split('\n')[0]}`); }
   return null;
 }
 
@@ -303,7 +313,6 @@ async function fetchFromWayback() {
     const snapshotUrl = cdxData?.archived_snapshots?.closest?.url;
     if (!snapshotUrl) throw new Error('No snapshot');
 
-    // Render Wayback snapshot with Puppeteer to bypass their JS overlays
     const html = await fetchPageHTML(snapshotUrl);
     const parsed = parseGenericHTMLTable(html, 'wayback');
     if (parsed && isValidGold(parsed)) {
@@ -389,7 +398,7 @@ function persist(entry, history, file, keys, label) {
    ═══════════════════════════════════════════════════════════ */
 async function scrapeBajus() {
   info('════════════════════════════════');
-  info('Starting BAJUS scrape v4.2 (puppeteer-rendered)...');
+  info('Starting BAJUS scrape v4.3 (system-chrome)...');
 
   const strategies = [
     { name: 'BAJUS Official', fn: fetchFromBajusOfficial },
@@ -424,7 +433,7 @@ async function main() {
   const dryRun = args.includes('--dry-run');
 
   info('══════════════════════════════════════════════');
-  info('SonarGold Scraper v4.2 starting...');
+  info('SonarGold Scraper v4.3 starting...');
   info(`Mode: ${dryRun ? 'DRY RUN' : 'LIVE'}`);
   info('══════════════════════════════════════════════');
 
@@ -442,7 +451,6 @@ async function main() {
     bajus = await scrapeBajus();
     fromCache = bajus.source === 'cache';
   } finally {
-    // ALWAYS close browser to prevent zombie processes on GitHub Actions
     await closeBrowser();
   }
 
