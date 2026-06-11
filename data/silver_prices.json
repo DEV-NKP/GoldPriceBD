@@ -2782,15 +2782,15 @@
   },
   {
     "date": "2026-06-11",
-    "timestamp": "2026-06-11T04:34:30.195Z",
-    "data_source": "bajushub",
-    "bajus_s22": null,
-    "bajus_s21": null,
-    "bajus_s18": null,
-    "bajus_str": null,
-    "bajus_s22_vori": null,
-    "bajus_s21_vori": null,
-    "bajus_s18_vori": null,
-    "bajus_str_vori": null
+    "timestamp": "2026-06-11T06:20:43.784Z",
+    "data_source": "bajusctg-api",
+    "bajus_s22": 415,
+    "bajus_s21": 395,
+    "bajus_s18": 340,
+    "bajus_str": 255,
+    "bajus_s22_vori": 4841,
+    "bajus_s21_vori": 4607,
+    "bajus_s18_vori": 3966,
+    "bajus_str_vori": 2974
   }
 ]
