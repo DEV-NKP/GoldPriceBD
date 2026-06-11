@@ -26,3 +26,60 @@
 [2026-06-11T04:17:31.866Z] [INFO ] Intl: appended entry #268
 [2026-06-11T04:17:31.880Z] [INFO ] latest.json written | Final source: cache
 [2026-06-11T04:17:31.881Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-11T04:22:37.160Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-11T04:22:37.161Z] [INFO ] SonarGold Scraper v4.2 starting...
+[2026-06-11T04:22:37.162Z] [INFO ] Mode: LIVE
+[2026-06-11T04:22:37.163Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-11T04:22:37.164Z] [INFO ] History size — Gold: 221, Silver: 214, Intl: 268
+[2026-06-11T04:22:37.165Z] [INFO ] ════════════════════════════════
+[2026-06-11T04:22:37.166Z] [INFO ] Starting BAJUS scrape v4.2 (puppeteer-rendered)...
+[2026-06-11T04:22:37.167Z] [INFO ] Trying Strategy 0: BAJUS Official (bajus.org.bd)...
+[2026-06-11T04:22:37.168Z] [INFO ] Launching headless browser...
+[2026-06-11T04:22:37.205Z] [WARN ] BAJUS Official failed: Could not find Chrome (ver. 146.0.7680.153). This can occur if either
+ 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+ 2. your cache path is incorrectly configured (which is: /home/runner/.cache/puppeteer).
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+[2026-06-11T04:22:37.206Z] [INFO ] Trying Strategy 1: BajusHub (bajushub.com)...
+[2026-06-11T04:22:37.207Z] [INFO ] Launching headless browser...
+[2026-06-11T04:22:37.212Z] [WARN ] BajusHub failed: Could not find Chrome (ver. 146.0.7680.153). This can occur if either
+ 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+ 2. your cache path is incorrectly configured (which is: /home/runner/.cache/puppeteer).
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+[2026-06-11T04:22:37.212Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-06-11T04:22:37.213Z] [INFO ] Launching headless browser...
+[2026-06-11T04:22:37.214Z] [WARN ] GoldR.org failed: Could not find Chrome (ver. 146.0.7680.153). This can occur if either
+ 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+ 2. your cache path is incorrectly configured (which is: /home/runner/.cache/puppeteer).
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+[2026-06-11T04:22:37.215Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-06-11T04:22:37.215Z] [INFO ] Launching headless browser...
+[2026-06-11T04:22:37.217Z] [WARN ] BDGoldPrice failed: Could not find Chrome (ver. 146.0.7680.153). This can occur if either
+ 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+ 2. your cache path is incorrectly configured (which is: /home/runner/.cache/puppeteer).
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+[2026-06-11T04:22:37.217Z] [INFO ] Trying Strategy 4: goldpricebd.com...
+[2026-06-11T04:22:37.218Z] [INFO ] Launching headless browser...
+[2026-06-11T04:22:37.219Z] [WARN ] GoldPriceBD failed: Could not find Chrome (ver. 146.0.7680.153). This can occur if either
+ 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+ 2. your cache path is incorrectly configured (which is: /home/runner/.cache/puppeteer).
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+[2026-06-11T04:22:37.219Z] [INFO ] Trying Strategy 5: BAJUSCTG API...
+[2026-06-11T04:22:38.428Z] [WARN ] BAJUSCTG API failed: Not JSON (text/html; charset=U)
+[2026-06-11T04:22:38.429Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-06-11T04:22:38.429Z] [INFO ] Launching headless browser...
+[2026-06-11T04:22:38.431Z] [WARN ] BAJUSCTG HTML failed: Could not find Chrome (ver. 146.0.7680.153). This can occur if either
+ 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+ 2. your cache path is incorrectly configured (which is: /home/runner/.cache/puppeteer).
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+[2026-06-11T04:22:38.432Z] [INFO ] Trying Strategy 6: Wayback Machine...
+[2026-06-11T04:22:43.679Z] [WARN ] Wayback failed: No snapshot
+[2026-06-11T04:22:43.680Z] [INFO ] Using cached prices from 2026-06-05 (139h old)
+[2026-06-11T04:22:43.681Z] [WARN ] ALL LIVE SOURCES FAILED — Using cached prices (mandatory fallback)
+[2026-06-11T04:22:43.681Z] [INFO ] Fetching international prices...
+[2026-06-11T04:22:43.819Z] [WARN ] XAU failed from https://api.gold-api.com/price/XAU: request to https://api.gold-api.com/price/XAU failed, reason: getaddrinfo ENOTFOUND api.gold-api.com
+[2026-06-11T04:22:43.820Z] [ERROR] XAU: all sources failed
+[2026-06-11T04:22:44.279Z] [INFO ] Gold: no change — skipping append
+[2026-06-11T04:22:44.279Z] [INFO ] Silver: no change — skipping append
+[2026-06-11T04:22:44.280Z] [INFO ] Intl: updated same-day entry
+[2026-06-11T04:22:44.575Z] [INFO ] latest.json written | Final source: cache
+[2026-06-11T04:22:44.575Z] [INFO ] ══════════════════════════════════════════════
