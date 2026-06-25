@@ -1,0 +1,26 @@
+[2026-06-25T01:32:38.631Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-25T01:32:38.633Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-06-25T01:32:38.634Z] [INFO ] Mode: LIVE
+[2026-06-25T01:32:38.634Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-25T01:32:38.636Z] [INFO ] History size — Gold: 229, Silver: 220, Intl: 281
+[2026-06-25T01:32:38.637Z] [INFO ] ════════════════════════════════
+[2026-06-25T01:32:38.638Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-06-25T01:32:38.639Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-06-25T01:32:39.408Z] [WARN ] BAJUSCTG API failed: HTTP 401
+[2026-06-25T01:32:39.409Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-06-25T01:32:40.070Z] [WARN ] BAJUSCTG HTML failed: HTTP 401
+[2026-06-25T01:32:40.071Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-06-25T01:32:40.519Z] [WARN ] GoldR.org failed: HTTP 502
+[2026-06-25T01:32:40.520Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-06-25T01:32:40.791Z] [WARN ] BDGoldPrice failed: Invalid response body while trying to fetch https://www.bdgoldprice.com/: Premature close
+[2026-06-25T01:32:40.792Z] [INFO ] Trying Strategy 4: Wayback Machine...
+[2026-06-25T01:32:42.803Z] [WARN ] Wayback failed: Invalid response body while trying to fetch http://web.archive.org/web/20250901185455/https://www.bajus.org/gold-price: Premature close
+[2026-06-25T01:32:42.804Z] [INFO ] Using cached prices from 2026-06-24 (22h old)
+[2026-06-25T01:32:42.804Z] [WARN ] ALL LIVE SOURCES FAILED — Using cached prices (mandatory fallback)
+[2026-06-25T01:32:42.805Z] [INFO ] Fetching international prices...
+[2026-06-25T01:32:43.275Z] [ERROR] FX fetch failed: Invalid response body while trying to fetch https://open.er-api.com/v6/latest/USD: Premature close
+[2026-06-25T01:32:43.276Z] [INFO ] Gold: no change — skipping append
+[2026-06-25T01:32:43.277Z] [INFO ] Silver: no change — skipping append
+[2026-06-25T01:32:43.277Z] [INFO ] Intl: appended entry #282
+[2026-06-25T01:32:43.788Z] [INFO ] latest.json written | Final source: cache
+[2026-06-25T01:32:43.789Z] [INFO ] ══════════════════════════════════════════════
