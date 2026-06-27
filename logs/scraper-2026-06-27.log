@@ -232,3 +232,29 @@
 [2026-06-27T18:45:42.823Z] [INFO ] Intl: no change — skipping append
 [2026-06-27T18:45:43.067Z] [INFO ] latest.json written | Final source: cache
 [2026-06-27T18:45:43.067Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-27T20:11:21.813Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-27T20:11:21.815Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-06-27T20:11:21.815Z] [INFO ] Mode: LIVE
+[2026-06-27T20:11:21.816Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-27T20:11:21.818Z] [INFO ] History size — Gold: 230, Silver: 221, Intl: 283
+[2026-06-27T20:11:21.819Z] [INFO ] ════════════════════════════════
+[2026-06-27T20:11:21.820Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-06-27T20:11:21.824Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-06-27T20:11:23.254Z] [WARN ] BAJUSCTG API failed: HTTP 401
+[2026-06-27T20:11:23.255Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-06-27T20:11:24.066Z] [WARN ] BAJUSCTG HTML failed: HTTP 401
+[2026-06-27T20:11:24.067Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-06-27T20:11:24.188Z] [WARN ] GoldR.org failed: Invalid response body while trying to fetch https://www.goldr.org/: Premature close
+[2026-06-27T20:11:24.189Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-06-27T20:11:24.405Z] [WARN ] BDGoldPrice failed: Invalid response body while trying to fetch https://www.bdgoldprice.com/: Premature close
+[2026-06-27T20:11:24.406Z] [INFO ] Trying Strategy 4: Wayback Machine...
+[2026-06-27T20:11:29.649Z] [WARN ] Wayback failed: No snapshot
+[2026-06-27T20:11:29.650Z] [INFO ] Using cached prices from 2026-06-25 (58h old)
+[2026-06-27T20:11:29.650Z] [WARN ] ALL LIVE SOURCES FAILED — Using cached prices (mandatory fallback)
+[2026-06-27T20:11:29.651Z] [INFO ] Fetching international prices...
+[2026-06-27T20:11:30.136Z] [ERROR] FX fetch failed: Invalid response body while trying to fetch https://open.er-api.com/v6/latest/USD: Premature close
+[2026-06-27T20:11:30.137Z] [INFO ] Gold: no change — skipping append
+[2026-06-27T20:11:30.138Z] [INFO ] Silver: no change — skipping append
+[2026-06-27T20:11:30.138Z] [INFO ] Intl: no change — skipping append
+[2026-06-27T20:11:30.153Z] [INFO ] latest.json written | Final source: cache
+[2026-06-27T20:11:30.153Z] [INFO ] ══════════════════════════════════════════════
