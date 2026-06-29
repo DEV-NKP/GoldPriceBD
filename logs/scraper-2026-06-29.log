@@ -1,0 +1,26 @@
+[2026-06-29T00:12:49.156Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-29T00:12:49.158Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-06-29T00:12:49.159Z] [INFO ] Mode: LIVE
+[2026-06-29T00:12:49.160Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-29T00:12:49.162Z] [INFO ] History size — Gold: 231, Silver: 222, Intl: 284
+[2026-06-29T00:12:49.163Z] [INFO ] ════════════════════════════════
+[2026-06-29T00:12:49.164Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-06-29T00:12:49.167Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-06-29T00:12:49.797Z] [WARN ] BAJUSCTG API failed: HTTP 401
+[2026-06-29T00:12:49.798Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-06-29T00:12:50.468Z] [WARN ] BAJUSCTG HTML failed: HTTP 401
+[2026-06-29T00:12:50.469Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-06-29T00:12:50.768Z] [WARN ] GoldR.org failed: Invalid response body while trying to fetch https://www.goldr.org/: Premature close
+[2026-06-29T00:12:50.769Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-06-29T00:12:50.915Z] [WARN ] BDGoldPrice failed: Invalid response body while trying to fetch https://www.bdgoldprice.com/: Premature close
+[2026-06-29T00:12:50.916Z] [INFO ] Trying Strategy 4: Wayback Machine...
+[2026-06-29T00:12:52.324Z] [WARN ] Wayback failed: Invalid response body while trying to fetch http://web.archive.org/web/20250901185455/https://www.bajus.org/gold-price: Premature close
+[2026-06-29T00:12:52.325Z] [INFO ] Using cached prices from 2026-06-28 (12h old)
+[2026-06-29T00:12:52.326Z] [WARN ] ALL LIVE SOURCES FAILED — Using cached prices (mandatory fallback)
+[2026-06-29T00:12:52.327Z] [INFO ] Fetching international prices...
+[2026-06-29T00:12:52.861Z] [ERROR] FX fetch failed: Invalid response body while trying to fetch https://open.er-api.com/v6/latest/USD: Premature close
+[2026-06-29T00:12:52.862Z] [INFO ] Gold: no change — skipping append
+[2026-06-29T00:12:52.863Z] [INFO ] Silver: no change — skipping append
+[2026-06-29T00:12:52.863Z] [INFO ] Intl: appended entry #285
+[2026-06-29T00:12:52.891Z] [INFO ] latest.json written | Final source: cache
+[2026-06-29T00:12:52.892Z] [INFO ] ══════════════════════════════════════════════
