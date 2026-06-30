@@ -24,3 +24,29 @@
 [2026-06-30T01:31:50.881Z] [INFO ] Intl: appended entry #286
 [2026-06-30T01:31:51.128Z] [INFO ] latest.json written | Final source: cache
 [2026-06-30T01:31:51.128Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-30T06:17:20.808Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-30T06:17:20.809Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-06-30T06:17:20.810Z] [INFO ] Mode: LIVE
+[2026-06-30T06:17:20.811Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-30T06:17:20.813Z] [INFO ] History size — Gold: 231, Silver: 222, Intl: 286
+[2026-06-30T06:17:20.814Z] [INFO ] ════════════════════════════════
+[2026-06-30T06:17:20.815Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-06-30T06:17:20.816Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-06-30T06:17:21.656Z] [WARN ] BAJUSCTG API failed: Invalid response body while trying to fetch https://bajushub.com/pricesx.php: Premature close
+[2026-06-30T06:17:21.657Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-06-30T06:17:22.608Z] [WARN ] BAJUSCTG HTML failed: Invalid response body while trying to fetch https://bajushub.com/: Premature close
+[2026-06-30T06:17:22.609Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-06-30T06:17:22.891Z] [WARN ] GoldR.org failed: Invalid response body while trying to fetch https://www.goldr.org/: Premature close
+[2026-06-30T06:17:22.892Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-06-30T06:17:23.112Z] [WARN ] BDGoldPrice failed: Invalid response body while trying to fetch https://www.bdgoldprice.com/: Premature close
+[2026-06-30T06:17:23.112Z] [INFO ] Trying Strategy 4: Wayback Machine...
+[2026-06-30T06:17:24.622Z] [WARN ] Wayback failed: Invalid response body while trying to fetch http://web.archive.org/web/20250901185455/https://www.bajus.org/gold-price: Premature close
+[2026-06-30T06:17:24.624Z] [INFO ] Using cached prices from 2026-06-28 (42h old)
+[2026-06-30T06:17:24.625Z] [WARN ] ALL LIVE SOURCES FAILED — Using cached prices (mandatory fallback)
+[2026-06-30T06:17:24.625Z] [INFO ] Fetching international prices...
+[2026-06-30T06:17:25.328Z] [ERROR] FX fetch failed: Invalid response body while trying to fetch https://open.er-api.com/v6/latest/USD: Premature close
+[2026-06-30T06:17:25.329Z] [INFO ] Gold: no change — skipping append
+[2026-06-30T06:17:25.330Z] [INFO ] Silver: no change — skipping append
+[2026-06-30T06:17:25.330Z] [INFO ] Intl: updated same-day entry
+[2026-06-30T06:17:25.606Z] [INFO ] latest.json written | Final source: cache
+[2026-06-30T06:17:25.606Z] [INFO ] ══════════════════════════════════════════════
