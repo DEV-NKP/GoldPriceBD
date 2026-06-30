@@ -50,3 +50,29 @@
 [2026-06-30T06:17:25.330Z] [INFO ] Intl: updated same-day entry
 [2026-06-30T06:17:25.606Z] [INFO ] latest.json written | Final source: cache
 [2026-06-30T06:17:25.606Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-30T10:08:09.680Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-30T10:08:09.681Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-06-30T10:08:09.682Z] [INFO ] Mode: LIVE
+[2026-06-30T10:08:09.683Z] [INFO ] ══════════════════════════════════════════════
+[2026-06-30T10:08:09.685Z] [INFO ] History size — Gold: 231, Silver: 222, Intl: 286
+[2026-06-30T10:08:09.686Z] [INFO ] ════════════════════════════════
+[2026-06-30T10:08:09.687Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-06-30T10:08:09.689Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-06-30T10:08:10.613Z] [WARN ] BAJUSCTG API failed: HTTP 401
+[2026-06-30T10:08:10.614Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-06-30T10:08:11.276Z] [WARN ] BAJUSCTG HTML failed: HTTP 401
+[2026-06-30T10:08:11.277Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-06-30T10:08:11.546Z] [WARN ] GoldR.org failed: Invalid response body while trying to fetch https://www.goldr.org/: Premature close
+[2026-06-30T10:08:11.547Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-06-30T10:08:11.823Z] [WARN ] BDGoldPrice failed: Invalid response body while trying to fetch https://www.bdgoldprice.com/: Premature close
+[2026-06-30T10:08:11.824Z] [INFO ] Trying Strategy 4: Wayback Machine...
+[2026-06-30T10:08:12.789Z] [WARN ] Wayback failed: Invalid response body while trying to fetch http://web.archive.org/web/20250901185455/https://www.bajus.org/gold-price: Premature close
+[2026-06-30T10:08:12.790Z] [INFO ] Using cached prices from 2026-06-28 (46h old)
+[2026-06-30T10:08:12.791Z] [WARN ] ALL LIVE SOURCES FAILED — Using cached prices (mandatory fallback)
+[2026-06-30T10:08:12.791Z] [INFO ] Fetching international prices...
+[2026-06-30T10:08:13.292Z] [ERROR] FX fetch failed: Invalid response body while trying to fetch https://open.er-api.com/v6/latest/USD: Premature close
+[2026-06-30T10:08:13.293Z] [INFO ] Gold: no change — skipping append
+[2026-06-30T10:08:13.293Z] [INFO ] Silver: no change — skipping append
+[2026-06-30T10:08:13.294Z] [INFO ] Intl: updated same-day entry
+[2026-06-30T10:08:13.326Z] [INFO ] latest.json written | Final source: cache
+[2026-06-30T10:08:13.327Z] [INFO ] ══════════════════════════════════════════════
