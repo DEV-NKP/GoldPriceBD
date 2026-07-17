@@ -2964,15 +2964,15 @@
   },
   {
     "date": "2026-07-17",
-    "timestamp": "2026-07-17T17:39:40.480Z",
-    "data_source": "fallback",
-    "bajus_s22": 450,
-    "bajus_s21": 430,
-    "bajus_s18": 380,
-    "bajus_str": 280,
-    "bajus_s22_vori": 5249,
-    "bajus_s21_vori": 5016,
-    "bajus_s18_vori": 4432,
-    "bajus_str_vori": 3266
+    "timestamp": "2026-07-17T19:16:48.342Z",
+    "data_source": "bajusctg-api",
+    "bajus_s22": 395,
+    "bajus_s21": 375,
+    "bajus_s18": 325,
+    "bajus_str": 245,
+    "bajus_s22_vori": 4607,
+    "bajus_s21_vori": 4374,
+    "bajus_s18_vori": 3791,
+    "bajus_str_vori": 2858
   }
 ]
