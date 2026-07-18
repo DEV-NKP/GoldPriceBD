@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-18T22:25:02.157Z",
+  "generated_at": "2026-07-18T23:28:26.797Z",
   "bajus_date": "Sunday, July 19, 2026",
-  "bajus_ok": false,
-  "bajus_cached": true,
-  "bajus_source": "cache",
+  "bajus_ok": true,
+  "bajus_cached": false,
+  "bajus_source": "bajusctg-api",
   "intl_ok": true,
   "fx_ok": true,
   "gold": {
     "date": "2026-07-18",
-    "timestamp": "2026-07-18T22:25:02.157Z",
-    "data_source": "cache",
+    "timestamp": "2026-07-18T23:28:26.797Z",
+    "data_source": "bajusctg-api",
     "bajus_g22": 18845,
     "bajus_g21": 17995,
     "bajus_g18": 15455,
@@ -27,8 +27,8 @@
   },
   "silver": {
     "date": "2026-07-18",
-    "timestamp": "2026-07-18T22:25:02.157Z",
-    "data_source": "cache",
+    "timestamp": "2026-07-18T23:28:26.797Z",
+    "data_source": "bajusctg-api",
     "bajus_s22": 395,
     "bajus_s21": 375,
     "bajus_s18": 325,
@@ -49,5 +49,5 @@
     "silver": 229,
     "intl": 304
   },
-  "bajus_raw": "[cached]"
+  "bajus_raw": "BAJUSCTG API"
 }
