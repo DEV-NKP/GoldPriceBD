@@ -3120,15 +3120,15 @@
   },
   {
     "date": "2026-07-21",
-    "timestamp": "2026-07-21T04:24:59.692Z",
+    "timestamp": "2026-07-21T07:10:56.772Z",
     "data_source": "bajusctg-api",
-    "bajus_g22": 18845,
-    "bajus_g21": 17995,
-    "bajus_g18": 15455,
-    "bajus_gtr": 12630,
-    "bajus_g22_vori": 219808,
-    "bajus_g21_vori": 209894,
-    "bajus_g18_vori": 180267,
-    "bajus_gtr_vori": 147316
+    "bajus_g22": 18985,
+    "bajus_g21": 18130,
+    "bajus_g18": 15570,
+    "bajus_gtr": 12720,
+    "bajus_g22_vori": 221441,
+    "bajus_g21_vori": 211468,
+    "bajus_g18_vori": 181608,
+    "bajus_gtr_vori": 148366
   }
 ]
