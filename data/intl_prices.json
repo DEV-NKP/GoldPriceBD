@@ -4921,17 +4921,17 @@
   },
   {
     "date": "2026-07-30",
-    "timestamp": "2026-07-30T19:39:28.808Z",
-    "gold_usd_oz": 4114.399902,
+    "timestamp": "2026-07-30T21:15:44.850Z",
+    "gold_usd_oz": 4104.600098,
     "gold_prev_usd_oz": null,
     "gold_chg_usd": null,
     "gold_chg_pct": null,
-    "gold_gram_bdt": 16330.68,
-    "silver_usd_oz": 59.268002,
+    "gold_gram_bdt": 16291.79,
+    "silver_usd_oz": 59.134998,
     "silver_prev_usd_oz": null,
     "silver_chg_usd": null,
     "silver_chg_pct": null,
-    "silver_gram_bdt": 235.2438,
+    "silver_gram_bdt": 234.7159,
     "usd_bdt": 123.454548
   }
 ]
