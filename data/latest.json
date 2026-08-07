@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07T00:25:45.239Z",
+  "generated_at": "2026-08-07T03:30:41.980Z",
   "bajus_date": "Friday, August 7, 2026",
   "bajus_ok": true,
   "bajus_cached": false,
@@ -8,7 +8,7 @@
   "fx_ok": true,
   "gold": {
     "date": "2026-08-07",
-    "timestamp": "2026-08-07T00:25:45.239Z",
+    "timestamp": "2026-08-07T03:30:41.980Z",
     "data_source": "bajusctg-api",
     "bajus_g22": 19970,
     "bajus_g21": 19075,
@@ -18,16 +18,16 @@
     "bajus_g21_vori": 222491,
     "bajus_g18_vori": 191056,
     "bajus_gtr_vori": 156064,
-    "intl_usd_oz": 4240.799805,
+    "intl_usd_oz": 4259.799805,
     "intl_prev_usd_oz": null,
     "intl_chg_usd": null,
     "intl_chg_pct": null,
-    "intl_gram_bdt": 16870.28,
-    "usd_bdt": 123.732519
+    "intl_gram_bdt": 16950.93,
+    "usd_bdt": 123.769493
   },
   "silver": {
     "date": "2026-08-07",
-    "timestamp": "2026-08-07T00:25:45.239Z",
+    "timestamp": "2026-08-07T03:30:41.980Z",
     "data_source": "bajusctg-api",
     "bajus_s22": 420,
     "bajus_s21": 400,
@@ -37,12 +37,12 @@
     "bajus_s21_vori": 4666,
     "bajus_s18_vori": 4024,
     "bajus_str_vori": 3033,
-    "intl_usd_oz": 61.519001,
+    "intl_usd_oz": 62.346001,
     "intl_prev_usd_oz": null,
     "intl_chg_usd": null,
     "intl_chg_pct": null,
-    "intl_gram_bdt": 244.7281,
-    "usd_bdt": 123.732519
+    "intl_gram_bdt": 248.0921,
+    "usd_bdt": 123.769493
   },
   "counts": {
     "gold": 247,
