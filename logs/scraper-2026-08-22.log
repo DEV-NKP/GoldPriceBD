@@ -158,3 +158,19 @@
 [2026-08-22T10:27:49.379Z] [INFO ] Intl: no change — skipping append
 [2026-08-22T10:27:49.394Z] [INFO ] latest.json written | Final source: bajusctg-api
 [2026-08-22T10:27:49.395Z] [INFO ] ══════════════════════════════════════════════
+[2026-08-22T10:52:55.503Z] [INFO ] ══════════════════════════════════════════════
+[2026-08-22T10:52:55.505Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-08-22T10:52:55.506Z] [INFO ] Mode: LIVE
+[2026-08-22T10:52:55.507Z] [INFO ] ══════════════════════════════════════════════
+[2026-08-22T10:52:55.511Z] [INFO ] History size — Gold: 255, Silver: 238, Intl: 339
+[2026-08-22T10:52:55.512Z] [INFO ] ════════════════════════════════
+[2026-08-22T10:52:55.513Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-08-22T10:52:55.514Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-08-22T10:52:55.856Z] [INFO ] ✓ BAJUSCTG success: 22K gram ≈ 21100
+[2026-08-22T10:52:55.857Z] [INFO ] SUCCESS — Source: bajusctg-api
+[2026-08-22T10:52:55.858Z] [INFO ] Fetching international prices...
+[2026-08-22T10:52:56.151Z] [INFO ] Gold: no change — skipping append
+[2026-08-22T10:52:56.152Z] [INFO ] Silver: no change — skipping append
+[2026-08-22T10:52:56.153Z] [INFO ] Intl: no change — skipping append
+[2026-08-22T10:52:56.170Z] [INFO ] latest.json written | Final source: bajusctg-api
+[2026-08-22T10:52:56.171Z] [INFO ] ══════════════════════════════════════════════
