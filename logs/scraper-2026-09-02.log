@@ -45,3 +45,27 @@
 [2026-09-02T04:59:18.964Z] [INFO ] Intl: updated same-day entry
 [2026-09-02T04:59:18.987Z] [INFO ] latest.json written | Final source: fallback
 [2026-09-02T04:59:18.987Z] [INFO ] ══════════════════════════════════════════════
+[2026-09-02T09:29:17.853Z] [INFO ] ══════════════════════════════════════════════
+[2026-09-02T09:29:17.855Z] [INFO ] SonarGold Scraper v4.0 starting...
+[2026-09-02T09:29:17.857Z] [INFO ] Mode: LIVE
+[2026-09-02T09:29:17.858Z] [INFO ] ══════════════════════════════════════════════
+[2026-09-02T09:29:17.862Z] [INFO ] History size — Gold: 257, Silver: 239, Intl: 350
+[2026-09-02T09:29:17.863Z] [INFO ] ════════════════════════════════
+[2026-09-02T09:29:17.864Z] [INFO ] Starting BAJUS scrape v4.0 (sequential)...
+[2026-09-02T09:29:17.865Z] [INFO ] Trying Strategy 1: BAJUSCTG API...
+[2026-09-02T09:29:18.431Z] [WARN ] BAJUSCTG API failed: HTTP 403
+[2026-09-02T09:29:18.432Z] [INFO ] Trying BAJUSCTG HTML fallback...
+[2026-09-02T09:29:19.110Z] [WARN ] BAJUSCTG HTML failed: HTTP 403
+[2026-09-02T09:29:19.112Z] [INFO ] Trying Strategy 2: GoldR.org homepage...
+[2026-09-02T09:29:19.672Z] [WARN ] GoldR.org failed: HTTP 403
+[2026-09-02T09:29:19.673Z] [INFO ] Trying Strategy 3: bdgoldprice.com...
+[2026-09-02T09:29:20.026Z] [INFO ] Trying Strategy 4: Wayback Machine...
+[2026-09-02T09:29:22.773Z] [WARN ] Cache too old (124h)
+[2026-09-02T09:29:22.775Z] [ERROR] CRITICAL FAILURE — All sources + cache unavailable. Using zero fallback.
+[2026-09-02T09:29:22.776Z] [INFO ] Fetching international prices...
+[2026-09-02T09:29:22.914Z] [ERROR] XAU fetch failed: request to https://api.gold-api.com/price/XAU failed, reason: getaddrinfo ENOTFOUND api.gold-api.com
+[2026-09-02T09:29:23.539Z] [INFO ] Gold: no change — skipping append
+[2026-09-02T09:29:23.540Z] [INFO ] Silver: no change — skipping append
+[2026-09-02T09:29:23.541Z] [INFO ] Intl: updated same-day entry
+[2026-09-02T09:29:23.557Z] [INFO ] latest.json written | Final source: fallback
+[2026-09-02T09:29:23.558Z] [INFO ] ══════════════════════════════════════════════
