@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-05T17:29:59.314Z",
-  "bajus_date": "Saturday, September 5, 2026",
+  "generated_at": "2026-09-05T19:24:49.080Z",
+  "bajus_date": "Sunday, September 6, 2026",
   "bajus_ok": true,
   "bajus_cached": false,
   "bajus_source": "fallback",
@@ -8,7 +8,7 @@
   "fx_ok": true,
   "gold": {
     "date": "2026-09-05",
-    "timestamp": "2026-09-05T17:29:59.314Z",
+    "timestamp": "2026-09-05T19:24:49.080Z",
     "data_source": "fallback",
     "bajus_g22": 21000,
     "bajus_g21": 20000,
@@ -27,7 +27,7 @@
   },
   "silver": {
     "date": "2026-09-05",
-    "timestamp": "2026-09-05T17:29:59.314Z",
+    "timestamp": "2026-09-05T19:24:49.080Z",
     "data_source": "fallback",
     "bajus_s22": 450,
     "bajus_s21": 430,
