@@ -3104,31 +3104,5 @@
     "bajus_s21_vori": 5016,
     "bajus_s18_vori": 4432,
     "bajus_str_vori": 3266
-  },
-  {
-    "date": "2026-09-06",
-    "timestamp": "2026-09-06T11:46:14.144Z",
-    "data_source": "goldratebd",
-    "bajus_s22": null,
-    "bajus_s21": null,
-    "bajus_s18": null,
-    "bajus_str": null,
-    "bajus_s22_vori": null,
-    "bajus_s21_vori": null,
-    "bajus_s18_vori": null,
-    "bajus_str_vori": null
-  },
-  {
-    "date": "2026-09-07",
-    "timestamp": "2026-09-07T11:37:53.831Z",
-    "data_source": "alamin",
-    "bajus_s22": 235146,
-    "bajus_s21": 224590,
-    "bajus_s18": 192864,
-    "bajus_str": 157522,
-    "bajus_s22_vori": 2742743,
-    "bajus_s21_vori": 2619618,
-    "bajus_s18_vori": 2249566,
-    "bajus_str_vori": 1837337
   }
 ]
