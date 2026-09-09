@@ -2,342 +2,173 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8"/>
-<title>NFJ Gold & Silver Price</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<title>NFJ Gold & Silver — Luxury Ledger</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800;900&family=Cinzel:wght@700;900&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',sans-serif;background:#2a0600;color:#fff;}
-:root{
-  --gold-1:#fff4b0;
-  --gold-2:#f8d44f;
-  --gold-3:#d9a514;
-  --gold-4:#9b6400;
-  --silver-1:#eef7ff;
-  --silver-2:#b8d7ea;
-  --silver-3:#6ea4c7;
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1080px;height:1080px;overflow:hidden;font-family:'Noto Sans Bengali',sans-serif;background:#0d0805;color:#fff}
+.canvas{width:1080px;height:1080px;position:relative;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(160,90,20,0.18),transparent 60%),#0d0805}
+.tex{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(230,180,70,0.04) 1px,transparent 1px);background-size:28px 28px}
+.wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.wm img{width:400px;opacity:.03;filter:grayscale(1) brightness(8)}
+.inner{position:relative;z-index:10;height:100%;display:flex;flex-direction:column;padding:20px 32px 16px}
 
-.canvas{
-  width:1080px;height:1080px;position:relative;overflow:hidden;
-  background:
-    radial-gradient(circle at top left, rgba(240,120,40,0.30), transparent 38%),
-    radial-gradient(circle at bottom right, rgba(200,80,20,0.22), transparent 38%),
-    linear-gradient(160deg,#7a1e00 0%,#5c1200 20%,#3e0a00 45%,#2a0600 70%,#4a1000 100%);
-}
+.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid rgba(230,180,70,.25)}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:56px;height:56px;border-radius:50%;border:1.5px solid #e6b84b;background:rgba(230,184,75,.1);display:flex;align-items:center;justify-content:center}
+.logo img{width:38px}
+.en{font-family:Cinzel,serif;font-size:23px;font-weight:900;color:#e6b84b}
+.bn{font-size:14px;color:rgba(255,220,150,.7);margin-top:1px}
+.right{text-align:right}.since{font-size:13px;color:rgba(255,200,140,.55)}.date{font-size:17px;font-weight:700;margin-top:2px}
 
-.tex{position:absolute;inset:0;z-index:2;pointer-events:none;background-image:radial-gradient(circle,rgba(255,210,80,0.08) 1px,transparent 1px);background-size:32px 32px;}
-.wm{position:absolute;inset:0;z-index:3;pointer-events:none;display:flex;align-items:center;justify-content:center;}
-.wm img{width:450px;height:450px;object-fit:contain;opacity:0.06;filter:grayscale(100%) brightness(6);}
+.title{text-align:center;padding:14px 0 16px}
+.title h1{font-size:30px;font-weight:900;background:linear-gradient(180deg,#fff6d0,#e6b84b 60%,#b8860b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.title p{font-size:14px;color:rgba(255,210,150,.65);margin-top:4px}
 
-/* ── INNER LAYOUT ── */
-.inner{position:relative;z-index:10;width:100%;height:100%;display:flex;flex-direction:column;padding:20px 35px;}
+.section{margin-bottom:14px}
+.sec-title{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.pill{font-size:14px;font-weight:800;padding:5px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:6px}
+.g-pill{background:linear-gradient(135deg,#e6b84b,#a07000);color:#1a0a00}
+.s-pill{background:linear-gradient(135deg,#6a98b0,#2e4a5e);color:#fff}
+.line{flex:1;height:1px;background:linear-gradient(90deg,rgba(230,180,70,.3),transparent)}
 
-/* ── NEW ORGANIZED HEADER ── */
-.header-full{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 5px 0;
-  margin-bottom: 10px;
-  border-bottom: 1px solid rgba(255,215,80,0.3);
-  flex-shrink: 0;
-}
+table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden}
+thead th{background:rgba(230,180,70,.12);padding:9px 12px;font-size:13px;font-weight:700;color:rgba(255,220,150,.8);text-align:left;border-bottom:1px solid rgba(230,180,70,.2)}
+thead th:last-child,td:last-child{text-align:right}
+tbody tr{background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.04)}
+tbody tr:last-child{border-bottom:none}
+td{padding:11px 12px;vertical-align:middle}
+.karat{font-size:18px;font-weight:900;color:#fff}
+.karat-sub{font-size:11px;color:rgba(255,220,150,.5);margin-top:1px}
+.price{font-size:20px;font-weight:900;color:#e6b84b}
+.vori{font-size:14px;color:rgba(255,255,255,.55);margin-top:2px}
+.chg{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;padding:3px 8px;border-radius:8px;background:rgba(0,0,0,.25)}
+.up{color:#3ddc6a}.down{color:#ff5a4a}.neutral{color:rgba(255,255,255,.4)}
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  flex: 1;
-}
-.header-logo {
-  width: 65px;
-  height: 65px;
-  border-radius: 50%;
-  border: 1.5px solid var(--gold-2);
-  background: rgba(255,210,80,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.header-logo img { width: 45px; height: 45px; object-fit: contain; }
-.brand-info { display: flex; flex-direction: column; }
-.brand-en { font-family: 'Cinzel', serif; font-size: 26px; font-weight: 900; color: var(--gold-2); line-height: 1.1; }
-.brand-bn { font-size: 18px; font-weight: 600; color: rgba(255,220,120,0.8); }
+.silver thead th{background:rgba(140,190,220,.1);border-color:rgba(140,190,220,.15)}
+.silver .price{color:#a8c8dc}
 
-.header-mid {
-  flex: 1;
-  text-align: right;
-  font-size: 18px;
-  color: rgba(255,220,160,0.7);
-  letter-spacing: 0.5px;
-}
-
-.header-right {
-  flex: 1;
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.date-val { font-size: 20px; font-weight: 800; color: #fff; }
-.date-day { font-size: 18px; font-weight: 500; color: var(--gold-2); }
-
-/* ── TITLE BAND ── */
-.title-band{
-  text-align:center;
-  padding:12px 0;
-  margin-bottom:12px;
-  flex-shrink:0;
-  background: linear-gradient(90deg, transparent, rgba(255,210,80,0.15), transparent);
-}
-.title-main{
-  font-size:35px;
-  font-weight:900;
-  background:linear-gradient(180deg,#fffbe0, #ffe84a, #d4a000);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  line-height:1.1;
-}
-.title-sub{font-size:18px; color:rgba(255,220,120,0.8); margin-top:5px;}
-
-/* ── SECTION HEADERS ── */
-.sec-hdr{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-shrink:0;}
-.sec-hdr-pill{
-  font-size:18px; font-weight:800; padding:8px 25px; border-radius:25px;
-  display:flex; align-items:center; gap:10px;
-}
-.gold-hdr .sec-hdr-pill{ background: linear-gradient(180deg, #f5cc28, #a06800); color:#2b1000; }
-.silver-hdr .sec-hdr-pill{ background: linear-gradient(135deg, #5a98b5, #2e4a5e); color:#fff; }
-.sec-hdr-line{flex:1; height:1px; background: rgba(255,215,80,0.3);}
-
-/* ── SECTIONS ── */
-.gold-section{flex:1; display:flex; flex-direction:column; gap:10px; margin-bottom:15px;}
-.silver-section{flex:1; display:flex; flex-direction:column; gap:10px;}
-
-/* ── PREMIUM CARDS ── */
-.cards{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
-.card{
-  border-radius:16px; overflow:hidden; position:relative;
-  display:flex; flex-direction:column;
-  background: linear-gradient(145deg, #4a1500, #1e0800);
-  border: 1px solid rgba(255,215,80,0.4);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-}
-.card.silver { background: linear-gradient(145deg, #1a3a4d, #051526); border-color: rgba(160,225,255,0.3); }
-
-/* Color Bar at top */
-.card-bar { height: 6px; width: 100%; background: linear-gradient(90deg, #ffe866, #d4a000); }
-.card.silver .card-bar { background: linear-gradient(90deg, #eef7ff, #6ea4c7); }
-
-.card-top { padding: 15px 12px 5px; position: relative; }
-.card-icon { position: absolute; top: 12px; right: 12px; font-size: 45px; color: rgba(255,215,80,0.2); }
-.card.silver .card-icon { color: rgba(160,225,255,0.2); }
-
-.c-karat { font-size: 35px; font-weight: 900; line-height: 1; color: #fff; }
-.c-karat-sn { font-size: 30px; font-weight: 900; line-height: 1.2; color: #fff; }
-.c-word { font-size: 18px; font-weight: 700; color: rgba(255,228,148,0.7); margin-top: 2px; }
-.card.silver .c-word { color: rgba(178,228,252,0.6); }
-
-.card-bot { 
-  margin-top: auto; padding: 10px 12px 15px; 
-  background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05);
-}
-.c-price { font-size: 28px; font-weight: 900; color: var(--gold-2); line-height: 1; }
-.card.silver .c-price { color: var(--silver-2); }
-.c-unit { font-size: 18px; color: rgba(255,255,255,0.5); margin-top: 3px; }
-.c-chg { 
-  display: inline-flex; align-items: center; gap: 4px; 
-  margin-top: 8px; padding: 4px 10px; border-radius: 10px; 
-  font-size: 18px; font-weight: 800; 
-}
-
-/* VORI STRIPS */
-.vori-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
-.vc { 
-  border-radius:12px; padding:12px; 
-  background: rgba(255,210,80,0.05); border: 1px solid rgba(255,210,80,0.2);
-}
-.card.silver + .vori-row .vc { background: rgba(160,225,255,0.05); border-color: rgba(160,225,255,0.2); }
-.vc-lbl { font-size: 18px; font-weight: 700; color: var(--gold-2); margin-bottom: 2px; }
-.vc-val { font-size: 22px; font-weight: 900; color: #fff; }
-.vc-unit { font-size: 18px; color: rgba(255,255,255,0.4); }
-
-/* ── FOOTER ── */
-.footer{
-  display:flex; justify-content:space-between; align-items:center; 
-  padding-top:15px; margin-top:auto; border-top:1px solid rgba(255,215,80,0.2);
-}
-.ft-src { font-size: 18px; color: rgba(255,220,150,0.7); }
-.ft-src a { color: var(--gold-2); text-decoration: none; font-weight: 700; }
-.ft-contact { font-size: 18px; color: rgba(255,220,150,0.7); }
-.copy-main { font-size: 18px; color: rgba(255,215,80,0.5); }
-
-.up{ color:#36d460; }
-.down{ color:#ff4d42; }
-.neutral{ color:rgba(255,255,255,0.6); }
+.footer{display:flex;justify-content:space-between;align-items:center;padding-top:12px;margin-top:auto;border-top:1px solid rgba(230,180,70,.2);font-size:13px;color:rgba(255,200,140,.55)}
+.footer a{color:#e6b84b;text-decoration:none;font-weight:700}
 </style>
 </head>
 <body>
 <div class="canvas">
   <div class="tex"></div>
-  <div class="wm"><img src="https://nfjs.odoo.com/web/image/1364-2e93ef11/trans_white.webp" alt="Watermark"/></div>
-  
+  <div class="wm"><img src="https://nfjs.odoo.com/web/image/1364-2e93ef11/trans_white.webp"/></div>
   <div class="inner">
-    <!-- ORGANIZED HEADER -->
-    <header class="header-full">
-      <div class="header-left">
-        <div class="header-logo">
-          <img src="https://nfjs.odoo.com/web/image/1364-2e93ef11/trans_white.webp" alt="Logo"/>
-        </div>
-        <div class="brand-info">
-          <div class="brand-en">New Fashion Jewellers</div>
-          <div class="brand-bn">নিউ ফ্যাশন জুয়েলার্স</div>
+    <header class="header">
+      <div class="brand">
+        <div class="logo"><img src="https://nfjs.odoo.com/web/image/1364-2e93ef11/trans_white.webp"/></div>
+        <div>
+          <div class="en">New Fashion Jewellers</div>
+          <div class="bn">নিউ ফ্যাশন জুয়েলার্স</div>
         </div>
       </div>
-      
-      <div class="header-right">
-        <div class="header-mid">
-        Since 1990 ● Dhaka, BD
-      </div>
-        <div class="date-val">{{DATE}}</div>
-        <!-- <div class="date-day">{{DAY}}</div> -->
+      <div class="right">
+        <div class="since">Since 1990 · Dhaka, BD</div>
+        <div class="date">{{DATE}}</div>
       </div>
     </header>
 
-    <!-- TITLE -->
-    <div class="title-band">
-      <div class="title-main">আজকের স্বর্ণ ও রূপার দর</div>
-      <div class="title-sub">বাজুস অনুমোদিত মূল্য তালিকা &nbsp;·&nbsp; প্রতি গ্রাম</div>
+    <div class="title">
+      <h1>আজকের স্বর্ণ ও রূপার দর</h1>
+      <p>বাজুস অনুমোদিত মূল্য তালিকা · প্রতি গ্রাম ও ভরি</p>
     </div>
 
-    <!-- GOLD SECTION -->
-    <section class="gold-section">
-      <div class="sec-hdr gold-hdr">
-        <div class="sec-hdr-pill"><i class="fa-solid fa-coins"></i> স্বর্ণের মূল্য — প্রতি গ্রাম</div>
-        <div class="sec-hdr-line"></div>
+    <!-- GOLD TABLE -->
+    <section class="section">
+      <div class="sec-title">
+        <div class="pill g-pill"><i class="fa-solid fa-coins"></i> স্বর্ণের মূল্য</div>
+        <div class="line"></div>
       </div>
-      <div class="cards">
-        <div class="card">
-          <div class="card-bar"></div>
-          <div class="card-top">
-            <i class="fa-solid fa-coins card-icon"></i>
-            <div class="c-karat">২২</div><div class="c-word">ক্যারেট</div>
-          </div>
-          <div class="card-bot">
-            <div class="c-price">{{G22_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
-            <div class="c-chg {{G22_DIR}}"><i class="fa-solid {{G22_ICON}}"></i> {{G22_DIFF}} ৳</div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-bar"></div>
-          <div class="card-top">
-            <i class="fa-solid fa-ring card-icon"></i>
-            <div class="c-karat">২১</div><div class="c-word">ক্যারেট</div>
-          </div>
-          <div class="card-bot">
-            <div class="c-price">{{G21_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
-            <div class="c-chg {{G21_DIR}}"><i class="fa-solid {{G21_ICON}}"></i> {{G21_DIFF}} ৳</div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-bar"></div>
-          <div class="card-top">
-            <i class="fa-solid fa-medal card-icon"></i>
-            <div class="c-karat">১৮</div><div class="c-word">ক্যারেট</div>
-          </div>
-          <div class="card-bot">
-            <div class="c-price">{{G18_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
-            <div class="c-chg {{G18_DIR}}"><i class="fa-solid {{G18_ICON}}"></i> {{G18_DIFF}} ৳</div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-bar"></div>
-          <div class="card-top">
-            <i class="fa-solid fa-gem card-icon"></i>
-            <div class="c-karat-sn">সনাতন</div><div class="c-word">(Traditional)</div>
-          </div>
-          <div class="card-bot">
-            <div class="c-price">{{GTR_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
-            <div class="c-chg {{GTR_DIR}}"><i class="fa-solid {{GTR_ICON}}"></i> {{GTR_DIFF}} ৳</div>
-          </div>
-        </div>
-      </div>
-      <div class="vori-row">
-        <div class="vc"><div class="vc-lbl">২২ ক্যারেট</div><div class="vc-val">{{G22_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
-        <div class="vc"><div class="vc-lbl">২১ ক্যারেট</div><div class="vc-val">{{G21_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
-        <div class="vc"><div class="vc-lbl">১৮ ক্যারেট</div><div class="vc-val">{{G18_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
-        <div class="vc"><div class="vc-lbl">সনাতন</div><div class="vc-val">{{GTR_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
-      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ক্যারেট</th>
+            <th>প্রতি গ্রাম</th>
+            <th>প্রতি ভরি</th>
+            <th>পরিবর্তন</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="karat">২২ ক্যারেট</div></td>
+            <td><div class="price">{{G22_NEW}}/-</div></td>
+            <td><div class="vori">{{G22_VORI}} ৳</div></td>
+            <td><div class="chg {{G22_DIR}}"><i class="fa-solid {{G22_ICON}}"></i> {{G22_DIFF}} ৳</div></td>
+          </tr>
+          <tr>
+            <td><div class="karat">২১ ক্যারেট</div></td>
+            <td><div class="price">{{G21_NEW}}/-</div></td>
+            <td><div class="vori">{{G21_VORI}} ৳</div></td>
+            <td><div class="chg {{G21_DIR}}"><i class="fa-solid {{G21_ICON}}"></i> {{G21_DIFF}} ৳</div></td>
+          </tr>
+          <tr>
+            <td><div class="karat">১৮ ক্যারেট</div></td>
+            <td><div class="price">{{G18_NEW}}/-</div></td>
+            <td><div class="vori">{{G18_VORI}} ৳</div></td>
+            <td><div class="chg {{G18_DIR}}"><i class="fa-solid {{G18_ICON}}"></i> {{G18_DIFF}} ৳</div></td>
+          </tr>
+          <tr>
+            <td><div class="karat">সনাতন</div><div class="karat-sub">Traditional</div></td>
+            <td><div class="price">{{GTR_NEW}}/-</div></td>
+            <td><div class="vori">{{GTR_VORI}} ৳</div></td>
+            <td><div class="chg {{GTR_DIR}}"><i class="fa-solid {{GTR_ICON}}"></i> {{GTR_DIFF}} ৳</div></td>
+          </tr>
+        </tbody>
+      </table>
     </section>
 
-    <!-- SILVER SECTION -->
-    <section class="silver-section">
-      <div class="sec-hdr silver-hdr">
-        <div class="sec-hdr-pill"><i class="fa-solid fa-circle-dot"></i> রূপার মূল্য — প্রতি গ্রাম</div>
-        <div class="sec-hdr-line"></div>
+    <!-- SILVER TABLE -->
+    <section class="section silver">
+      <div class="sec-title">
+        <div class="pill s-pill"><i class="fa-solid fa-circle-dot"></i> রূপার মূল্য</div>
+        <div class="line"></div>
       </div>
-      <div class="cards">
-        <div class="card silver">
-          <div class="card-bar"></div>
-          <div class="card-top">
-            <i class="fa-solid fa-coins card-icon"></i>
-            <div class="c-karat">২২</div><div class="c-word">ক্যারেট</div>
-          </div>
-          <div class="card-bot">
-            <div class="c-price">{{S22_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
-            <div class="c-chg {{S22_DIR}}"><i class="fa-solid {{S22_ICON}}"></i> {{S22_DIFF}} ৳</div>
-          </div>
-        </div>
-        <div class="card silver">
-          <div class="card-bar"></div>
-          <div class="card-top">
-            <i class="fa-solid fa-ring card-icon"></i>
-            <div class="c-karat">২১</div><div class="c-word">ক্যারেট</div>
-          </div>
-          <div class="card-bot">
-            <div class="c-price">{{S21_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
-            <div class="c-chg {{S21_DIR}}"><i class="fa-solid {{S21_ICON}}"></i> {{S21_DIFF}} ৳</div>
-          </div>
-        </div>
-        <div class="card silver">
-          <div class="card-bar"></div>
-          <div class="card-top">
-            <i class="fa-solid fa-medal card-icon"></i>
-            <div class="c-karat">১৮</div><div class="c-word">ক্যারেট</div>
-          </div>
-          <div class="card-bot">
-            <div class="c-price">{{S18_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
-            <div class="c-chg {{S18_DIR}}"><i class="fa-solid {{S18_ICON}}"></i> {{S18_DIFF}} ৳</div>
-          </div>
-        </div>
-        <div class="card silver">
-          <div class="card-bar"></div>
-          <div class="card-top">
-            <i class="fa-solid fa-gem card-icon"></i>
-            <div class="c-karat-sn">সনাতন</div><div class="c-word">(Traditional)</div>
-          </div>
-          <div class="card-bot">
-            <div class="c-price">{{STR_NEW}}/-</div><div class="c-unit">প্রতি গ্রাম</div>
-            <div class="c-chg {{STR_DIR}}"><i class="fa-solid {{STR_ICON}}"></i> {{STR_DIFF}} ৳</div>
-          </div>
-        </div>
-      </div>
-      <div class="vori-row">
-        <div class="vc"><div class="vc-lbl">২২ ক্যারেট</div><div class="vc-val">{{S22_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
-        <div class="vc"><div class="vc-lbl">২১ ক্যারেট</div><div class="vc-val">{{S21_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
-        <div class="vc"><div class="vc-lbl">১৮ ক্যারেট</div><div class="vc-val">{{S18_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
-        <div class="vc"><div class="vc-lbl">সনাতন</div><div class="vc-val">{{STR_VORI}}</div><div class="vc-unit">৳ প্রতি ভরি</div></div>
-      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>ক্যারেট</th>
+            <th>প্রতি গ্রাম</th>
+            <th>প্রতি ভরি</th>
+            <th>পরিবর্তন</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="karat">২২ ক্যারেট</div></td>
+            <td><div class="price">{{S22_NEW}}/-</div></td>
+            <td><div class="vori">{{S22_VORI}} ৳</div></td>
+            <td><div class="chg {{S22_DIR}}"><i class="fa-solid {{S22_ICON}}"></i> {{S22_DIFF}} ৳</div></td>
+          </tr>
+          <tr>
+            <td><div class="karat">২১ ক্যারেট</div></td>
+            <td><div class="price">{{S21_NEW}}/-</div></td>
+            <td><div class="vori">{{S21_VORI}} ৳</div></td>
+            <td><div class="chg {{S21_DIR}}"><i class="fa-solid {{S21_ICON}}"></i> {{S21_DIFF}} ৳</div></td>
+          </tr>
+          <tr>
+            <td><div class="karat">১৮ ক্যারেট</div></td>
+            <td><div class="price">{{S18_NEW}}/-</div></td>
+            <td><div class="vori">{{S18_VORI}} ৳</div></td>
+            <td><div class="chg {{S18_DIR}}"><i class="fa-solid {{S18_ICON}}"></i> {{S18_DIFF}} ৳</div></td>
+          </tr>
+          <tr>
+            <td><div class="karat">সনাতন</div><div class="karat-sub">Traditional</div></td>
+            <td><div class="price">{{STR_NEW}}/-</div></td>
+            <td><div class="vori">{{STR_VORI}} ৳</div></td>
+            <td><div class="chg {{STR_DIR}}"><i class="fa-solid {{STR_ICON}}"></i> {{STR_DIFF}} ৳</div></td>
+          </tr>
+        </tbody>
+      </table>
     </section>
 
-    <!-- FOOTER -->
     <footer class="footer">
-      <div class="ft-src">তথ্যসূত্র: <a href="https://goldpricebd.pages.dev/">GoldPriceBD</a></div>
-      <div class="ft-contact">+880 1911-367421</div>
-      <div class="copy-main">© New Fashion Jewellers</div>
+      <div>তথ্যসূত্র: <a href="https://goldpricebd.pages.dev/">GoldPriceBD</a></div>
+      <div>+880 1911-367421</div>
+      <div>© New Fashion Jewellers</div>
     </footer>
   </div>
 </div>
