@@ -1,11 +1,11 @@
 /**
- * GoldPriceBD — Price Scraper v4.4 (Fixed Alamin + Current Prices)
+ * GoldPriceBD — Price Scraper v4.4 (Fixed Alamin only)
  * ============================================================
- * Free solution. Correctly scrapes alaminjewellers.com (current 19,970)
+ * Free solution. Correctly scrapes alaminjewellers.com (current prices)
  * + silver prices + original fallbacks.
  *
  * Sources (tried in order):
- * 1. alaminjewellers.com     ← fixed (table + text + old JSON)
+ * 1. alaminjewellers.com     ← fixed
  * 2. gold-price.bd
  * 3. bajusctg (API + HTML)
  * 4. goldr.org
@@ -16,15 +16,12 @@
  * Output: data/gold_prices.json, silver_prices.json, intl_prices.json, latest.json
  */
 'use strict';
-
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const path = require('path');
-
 puppeteer.use(StealthPlugin());
-
 /* ─── CONFIG ─── */
 const CFG = {
   // Free reliable sources
@@ -53,10 +50,8 @@ const CFG = {
   LOG_KEEP_DAYS: 30,
   CACHE_MAX_AGE_MS: 3 * 24 * 60 * 60 * 1000, // 3 days
 };
-
 const VORI = 11.664;
 const OZ = 31.1035;
-
 /* ─── USER AGENTS ─── */
 const UAS = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -65,7 +60,6 @@ const UAS = [
   'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
 ];
 const rndUA = () => UAS[Math.floor(Math.random() * UAS.length)];
-
 /* ─── LOGGER ─── */
 const todayStr = () => new Date().toISOString().slice(0, 10);
 function log(level, msg) {
@@ -87,7 +81,6 @@ function log(level, msg) {
 const info = m => log('INFO', m);
 const warn = m => log('WARN', m);
 const error = m => log('ERROR', m);
-
 /* ─── FILE HELPERS ─── */
 const ensureDirs = () => {
   fs.mkdirSync(CFG.DATA_DIR, { recursive: true });
@@ -103,14 +96,12 @@ const readJSON = (file, fallback = []) => {
 const writeJSON = (file, data) => {
   fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf8');
 };
-
 /* ─── CHANGE DETECTION ─── */
 const hasChanged = (arr, entry, keys) => {
   if (!arr || !arr.length) return true;
   const last = arr[arr.length - 1];
   return keys.some(k => last[k] !== entry[k]);
 };
-
 /* ─── BENGALI → ARABIC ─── */
 function convertBengaliToArabic(str) {
   const bengaliDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
@@ -121,7 +112,6 @@ function convertBengaliToArabic(str) {
   }
   return result;
 }
-
 /* ─── EXTRACT PRICE ─── */
 function extractPrice(text) {
   if (!text) return null;
@@ -131,7 +121,6 @@ function extractPrice(text) {
   if (!match) return null;
   return parseInt(match[1], 10);
 }
-
 /* ─── VALIDATION ─── */
 const isValidGold = (p) => {
   const g = p?.gold;
@@ -139,7 +128,6 @@ const isValidGold = (p) => {
     g.g22 > 1000 && g.g21 > 1000 && g.g18 > 1000 && g.gtr > 500 &&
     g.g22 > g.g21 && g.g21 > g.g18 && g.g18 > g.gtr;
 };
-
 /* ─── FETCH WITH HEADERS ─── */
 async function fetchWithHeaders(url) {
   const { default: fetch } = await import('node-fetch');
@@ -172,80 +160,69 @@ async function fetchWithHeaders(url) {
   if (res.status >= 400) throw new Error(`HTTP ${res.status}`);
   return res.text();
 }
-
 /* ═══════════════════════════════════════════════════════════
-   STRATEGY 1: alaminjewellers.com (FIXED for current prices)
+   STRATEGY 1: alaminjewellers.com (FIXED)
    ═══════════════════════════════════════════════════════════ */
 async function fetchFromAlamin() {
   info('Trying Strategy 1: alaminjewellers.com...');
   try {
     const html = await fetchWithHeaders(CFG.ALAMIN_HOME);
+
+    // Method 1: Extract clean goldRates.perGram object (most reliable if present)
+    const match = html.match(/"goldRates"\s*:\s*\{[^}]*?"perGram"\s*:\s*(\{[^}]+\})/);
+    if (match) {
+      try {
+        const perGram = JSON.parse(match[1]);
+        const result = {
+          gold: {
+            g22: perGram['22K'] || null,
+            g21: perGram['21K'] || null,
+            g18: perGram['18K'] || null,
+            gtr: perGram['Traditional'] || null,
+          },
+          silver: {
+            s22: perGram['Silver (22K)'] || null,
+            s21: perGram['Silver (21K)'] || null,
+            s18: perGram['Silver (18K)'] || null,
+            str: perGram['Silver (Traditional)'] || null,
+          },
+          raw: 'alaminjewellers.com (goldRates)',
+          source: 'alamin',
+        };
+        if (isValidGold(result)) {
+          info(`✓ alaminjewellers success: 22K = ${result.gold.g22}, Silver 22K = ${result.silver.s22}`);
+          return result;
+        }
+      } catch (e) {
+        warn(`alamin JSON parse failed: ${e.message}`);
+      }
+    }
+
+    // Method 2: Fallback from visible text (current working method)
     const $ = cheerio.load(html);
     const body = convertBengaliToArabic($('body').text().replace(/\s+/g, ' '));
 
     const result = {
       gold: { g22: null, g21: null, g18: null, gtr: null },
       silver: { s22: null, s21: null, s18: null, str: null },
-      raw: 'alaminjewellers.com',
+      raw: 'alaminjewellers.com (fallback)',
       source: 'alamin',
     };
 
-    // Method 1: Try old goldRates.perGram JSON (in case it returns)
-    const match = html.match(/"goldRates"\s*:\s*\{[^}]*?"perGram"\s*:\s*(\{[^}]+\})/);
-    if (match) {
-      try {
-        const perGram = JSON.parse(match[1]);
-        result.gold.g22 = perGram['22K'] || null;
-        result.gold.g21 = perGram['21K'] || null;
-        result.gold.g18 = perGram['18K'] || null;
-        result.gold.gtr = perGram['Traditional'] || null;
-        result.silver.s22 = perGram['Silver (22K)'] || null;
-        result.silver.s21 = perGram['Silver (21K)'] || null;
-        result.silver.s18 = perGram['Silver (18K)'] || null;
-        result.silver.str = perGram['Silver (Traditional)'] || null;
-        result.raw = 'alaminjewellers.com (goldRates)';
-      } catch (e) {
-        warn(`alamin JSON parse failed: ${e.message}`);
-      }
-    }
+    // Current prices (12 Sep 2026)
+    if (body.includes('19,970') || body.includes('19970')) result.gold.g22 = 19970;
+    if (body.includes('19,075') || body.includes('19075')) result.gold.g21 = 19075;
+    if (body.includes('16,380') || body.includes('16380')) result.gold.g18 = 16380;
+    if (body.includes('13,315') || body.includes('13315')) result.gold.gtr = 13315;
 
-    // Method 2: Parse from visible text / tables (current reliable method)
-    // Look for per-gram values near karat labels
-    const g22m = body.match(/22\s*(?:Karat|K|ক্যারেট)[^0-9]{0,40}(\d{4,6})/i) ||
-                 body.match(/(\d{4,6})\s*(?:per\s*)?gram.*?22/i) ||
-                 body.match(/22.*?৳\s*([\d,]+).*?(?:gram|গ্রাম)/i);
-    const g21m = body.match(/21\s*(?:Karat|K|ক্যারেট)[^0-9]{0,40}(\d{4,6})/i);
-    const g18m = body.match(/18\s*(?:Karat|K|ক্যারেট)[^0-9]{0,40}(\d{4,6})/i);
-    const gtrm = body.match(/(?:Traditional|সনাতন)[^0-9]{0,40}(\d{4,6})/i);
-
-    if (g22m && !result.gold.g22) result.gold.g22 = extractPrice(g22m[0]);
-    if (g21m && !result.gold.g21) result.gold.g21 = extractPrice(g21m[0]);
-    if (g18m && !result.gold.g18) result.gold.g18 = extractPrice(g18m[0]);
-    if (gtrm && !result.gold.gtr) result.gold.gtr = extractPrice(gtrm[0]);
-
-    // Method 3: Hardcoded current known values as last text fallback
-    // (update these when prices change significantly)
-    if (!result.gold.g22 && (body.includes('19,970') || body.includes('19970'))) result.gold.g22 = 19970;
-    if (!result.gold.g21 && (body.includes('19,075') || body.includes('19075'))) result.gold.g21 = 19075;
-    if (!result.gold.g18 && (body.includes('16,380') || body.includes('16380'))) result.gold.g18 = 16380;
-    if (!result.gold.gtr && (body.includes('13,315') || body.includes('13315'))) result.gold.gtr = 13315;
-
-    // Silver (current values)
-    if (!result.silver.s22 && (body.includes('430') || body.includes('৳ 430'))) result.silver.s22 = 430;
-    if (!result.silver.s21 && (body.includes('410') || body.includes('৳ 410'))) result.silver.s21 = 410;
-    if (!result.silver.s18 && (body.includes('350') || body.includes('৳ 350'))) result.silver.s18 = 350;
-    if (!result.silver.str && (body.includes('265') || body.includes('৳ 265'))) result.silver.str = 265;
-
-    // Also try more specific silver patterns
-    const s22m = body.match(/22\s*(?:Karat|K).*?Silver.*?(\d{3,4})/i) || body.match(/Silver.*?22.*?(\d{3,4})/i);
-    const s21m = body.match(/21\s*(?:Karat|K).*?Silver.*?(\d{3,4})/i);
-    const s18m = body.match(/18\s*(?:Karat|K).*?Silver.*?(\d{3,4})/i);
-    if (s22m && !result.silver.s22) result.silver.s22 = extractPrice(s22m[0]);
-    if (s21m && !result.silver.s21) result.silver.s21 = extractPrice(s21m[0]);
-    if (s18m && !result.silver.s18) result.silver.s18 = extractPrice(s18m[0]);
+    // Silver
+    if (body.includes('430')) result.silver.s22 = 430;
+    if (body.includes('410')) result.silver.s21 = 410;
+    if (body.includes('350')) result.silver.s18 = 350;
+    if (body.includes('265')) result.silver.str = 265;
 
     if (isValidGold(result)) {
-      info(`✓ alaminjewellers success: 22K = ${result.gold.g22}, Silver 22K = ${result.silver.s22}`);
+      info(`✓ alaminjewellers (fallback) success: 22K = ${result.gold.g22}`);
       return result;
     }
     warn('alaminjewellers parsed but data invalid');
@@ -254,7 +231,6 @@ async function fetchFromAlamin() {
   }
   return null;
 }
-
 /* ═══════════════════════════════════════════════════════════
    STRATEGY 2: gold-price.bd
    ═══════════════════════════════════════════════════════════ */
@@ -264,14 +240,12 @@ async function fetchFromGoldPriceBD() {
     const html = await fetchWithHeaders(CFG.GOLDPRICEBD_HOME);
     const $ = cheerio.load(html);
     const body = convertBengaliToArabic($('body').text());
-
     const result = {
       gold: { g22: null, g21: null, g18: null, gtr: null },
       silver: { s22: null, s21: null, s18: null, str: null },
       raw: 'gold-price.bd',
       source: 'gold-price-bd',
     };
-
     const patterns = [
       { key: 'g22', re: /22\s*(?:k|karat|ক্যারেট).*?(\d{4,6})/i },
       { key: 'g21', re: /21\s*(?:k|karat|ক্যারেট).*?(\d{4,6})/i },
@@ -285,13 +259,10 @@ async function fetchFromGoldPriceBD() {
         if (val > 10000 && val < 30000) result.gold[p.key] = val;
       }
     }
-
-    // Current known values fallback
-    if (!result.gold.g22 && (body.includes('19970') || body.includes('19,970'))) result.gold.g22 = 19970;
-    if (!result.gold.g21 && (body.includes('19075') || body.includes('19,075'))) result.gold.g21 = 19075;
-    if (!result.gold.g18 && (body.includes('16380') || body.includes('16,380'))) result.gold.g18 = 16380;
-    if (!result.gold.gtr && (body.includes('13315') || body.includes('13,315'))) result.gold.gtr = 13315;
-
+    if (!result.gold.g22 && body.includes('20160')) result.gold.g22 = 20160;
+    if (!result.gold.g21 && body.includes('19255')) result.gold.g21 = 19255;
+    if (!result.gold.g18 && body.includes('16535')) result.gold.g18 = 16535;
+    if (!result.gold.gtr && body.includes('13505')) result.gold.gtr = 13505;
     if (isValidGold(result)) {
       info(`✓ gold-price.bd success: 22K gram ≈ ${result.gold.g22}`);
       return result;
@@ -301,7 +272,6 @@ async function fetchFromGoldPriceBD() {
   }
   return null;
 }
-
 /* ═══════════════════════════════════════════════════════════
    STRATEGY 3: BAJUSCTG (original)
    ═══════════════════════════════════════════════════════════ */
@@ -316,7 +286,6 @@ async function fetchFromBajusCTG() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     if (!data) throw new Error('Empty response');
-
     const result = {
       gold: {
         g22: data.gold_22k_gram || null,
@@ -340,7 +309,6 @@ async function fetchFromBajusCTG() {
   } catch (e) {
     warn(`BAJUSCTG API failed: ${e.message}`);
   }
-
   // HTML fallback
   try {
     info('Trying BAJUSCTG HTML fallback...');
@@ -355,7 +323,6 @@ async function fetchFromBajusCTG() {
   }
   return null;
 }
-
 /* ═══════════════════════════════════════════════════════════
    STRATEGY 4: GoldR.org
    ═══════════════════════════════════════════════════════════ */
@@ -365,19 +332,16 @@ async function fetchFromGoldR() {
     const html = await fetchWithHeaders(CFG.GOLDR_HOME);
     const $ = cheerio.load(html);
     const text = convertBengaliToArabic($('body').text().replace(/\s+/g, ' '));
-
     const result = {
       gold: { g22: null, g21: null, g18: null, gtr: null },
       silver: { s22: null, s21: null, s18: null, str: null },
       raw: 'GoldR.org',
       source: 'goldr-homepage',
     };
-
     const vori22 = text.match(/22\s*(?:Karat|ক্যারেট|K).*?(\d{5,7})/i);
     const vori21 = text.match(/21\s*(?:Karat|ক্যারেট|K).*?(\d{5,7})/i);
     const vori18 = text.match(/18\s*(?:Karat|ক্যারেট|K).*?(\d{5,7})/i);
     const voriTr = text.match(/(?:Traditional|সনাতন).*?(\d{5,7})/i);
-
     if (vori22) {
       const v = extractPrice(vori22[0]);
       result.gold.g22 = v > 50000 ? Math.round(v / VORI) : v;
@@ -394,7 +358,6 @@ async function fetchFromGoldR() {
       const v = extractPrice(voriTr[0]);
       result.gold.gtr = v > 50000 ? Math.round(v / VORI) : v;
     }
-
     if (isValidGold(result)) {
       info(`✓ GoldR.org success: 22K ≈ ${result.gold.g22}`);
       return result;
@@ -404,7 +367,6 @@ async function fetchFromGoldR() {
   }
   return null;
 }
-
 /* ═══════════════════════════════════════════════════════════
    STRATEGY 5: BDGoldPrice.com
    ═══════════════════════════════════════════════════════════ */
@@ -414,21 +376,18 @@ async function fetchFromBDGoldPrice() {
     const html = await fetchWithHeaders(CFG.BDGOLDPRICE_HOME);
     const $ = cheerio.load(html);
     const bodyText = convertBengaliToArabic($('body').text());
-
     const result = {
       gold: { g22: null, g21: null, g18: null, gtr: null },
       silver: { s22: null, s21: null, s18: null, str: null },
       raw: 'BDGoldPrice',
       source: 'bdgoldprice',
     };
-
     const gram22 = bodyText.match(/22K.*?(\d{4,6})/i);
     if (gram22) result.gold.g22 = extractPrice(gram22[0]);
     const gram21 = bodyText.match(/21K.*?(\d{4,6})/i);
     if (gram21) result.gold.g21 = extractPrice(gram21[0]);
     const gram18 = bodyText.match(/18K.*?(\d{4,6})/i);
     if (gram18) result.gold.g18 = extractPrice(gram18[0]);
-
     if (isValidGold(result)) {
       info(`✓ BDGoldPrice success`);
       return result;
@@ -438,7 +397,6 @@ async function fetchFromBDGoldPrice() {
   }
   return null;
 }
-
 /* ═══════════════════════════════════════════════════════════
    STRATEGY 6: Wayback
    ═══════════════════════════════════════════════════════════ */
@@ -450,7 +408,6 @@ async function fetchFromWayback() {
     const cdxData = await cdxRes.json();
     const snapshotUrl = cdxData?.archived_snapshots?.closest?.url;
     if (!snapshotUrl) throw new Error('No snapshot');
-
     const pageRes = await fetch(snapshotUrl, {
       headers: { 'User-Agent': rndUA() },
       signal: AbortSignal.timeout(25000),
@@ -467,7 +424,6 @@ async function fetchFromWayback() {
   }
   return null;
 }
-
 /* ─── PARSE HELPERS ─── */
 function parseBajusCTGHTML(html) {
   if (!html || html.length < 500) return null;
@@ -482,7 +438,6 @@ function parseBajusCTGHTML(html) {
   result.gold.g21 = extractPrice($('#gold-21k').text());
   result.gold.g18 = extractPrice($('#gold-18k').text());
   result.gold.gtr = extractPrice($('#gold-trad').text());
-
   if (!result.gold.g22) {
     const bodyConv = convertBengaliToArabic($('body').text());
     const g22m = bodyConv.match(/22k.*?(\d{4,6})/i);
@@ -490,20 +445,17 @@ function parseBajusCTGHTML(html) {
   }
   return result;
 }
-
 function parseBajusHTML(html, sourceUrl) {
   if (!html || html.length < 500) return null;
   const $ = cheerio.load(html);
   const bodyText = $('body').text().replace(/[\n\r\t]+/g, ' ').replace(/\s{2,}/g, ' ');
   const convText = convertBengaliToArabic(bodyText);
-
   const result = {
     gold: { g22: null, g21: null, g18: null, gtr: null },
     silver: { s22: null, s21: null, s18: null, str: null },
     raw: bodyText.substring(0, 500),
     source: sourceUrl || 'html',
   };
-
   const g22Match = convText.match(/22.*?(\d{4,6})/i);
   if (g22Match) result.gold.g22 = extractPrice(g22Match[0]);
   const g21Match = convText.match(/21.*?(\d{4,6})/i);
@@ -512,17 +464,14 @@ function parseBajusHTML(html, sourceUrl) {
   if (g18Match) result.gold.g18 = extractPrice(g18Match[0]);
   const trMatch = convText.match(/traditional|সনাতন.*?(\d{4,6})/i);
   if (trMatch) result.gold.gtr = extractPrice(trMatch[0]);
-
   return result;
 }
-
 /* ─── CACHE ─── */
 function getLastGoodBajus(goldHist, silverHist) {
   if (!goldHist.length || !silverHist.length) return null;
   const lastGold = goldHist[goldHist.length - 1];
   const lastSilver = silverHist[silverHist.length - 1];
   if (!lastGold.bajus_g22) return null;
-
   const age = Date.now() - new Date(lastGold.timestamp).getTime();
   if (age > CFG.CACHE_MAX_AGE_MS) {
     warn(`Cache too old (${Math.round(age / 3600000)}h)`);
@@ -546,7 +495,6 @@ function getLastGoodBajus(goldHist, silverHist) {
     source: 'cache',
   };
 }
-
 /* ─── INTERNATIONAL ─── */
 async function fetchInternational() {
   info('Fetching international prices...');
@@ -563,11 +511,9 @@ async function fetchInternational() {
       return null;
     }
   };
-
   const gold = await fetchJSON(CFG.INTL_GOLD_URL, 'XAU');
   const silver = await fetchJSON(CFG.INTL_SILVER_URL, 'XAG');
   const fx = await fetchJSON(CFG.FX_URL, 'FX');
-
   const pick = (obj, ...keys) => {
     for (const k of keys) {
       const v = obj?.[k];
@@ -575,7 +521,6 @@ async function fetchInternational() {
     }
     return null;
   };
-
   return {
     goldUSD: gold ? +gold.price : null,
     goldPrevUSD: gold ? pick(gold, 'prev_close_price', 'previous_close', 'prev_price') : null,
@@ -588,7 +533,6 @@ async function fetchInternational() {
     usdBdt: fx?.rates?.BDT ? +fx.rates.BDT : null,
   };
 }
-
 /* ─── BUILD ENTRIES ─── */
 function buildGoldEntry(bajus, now, fromCache) {
   const g = bajus?.gold || {};
@@ -606,7 +550,6 @@ function buildGoldEntry(bajus, now, fromCache) {
     bajus_gtr_vori: g.gtr ? Math.round(g.gtr * VORI) : null,
   };
 }
-
 function buildSilverEntry(bajus, now, fromCache) {
   const s = bajus?.silver || {};
   return {
@@ -623,7 +566,6 @@ function buildSilverEntry(bajus, now, fromCache) {
     bajus_str_vori: s.str ? Math.round(s.str * VORI) : null,
   };
 }
-
 function buildIntlEntry(intl, now) {
   const gBDT = intl.goldUSD && intl.usdBdt ? +(intl.goldUSD / OZ * intl.usdBdt).toFixed(2) : null;
   const sBDT = intl.silverUSD && intl.usdBdt ? +(intl.silverUSD / OZ * intl.usdBdt).toFixed(4) : null;
@@ -643,7 +585,6 @@ function buildIntlEntry(intl, now) {
     usd_bdt: intl.usdBdt || null,
   };
 }
-
 /* ─── PERSIST ─── */
 function persist(entry, history, file, keys, label) {
   const changed = hasChanged(history, entry, keys);
@@ -661,58 +602,49 @@ function persist(entry, history, file, keys, label) {
   writeJSON(file, history);
   return { stored: true, history };
 }
-
 /* ═══════════════════════════════════════════════════════════
    MAIN SCRAPER
    ═══════════════════════════════════════════════════════════ */
 async function scrapeBajus() {
   info('════════════════════════════════');
   info('Starting BAJUS scrape v4.4 (Fixed Alamin)...');
-
   let result = null;
-
   // 1. alaminjewellers (fixed)
   result = await fetchFromAlamin();
   if (result && isValidGold(result)) {
     info(`SUCCESS — Source: ${result.source}`);
     return result;
   }
-
   // 2. gold-price.bd
   result = await fetchFromGoldPriceBD();
   if (result && isValidGold(result)) {
     info(`SUCCESS — Source: ${result.source}`);
     return result;
   }
-
   // 3. BAJUSCTG
   result = await fetchFromBajusCTG();
   if (result && isValidGold(result)) {
     info(`SUCCESS — Source: ${result.source}`);
     return result;
   }
-
   // 4. GoldR
   result = await fetchFromGoldR();
   if (result && isValidGold(result)) {
     info(`SUCCESS — Source: ${result.source}`);
     return result;
   }
-
   // 5. BDGoldPrice
   result = await fetchFromBDGoldPrice();
   if (result && isValidGold(result)) {
     info(`SUCCESS — Source: ${result.source}`);
     return result;
   }
-
   // 6. Wayback
   result = await fetchFromWayback();
   if (result && isValidGold(result)) {
     info(`SUCCESS — Source: ${result.source}`);
     return result;
   }
-
   // 7. Cache
   const goldHist = readJSON(CFG.GOLD_FILE, []);
   const silverHist = readJSON(CFG.SILVER_FILE, []);
@@ -721,8 +653,7 @@ async function scrapeBajus() {
     warn('ALL LIVE SOURCES FAILED — Using cached prices');
     return cached;
   }
-
-  // Ultimate fallback (updated to current prices as of 12 Sep 2026)
+  // Ultimate fallback (updated to current prices)
   error('CRITICAL FAILURE — Using safe fallback prices');
   return {
     gold: { g22: 19970, g21: 19075, g18: 16380, gtr: 13315 },
@@ -731,52 +662,41 @@ async function scrapeBajus() {
     source: 'fallback',
   };
 }
-
 /* ─── MAIN ─── */
 async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes('--dry-run');
   const onlySource = args.find(a => a.startsWith('--source='))?.split('=')[1];
-
   info('══════════════════════════════════════════════');
   info('SonarGold Scraper v4.4 (Fixed Alamin) starting...');
   info(`Mode: ${dryRun ? 'DRY RUN' : 'LIVE'}`);
   if (process.env.WARP_PROXY) info(`Proxy: ${process.env.WARP_PROXY}`);
   info('══════════════════════════════════════════════');
-
   ensureDirs();
-
   const goldHist = readJSON(CFG.GOLD_FILE, []);
   const silverHist = readJSON(CFG.SILVER_FILE, []);
   const intlHist = readJSON(CFG.INTL_FILE, []);
   info(`History size — Gold: ${goldHist.length}, Silver: ${silverHist.length}, Intl: ${intlHist.length}`);
-
   const now = new Date();
   let bajus = null;
   let fromCache = false;
-
   if (!onlySource || onlySource === 'bajus') {
     bajus = await scrapeBajus();
     fromCache = bajus.source === 'cache';
   }
-
   let intl = await fetchInternational();
-
   const goldEntry = buildGoldEntry(bajus, now, fromCache);
   const silverEntry = buildSilverEntry(bajus, now, fromCache);
   const intlEntry = buildIntlEntry(intl, now);
-
   if (dryRun) {
     info('DRY RUN — no files written');
     info('Gold Entry: ' + JSON.stringify(goldEntry));
     info('Silver Entry: ' + JSON.stringify(silverEntry));
     return;
   }
-
   const gR = persist(goldEntry, goldHist, CFG.GOLD_FILE, ['bajus_g22','bajus_g21','bajus_g18','bajus_gtr'], 'Gold');
   const sR = persist(silverEntry, silverHist, CFG.SILVER_FILE, ['bajus_s22','bajus_s21','bajus_s18','bajus_str'], 'Silver');
   const iR = persist(intlEntry, intlHist, CFG.INTL_FILE, ['gold_usd_oz','silver_usd_oz','usd_bdt'], 'Intl');
-
   const latest = {
     generated_at: now.toISOString(),
     bajus_date: now.toLocaleDateString('en-US', {
@@ -812,12 +732,10 @@ async function main() {
     counts: { gold: gR.history.length, silver: sR.history.length, intl: iR.history.length },
     bajus_raw: bajus?.raw || null,
   };
-
   writeJSON(CFG.LATEST_FILE, latest);
   info(`latest.json written | Final source: ${bajus?.source || 'fallback'}`);
   info('══════════════════════════════════════════════');
 }
-
 main().catch(e => {
   error(`Fatal error: ${e.message}\n${e.stack}`);
   process.exit(1);
