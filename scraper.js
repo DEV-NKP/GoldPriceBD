@@ -173,7 +173,7 @@ async function fetchWithHeaders(url) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   STRATEGY 1: alaminjewellers.com (FULLY DYNAMIC)
+   STRATEGY 1: alaminjewellers.com (FULLY DYNAMIC + FIXED)
    ═══════════════════════════════════════════════════════════ */
 async function fetchFromAlamin() {
   info('Trying Strategy 1: alaminjewellers.com (dynamic)...');
@@ -189,103 +189,140 @@ async function fetchFromAlamin() {
       source: 'alamin',
     };
 
-    // ── Method 1: Try JSON (if site ever re-adds it) ──
-    const jsonMatch = html.match(/"goldRates"\s*:\s*\{[^}]*?"perGram"\s*:\s*(\{[^}]+\})/);
-    if (jsonMatch) {
-      try {
-        const perGram = JSON.parse(jsonMatch[1]);
-        result.gold.g22 = perGram['22K'] || perGram['22'] || null;
-        result.gold.g21 = perGram['21K'] || perGram['21'] || null;
-        result.gold.g18 = perGram['18K'] || perGram['18'] || null;
-        result.gold.gtr = perGram['Traditional'] || perGram['trad'] || null;
-        if (isValidGold(result)) {
-          info(`✓ alaminjewellers (JSON) success: 22K = ${result.gold.g22}`);
-          return result;
-        }
-      } catch (_) {}
+    // ── Helper: decide if a number is a good per-gram gold price ──
+    const isGoodGramPrice = (val, karat) => {
+      if (!val) return false;
+      if (karat === 'g22') return val >= 15000 && val <= 28000;
+      if (karat === 'g21') return val >= 14000 && val <= 27000;
+      if (karat === 'g18') return val >= 12000 && val <= 24000;
+      if (karat === 'gtr') return val >= 9000  && val <= 20000;
+      return false;
+    };
+
+    // ── Method 1: Strong text patterns (most reliable) ──
+    // Look for the explicit "per gram" sentence
+    const gramSentence = body.match(/(\d{1,2}[,.]?\d{3})\s*per\s*gram/i) ||
+                         body.match(/প্রতি\s*গ্রাম\s*৳?\s*(\d{1,2}[,.]?\d{3})/i);
+    if (gramSentence) {
+      const val = extractPrice(gramSentence[1] || gramSentence[0]);
+      if (isGoodGramPrice(val, 'g22')) result.gold.g22 = val;
     }
 
-    // ── Method 2: Parse ALL tables (most reliable) ──
+    // Direct karat + price near "gram"
+    const directPatterns = [
+      { key: 'g22', re: /22\s*(?:karat|ক্যারেট|k)[^0-9]{0,80}?(\d{1,2}[,.]?\d{3})[^0-9]{0,30}?(?:per\s*gram|প্রতি\s*গ্রাম|\/\s*gram)/i },
+      { key: 'g21', re: /21\s*(?:karat|ক্যারেট|k)[^0-9]{0,80}?(\d{1,2}[,.]?\d{3})[^0-9]{0,30}?(?:per\s*gram|প্রতি\s*গ্রাম|\/\s*gram)/i },
+      { key: 'g18', re: /18\s*(?:karat|ক্যারেট|k)[^0-9]{0,80}?(\d{1,2}[,.]?\d{3})[^0-9]{0,30}?(?:per\s*gram|প্রতি\s*গ্রাম|\/\s*gram)/i },
+      { key: 'gtr', re: /(?:traditional|সনাতন)[^0-9]{0,80}?(\d{1,2}[,.]?\d{3})[^0-9]{0,30}?(?:per\s*gram|প্রতি\s*গ্রাম|\/\s*gram)/i },
+    ];
+
+    for (const p of directPatterns) {
+      const m = body.match(p.re);
+      if (m) {
+        const val = extractPrice(m[1]);
+        if (isGoodGramPrice(val, p.key)) result.gold[p.key] = val;
+      }
+    }
+
+    // ── Method 2: Parse tables but ONLY the "per gram" table ──
     $('table').each((_, table) => {
+      const tableText = convertBengaliToArabic($(table).text().toLowerCase());
+
+      // Skip ana / roti / bhori-only tables
+      if (tableText.includes('per ana') || tableText.includes('আনা') ||
+          tableText.includes('per roti') || tableText.includes('রতি') ||
+          (tableText.includes('per bhori') && !tableText.includes('per gram'))) {
+        return;
+      }
+
+      // Only process tables that look like per-gram
+      const isGramTable = tableText.includes('per gram') ||
+                          tableText.includes('প্রতি গ্রাম') ||
+                          tableText.includes('price / gram') ||
+                          tableText.includes('/ gram');
+
+      if (!isGramTable) return;
+
       $(table).find('tr').each((__, row) => {
         const cells = $(row).find('td, th').map((_, el) => $(el).text().trim()).get();
         if (cells.length < 2) return;
 
         const label = convertBengaliToArabic(cells[0]).toLowerCase();
-        const priceRaw = extractPrice(cells[1]);
-        if (!priceRaw) return;
+        const price = extractPrice(cells[1]);
+        if (!price) return;
 
-        // Decide if this is per-gram or per-bhori
-        const isBhori = priceRaw > 50000;
-        const price = isBhori ? Math.round(priceRaw / VORI) : priceRaw;
-
-        if (label.includes('22') && (label.includes('karat') || label.includes('ক্যারেট') || label.includes('k'))) {
-          if (price > 8000 && price < 35000) result.gold.g22 = price;
-        } else if (label.includes('21') && (label.includes('karat') || label.includes('ক্যারেট') || label.includes('k'))) {
-          if (price > 8000 && price < 35000) result.gold.g21 = price;
-        } else if (label.includes('18') && (label.includes('karat') || label.includes('ক্যারেট') || label.includes('k'))) {
-          if (price > 8000 && price < 35000) result.gold.g18 = price;
-        } else if (label.includes('traditional') || label.includes('সনাতন') || label.includes('trad')) {
-          if (price > 4000 && price < 25000) result.gold.gtr = price;
-        }
-
-        // Silver in tables
-        if (label.includes('silver') || label.includes('রুপা') || label.includes('রূপার')) {
-          if (label.includes('22')) result.silver.s22 = priceRaw < 2000 ? priceRaw : Math.round(priceRaw / VORI);
-          else if (label.includes('21')) result.silver.s21 = priceRaw < 2000 ? priceRaw : Math.round(priceRaw / VORI);
-          else if (label.includes('18')) result.silver.s18 = priceRaw < 2000 ? priceRaw : Math.round(priceRaw / VORI);
-          else if (label.includes('traditional') || label.includes('সনাতন')) {
-            result.silver.str = priceRaw < 2000 ? priceRaw : Math.round(priceRaw / VORI);
-          }
+        if (label.includes('22') && isGoodGramPrice(price, 'g22')) result.gold.g22 = price;
+        else if (label.includes('21') && isGoodGramPrice(price, 'g21')) result.gold.g21 = price;
+        else if (label.includes('18') && isGoodGramPrice(price, 'g18')) result.gold.g18 = price;
+        else if ((label.includes('traditional') || label.includes('সনাতন')) && isGoodGramPrice(price, 'gtr')) {
+          result.gold.gtr = price;
         }
       });
     });
 
-    // ── Method 3: Smart body-text regex (fallback) ──
+    // ── Method 3: Fallback – any good-looking numbers near karat ──
     if (!isValidGold(result)) {
-      const patterns = [
-        { key: 'g22', re: /22\s*(?:karat|ক্যারেট|k)[^0-9]{0,60}?(\d{1,2}[,.]?\d{3,6})/gi },
-        { key: 'g21', re: /21\s*(?:karat|ক্যারেট|k)[^0-9]{0,60}?(\d{1,2}[,.]?\d{3,6})/gi },
-        { key: 'g18', re: /18\s*(?:karat|ক্যারেট|k)[^0-9]{0,60}?(\d{1,2}[,.]?\d{3,6})/gi },
-        { key: 'gtr', re: /(?:traditional|সনাতন)[^0-9]{0,60}?(\d{1,2}[,.]?\d{3,6})/gi },
+      const fallbackPatterns = [
+        { key: 'g22', re: /22\s*(?:karat|ক্যারেট|k)[^0-9]{0,50}?(\d{1,2}[,.]?\d{3,6})/gi },
+        { key: 'g21', re: /21\s*(?:karat|ক্যারেট|k)[^0-9]{0,50}?(\d{1,2}[,.]?\d{3,6})/gi },
+        { key: 'g18', re: /18\s*(?:karat|ক্যারেট|k)[^0-9]{0,50}?(\d{1,2}[,.]?\d{3,6})/gi },
+        { key: 'gtr', re: /(?:traditional|সনাতন)[^0-9]{0,50}?(\d{1,2}[,.]?\d{3,6})/gi },
       ];
 
-      for (const p of patterns) {
+      for (const p of fallbackPatterns) {
         const matches = [...body.matchAll(p.re)];
         for (const m of matches) {
-          const val = extractPrice(m[1]);
+          let val = extractPrice(m[1]);
           if (!val) continue;
-          // Prefer per-gram range
-          if (val >= 8000 && val <= 35000) {
+
+          // Convert bhori → gram if needed
+          if (val > 80000) val = Math.round(val / VORI);
+
+          if (isGoodGramPrice(val, p.key)) {
             result.gold[p.key] = val;
             break;
           }
-          // Convert bhori → gram
-          if (val > 50000 && val < 400000) {
-            result.gold[p.key] = Math.round(val / VORI);
-            break;
-          }
         }
       }
     }
 
-    // ── Silver body-text fallback ──
-    if (!result.silver.s22) {
-      const silverBlock = body.match(/(?:silver price|রুপার দাম|আজকের রুপা)[\s\S]{0,900}/i);
-      if (silverBlock) {
-        const sText = silverBlock[0];
-        const sPatterns = [
-          { key: 's22', re: /22\s*(?:karat|ক্যারেট)?\s*(?:silver|রুপা)[^0-9]{0,40}?(\d{2,4})/i },
-          { key: 's21', re: /21\s*(?:karat|ক্যারেট)?\s*(?:silver|রুপা)[^0-9]{0,40}?(\d{2,4})/i },
-          { key: 's18', re: /18\s*(?:karat|ক্যারেট)?\s*(?:silver|রুপা)[^0-9]{0,40}?(\d{2,4})/i },
-          { key: 'str', re: /(?:traditional|সনাতন)\s*(?:silver|রুপা)[^0-9]{0,40}?(\d{2,4})/i },
-        ];
-        for (const p of sPatterns) {
-          const m = sText.match(p.re);
-          if (m) result.silver[p.key] = extractPrice(m[1]);
+    // ── Silver ──
+    const silverBlock = body.match(/(?:silver price|রুপার দাম|আজকের রুপা)[\s\S]{0,900}/i);
+    if (silverBlock) {
+      const sText = silverBlock[0];
+      const sPatterns = [
+        { key: 's22', re: /22\s*(?:karat|ক্যারেট)?\s*(?:silver|রুপা)[^0-9]{0,40}?(\d{2,4})/i },
+        { key: 's21', re: /21\s*(?:karat|ক্যারেট)?\s*(?:silver|রুপা)[^0-9]{0,40}?(\d{2,4})/i },
+        { key: 's18', re: /18\s*(?:karat|ক্যারেট)?\s*(?:silver|রুপা)[^0-9]{0,40}?(\d{2,4})/i },
+        { key: 'str', re: /(?:traditional|সনাতন)\s*(?:silver|রুপা)[^0-9]{0,40}?(\d{2,4})/i },
+      ];
+      for (const p of sPatterns) {
+        const m = sText.match(p.re);
+        if (m) {
+          const val = extractPrice(m[1]);
+          if (val && val > 100 && val < 2000) result.silver[p.key] = val;
         }
       }
     }
+
+    // Also try silver tables
+    $('table').each((_, table) => {
+      const tText = $(table).text().toLowerCase();
+      if (!tText.includes('silver') && !tText.includes('রুপা')) return;
+
+      $(table).find('tr').each((__, row) => {
+        const cells = $(row).find('td, th').map((_, el) => $(el).text().trim()).get();
+        if (cells.length < 2) return;
+        const label = convertBengaliToArabic(cells[0]).toLowerCase();
+        const price = extractPrice(cells[1]);
+        if (!price || price > 2000) return;
+
+        if (label.includes('22')) result.silver.s22 = price;
+        else if (label.includes('21')) result.silver.s21 = price;
+        else if (label.includes('18')) result.silver.s18 = price;
+        else if (label.includes('traditional') || label.includes('সনাতন')) result.silver.str = price;
+      });
+    });
 
     if (isValidGold(result)) {
       info(`✓ alaminjewellers success: 22K=${result.gold.g22} 21K=${result.gold.g21} 18K=${result.gold.g18} Trad=${result.gold.gtr}`);
@@ -298,7 +335,6 @@ async function fetchFromAlamin() {
   }
   return null;
 }
-
 /* ═══════════════════════════════════════════════════════════
    STRATEGY 2: gold-price.bd
    ═══════════════════════════════════════════════════════════ */
