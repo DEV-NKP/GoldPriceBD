@@ -1,0 +1,17 @@
+[2026-10-12T01:36:38.249Z] [INFO ] ══════════════════════════════════════════════
+[2026-10-12T01:36:38.252Z] [INFO ] SonarGold Scraper v4.5 (Fully Dynamic Alamin) starting...
+[2026-10-12T01:36:38.253Z] [INFO ] Mode: LIVE
+[2026-10-12T01:36:38.255Z] [INFO ] ══════════════════════════════════════════════
+[2026-10-12T01:36:38.258Z] [INFO ] History size — Gold: 262, Silver: 242, Intl: 389
+[2026-10-12T01:36:38.260Z] [INFO ] ════════════════════════════════
+[2026-10-12T01:36:38.262Z] [INFO ] Starting BAJUS scrape v4.5 (Fully Dynamic Alamin)...
+[2026-10-12T01:36:38.263Z] [INFO ] Trying Strategy 1: alaminjewellers.com (dynamic)...
+[2026-10-12T01:36:38.751Z] [INFO ] ✓ alaminjewellers success: 22K=19830 21K=18940 18K=16265 Trad=13285
+[2026-10-12T01:36:38.752Z] [INFO ] SUCCESS — Source: alamin
+[2026-10-12T01:36:38.754Z] [INFO ] Fetching international prices...
+[2026-10-12T01:36:38.931Z] [ERROR] XAU fetch failed: request to https://api.gold-api.com/price/XAU failed, reason: getaddrinfo ENOTFOUND api.gold-api.com
+[2026-10-12T01:36:39.444Z] [INFO ] Gold: no change — skipping append
+[2026-10-12T01:36:39.445Z] [INFO ] Silver: no change — skipping append
+[2026-10-12T01:36:39.446Z] [INFO ] Intl: appended entry #390
+[2026-10-12T01:36:39.489Z] [INFO ] latest.json written | Final source: alamin
+[2026-10-12T01:36:39.490Z] [INFO ] ══════════════════════════════════════════════
