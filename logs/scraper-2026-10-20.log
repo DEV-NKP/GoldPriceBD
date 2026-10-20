@@ -46,3 +46,19 @@
 [2026-10-20T11:57:59.755Z] [INFO ] Intl: updated same-day entry
 [2026-10-20T11:57:59.771Z] [INFO ] latest.json written | Final source: alamin
 [2026-10-20T11:57:59.772Z] [INFO ] ══════════════════════════════════════════════
+[2026-10-20T16:48:02.007Z] [INFO ] ══════════════════════════════════════════════
+[2026-10-20T16:48:02.010Z] [INFO ] SonarGold Scraper v4.5 (Fully Dynamic Alamin) starting...
+[2026-10-20T16:48:02.012Z] [INFO ] Mode: LIVE
+[2026-10-20T16:48:02.013Z] [INFO ] ══════════════════════════════════════════════
+[2026-10-20T16:48:02.016Z] [INFO ] History size — Gold: 263, Silver: 243, Intl: 398
+[2026-10-20T16:48:02.019Z] [INFO ] ════════════════════════════════
+[2026-10-20T16:48:02.020Z] [INFO ] Starting BAJUS scrape v4.5 (Fully Dynamic Alamin)...
+[2026-10-20T16:48:02.021Z] [INFO ] Trying Strategy 1: alaminjewellers.com (dynamic)...
+[2026-10-20T16:48:02.645Z] [INFO ] ✓ alaminjewellers success: 22K=19550 21K=18670 18K=16035 Trad=13100
+[2026-10-20T16:48:02.647Z] [INFO ] SUCCESS — Source: alamin
+[2026-10-20T16:48:02.649Z] [INFO ] Fetching international prices...
+[2026-10-20T16:48:03.050Z] [INFO ] Gold: no change — skipping append
+[2026-10-20T16:48:03.052Z] [INFO ] Silver: no change — skipping append
+[2026-10-20T16:48:03.053Z] [INFO ] Intl: updated same-day entry
+[2026-10-20T16:48:03.070Z] [INFO ] latest.json written | Final source: alamin
+[2026-10-20T16:48:03.071Z] [INFO ] ══════════════════════════════════════════════
