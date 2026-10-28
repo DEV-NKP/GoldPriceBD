@@ -6271,17 +6271,17 @@
   },
   {
     "date": "2026-10-28",
-    "timestamp": "2026-10-28T06:06:40.438Z",
-    "gold_usd_oz": 4030.800049,
+    "timestamp": "2026-10-28T13:23:40.707Z",
+    "gold_usd_oz": 4053.100098,
     "gold_prev_usd_oz": null,
     "gold_chg_usd": null,
     "gold_chg_pct": null,
-    "gold_gram_bdt": 16071.47,
-    "silver_usd_oz": 53.966999,
+    "gold_gram_bdt": 16160.39,
+    "silver_usd_oz": 54.236,
     "silver_prev_usd_oz": null,
     "silver_chg_usd": null,
     "silver_chg_pct": null,
-    "silver_gram_bdt": 215.1755,
+    "silver_gram_bdt": 216.248,
     "usd_bdt": 124.014863
   }
 ]
