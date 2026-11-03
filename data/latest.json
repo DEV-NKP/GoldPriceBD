@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T18:43:21.111Z",
+  "generated_at": "2026-11-03T01:28:39.274Z",
   "bajus_date": "Tuesday, November 3, 2026",
   "bajus_ok": true,
   "bajus_cached": false,
@@ -7,8 +7,8 @@
   "intl_ok": true,
   "fx_ok": true,
   "gold": {
-    "date": "2026-11-02",
-    "timestamp": "2026-11-02T18:43:21.111Z",
+    "date": "2026-11-03",
+    "timestamp": "2026-11-03T01:28:39.274Z",
     "data_source": "alamin",
     "bajus_g22": 18935,
     "bajus_g21": 18085,
@@ -18,16 +18,16 @@
     "bajus_g21_vori": 210943,
     "bajus_g18_vori": 181200,
     "bajus_gtr_vori": 148016,
-    "intl_usd_oz": 3955.600098,
+    "intl_usd_oz": 3954.399902,
     "intl_prev_usd_oz": null,
     "intl_chg_usd": null,
     "intl_chg_pct": null,
-    "intl_gram_bdt": 15773.42,
-    "usd_bdt": 124.028893
+    "intl_gram_bdt": 15814.28,
+    "usd_bdt": 124.387897
   },
   "silver": {
-    "date": "2026-11-02",
-    "timestamp": "2026-11-02T18:43:21.111Z",
+    "date": "2026-11-03",
+    "timestamp": "2026-11-03T01:28:39.274Z",
     "data_source": "alamin",
     "bajus_s22": 300,
     "bajus_s21": 290,
@@ -37,17 +37,17 @@
     "bajus_s21_vori": 3383,
     "bajus_s18_vori": 2916,
     "bajus_str_vori": 2216,
-    "intl_usd_oz": 50.792999,
+    "intl_usd_oz": 50.522999,
     "intl_prev_usd_oz": null,
     "intl_chg_usd": null,
     "intl_chg_pct": null,
-    "intl_gram_bdt": 202.5431,
-    "usd_bdt": 124.028893
+    "intl_gram_bdt": 202.0496,
+    "usd_bdt": 124.387897
   },
   "counts": {
     "gold": 271,
     "silver": 247,
-    "intl": 411
+    "intl": 412
   },
   "bajus_raw": "alaminjewellers.com"
 }
