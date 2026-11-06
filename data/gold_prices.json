@@ -3549,15 +3549,15 @@
   },
   {
     "date": "2026-11-06",
-    "timestamp": "2026-11-06T07:47:57.228Z",
+    "timestamp": "2026-11-06T15:47:27.411Z",
     "data_source": "alamin",
     "bajus_g22": 19455,
     "bajus_g21": 18580,
     "bajus_g18": 15955,
-    "bajus_gtr": 13190,
+    "bajus_gtr": 13035,
     "bajus_g22_vori": 226923,
     "bajus_g21_vori": 216717,
     "bajus_g18_vori": 186099,
-    "bajus_gtr_vori": 153848
+    "bajus_gtr_vori": 152040
   }
 ]
