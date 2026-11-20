@@ -3221,5 +3221,18 @@
     "bajus_s21_vori": 3208,
     "bajus_s18_vori": 2741,
     "bajus_str_vori": 2100
+  },
+  {
+    "date": "2026-11-20",
+    "timestamp": "2026-11-20T08:59:09.077Z",
+    "data_source": "alamin",
+    "bajus_s22": 260,
+    "bajus_s21": 250,
+    "bajus_s18": 215,
+    "bajus_str": 1925,
+    "bajus_s22_vori": 3033,
+    "bajus_s21_vori": 2916,
+    "bajus_s18_vori": 2508,
+    "bajus_str_vori": 22453
   }
 ]
